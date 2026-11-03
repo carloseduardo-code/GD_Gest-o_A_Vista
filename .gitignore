@@ -1,0 +1,10 @@
+# No GitHub fica só o visualizador 3D e os modelos.
+# Os desenhos da Vale (uso interno) ficam só no computador: DWG/PDF originais e as imagens geradas deles.
+DWG/
+projetos/*/desenhos/
+versoes-anteriores/
+.claude/
+*.bak
+*.dwl
+*.dwl2
+projetos/*/fotos/

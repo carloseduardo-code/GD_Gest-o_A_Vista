@@ -1,0 +1,2328 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projetos 3D · Gonçalves &amp; Dias</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M14 58V30h9v28zM27 58V24h9v34zM40 58V18h9v40z' fill='%23a9a9a9'/%3E%3Cpath d='M27 58V24h9v34z' fill='%2371706e'/%3E%3Cpath d='M40 58V18h9v40z' fill='%23393431'/%3E%3Cpath d='M12 26C20 6 46 2 58 22c-10-14-32-13-46 4z' fill='%23247e51'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* paleta da marca Gonçalves & Dias: verde #247E51, grafite #393431, cinzas #71706E e #A9A9A9 */
+  :root {
+    --bg: #121211;
+    --bg2: #1b1a19;
+    --line: rgba(255, 255, 255, .08);
+    --text: #f2f0ee;
+    --muted: #a19e9a;
+    --brand: #247e51;
+    --brand-hi: #2b9160;
+    --accent: #4fb582;      /* verde da marca clareado, para texto e ícones sobre o escuro */
+    --accent-ink: #ffffff;
+    --charcoal: #393431;
+    --warm: #ffd38a;
+    --glass: rgba(26, 25, 24, .72);
+    --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+    --hero-h: min(90vh, 880px);
+    --ease: cubic-bezier(.2, .7, .1, 1);
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  body.viewer { overflow: hidden; }
+  button { font: inherit; color: inherit; }
+  .glass { background: var(--glass); backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0, 0, 0, .35); }
+
+  /* ---------- palco 3D: fundo do destaque na galeria, tela cheia no projeto ---------- */
+  #stage { position: absolute; top: 0; left: 0; width: 100%; height: var(--hero-h); z-index: 0; overflow: hidden;
+    transition: height .8s var(--ease); }
+  body.viewer #stage { position: fixed; height: 100vh; height: 100dvh; }
+  #stage canvas { display: block; width: 100%; height: 100%; }
+  .labels { position: absolute; inset: 0; pointer-events: none; }
+  body:not(.viewer) .labels { display: none; }
+
+  /* ---------- galeria ---------- */
+  .page { position: relative; z-index: 1; pointer-events: none; transition: opacity .45s; }
+  body.viewer .page { opacity: 0; visibility: hidden; }
+  .nav, .hero-text, .scroll-cue, .gallery, .foot { pointer-events: auto; }
+
+  .nav { position: absolute; top: 0; left: 0; right: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between;
+    padding: 22px clamp(20px, 6vw, 88px); }
+  .brand { display: flex; align-items: center; gap: 14px; color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 500; }
+  .logo { display: block; height: 54px; width: auto; }
+  .brand-sep { width: 1px; height: 24px; background: rgba(255, 255, 255, .16); }
+  .nav-count { font: 500 12px var(--mono); color: var(--muted); letter-spacing: .04em; }
+
+  .hero { position: relative; height: var(--hero-h); }
+  .hero::before { content: ''; position: absolute; inset: 0; pointer-events: none;
+    background:
+      linear-gradient(90deg, var(--bg) 0%, rgba(18, 18, 17, .82) 26%, rgba(18, 18, 17, 0) 58%),
+      linear-gradient(0deg, var(--bg) 0%, rgba(18, 18, 17, 0) 32%),
+      linear-gradient(180deg, rgba(18, 18, 17, .7) 0%, rgba(18, 18, 17, 0) 18%); }
+  .hero-text { position: absolute; left: clamp(20px, 6vw, 88px); bottom: clamp(56px, 12vh, 130px); max-width: 600px; }
+  .eyebrow { display: flex; align-items: center; gap: 10px; font: 600 12px var(--mono); letter-spacing: .14em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 16px; }
+  .eyebrow::before { content: ''; width: 22px; height: 2px; border-radius: 2px; background: var(--brand); }
+  .hero-code { font: 800 clamp(44px, 7.4vw, 108px)/.92 var(--sans); letter-spacing: -.035em; margin: 0; }
+  .hero-title { font-size: clamp(18px, 1.8vw, 22px); font-weight: 600; margin: 14px 0 16px; color: #dcd9d5; }
+  .hero-meta { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+  .hero-meta b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; text-decoration: none;
+    border-radius: 999px; padding: 12px 20px; cursor: pointer; border: 1px solid transparent; transition: .2s var(--ease); }
+  .btn.primary { background: var(--brand); color: #fff; }
+  .btn.primary:hover { background: var(--brand-hi); transform: translateY(-1px); }
+  .btn.ghost { background: rgba(255, 255, 255, .06); border-color: var(--line); color: var(--text); }
+  .btn.ghost:hover { background: rgba(255, 255, 255, .1); }
+  .btn.sm { padding: 9px 15px; font-size: 13px; }
+  .scroll-cue { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); background: none; border: 0;
+    color: var(--muted); font: 500 12px var(--mono); letter-spacing: .08em; cursor: pointer; }
+  .scroll-cue:hover { color: var(--text); }
+
+  .gallery { max-width: 1240px; margin: 0 auto; padding: 40px clamp(20px, 6vw, 88px) 24px; }
+  .gallery-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 22px; }
+  .gallery-head h2 { font-size: 26px; font-weight: 700; letter-spacing: -.02em; margin: 0; }
+  .gallery-head span { font: 500 12px var(--mono); color: var(--muted); }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 20px; }
+  .card { position: relative; display: flex; flex-direction: column; background: var(--bg2); border: 1px solid var(--line); border-radius: 18px;
+    overflow: hidden; color: inherit; transition: transform .25s var(--ease), border-color .25s; }
+  .card:hover { transform: translateY(-4px); border-color: rgba(79, 181, 130, .45); }
+  .card-link { display: flex; flex-direction: column; flex: 1; color: inherit; text-decoration: none; }
+  .card-edit { position: absolute; top: 12px; right: 12px; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center;
+    border: 1px solid var(--line); background: rgba(18, 18, 17, .72); color: var(--text); cursor: pointer; opacity: 0;
+    backdrop-filter: blur(8px); transition: opacity .2s, background .2s; }
+  .card:hover .card-edit, .card-edit:focus-visible { opacity: 1; }
+  .card-edit:hover { background: var(--brand); border-color: var(--brand); }
+  @media (hover: none) { .card-edit { opacity: 1; } }
+  .thumb { aspect-ratio: 16 / 10; background: #0f0f0e; }
+  .thumb img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .6s; }
+  .thumb img.ready { opacity: 1; }
+  .card-body { padding: 16px 18px 18px; }
+  .card-code { font: 600 12px var(--mono); color: var(--accent); letter-spacing: .05em; }
+  .card-title { font-size: 18px; font-weight: 600; margin: 5px 0 10px; }
+  .card-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--muted); }
+  .card-meta b { color: var(--text); font-weight: 600; }
+  .card.new { border-style: dashed; background: transparent; padding: 26px; justify-content: center; min-height: 280px; }
+  .card.new:hover { transform: none; border-color: var(--line); }
+  .card.new .plus { width: 44px; height: 44px; border-radius: 50%; border: 1px dashed var(--muted); display: grid; place-items: center;
+    color: var(--muted); font-size: 22px; margin-bottom: 16px; }
+  .card.new p { color: var(--muted); font-size: 14px; line-height: 1.55; margin: 0; }
+  .foot { text-align: center; color: var(--muted); font-size: 12px; padding: 40px 20px 48px; }
+
+  /* ---------- projeto aberto ---------- */
+  .viewer-ui { position: fixed; inset: 0; z-index: 10; pointer-events: none; opacity: 0; visibility: hidden;
+    transition: opacity .3s, visibility 0s .3s; }
+  body.viewer .viewer-ui { opacity: 1; visibility: visible; transition: opacity .5s .35s; }
+  .viewer-ui > * { pointer-events: auto; }
+
+  .vhead { position: absolute; top: 16px; left: 16px; display: flex; gap: 10px; align-items: center; max-width: calc(100vw - 32px); }
+  .round { flex: none; width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; color: var(--text);
+    text-decoration: none; transition: .2s; }
+  .round:hover { background: rgba(255, 255, 255, .12); }
+  .vtitle { display: flex; align-items: center; gap: 10px; min-width: 0; border-radius: 999px; padding: 10px 16px; cursor: pointer; }
+  .vcode { font: 600 13px var(--mono); color: var(--accent); white-space: nowrap; }
+  .vname { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .vtitle svg { flex: none; color: var(--muted); transition: transform .25s; }
+  .vtitle[aria-expanded="true"] svg { transform: rotate(180deg); }
+
+  .vlogo { position: absolute; top: 12px; right: 20px; height: 48px; width: auto; opacity: .92; pointer-events: none !important; }
+
+  .details { position: absolute; top: 68px; left: 16px; width: min(380px, calc(100vw - 32px)); border-radius: 18px; padding: 18px;
+    max-height: calc(100vh - 170px); overflow-y: auto; }
+  .details[hidden] { display: none; }
+  .d-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+  .d-sum { margin: 0 0 14px; font-size: 14px; line-height: 1.55; color: #d9d6d2; white-space: pre-line; }
+  .d-sum.empty { color: var(--muted); font-style: italic; }
+  .d-total { display: flex; justify-content: space-between; align-items: baseline; padding: 12px 0; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+  .d-total b { font-size: 20px; color: var(--text); font-variant-numeric: tabular-nums; }
+  .d-total.main b { font-size: 26px; color: var(--accent); }
+  .d-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 8px; margin: 4px 0 14px; }
+  .d-group { text-align: left; background: rgba(255, 255, 255, .04); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px;
+    font-size: 12px; color: var(--muted); cursor: pointer; transition: border-color .2s, background .2s; }
+  .d-group:hover { border-color: rgba(79, 181, 130, .5); background: rgba(79, 181, 130, .08); }
+  .d-group b { display: block; color: var(--text); font-size: 14px; margin: 2px 0; font-variant-numeric: tabular-nums; }
+  .d-label { font: 600 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .d-date { font-size: 12px; color: var(--muted); }
+
+  /* menu Rótulos: interruptores para nomes, etiquetas de grupo e cotas */
+  .menu { position: absolute; left: 50%; bottom: 80px; transform: translateX(-50%); border-radius: 16px; padding: 8px; min-width: 250px; }
+  .opt { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 9px 10px; border-radius: 10px;
+    font-size: 13px; cursor: pointer; }
+  .opt:hover { background: rgba(255, 255, 255, .05); }
+  .opt small { display: block; color: var(--muted); font-size: 11.5px; margin-top: 2px; }
+  .switch { appearance: none; -webkit-appearance: none; flex: none; width: 34px; height: 20px; margin: 0; border-radius: 999px;
+    background: rgba(255, 255, 255, .16); position: relative; cursor: pointer; transition: background .2s; }
+  .switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: #fff;
+    transition: transform .2s var(--ease); }
+  .switch:checked { background: var(--brand); }
+  .switch:checked::after { transform: translateX(14px); }
+
+  /* janela de edição do projeto */
+  .modal { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 16px; background: rgba(8, 8, 8, .6); }
+  .dialog { width: min(480px, 100%); border-radius: 20px; padding: 22px; display: grid; gap: 14px; background: rgba(30, 29, 28, .92); }
+  .dialog h3 { margin: 0; font-size: 18px; }
+  .dialog h3 small { display: block; font: 500 12px var(--mono); color: var(--accent); margin-bottom: 4px; letter-spacing: .05em; }
+  .dialog label { display: grid; gap: 6px; font-size: 12px; color: var(--muted); }
+  .dialog input, .dialog textarea { font: inherit; font-size: 14px; color: var(--text); background: rgba(255, 255, 255, .05);
+    border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; resize: vertical; }
+  .dialog input:focus, .dialog textarea:focus { outline: none; border-color: var(--accent); }
+  .dialog .note { margin: 0; font-size: 12px; color: var(--muted); }
+  .dialog-actions { display: flex; gap: 8px; align-items: center; }
+  .dialog-actions .grow { flex: 1; }
+
+  .toolbar { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); display: flex; align-items: center; gap: 2px;
+    padding: 6px; border-radius: 999px; max-width: calc(100vw - 24px); }
+  .seg { display: flex; background: rgba(255, 255, 255, .05); border-radius: 999px; padding: 3px; }
+  .seg button { background: none; border: 0; color: var(--muted); font-size: 13px; font-weight: 500; padding: 7px 13px; border-radius: 999px; cursor: pointer; transition: .2s; }
+  .seg button:hover { color: var(--text); }
+  .seg button.on { background: rgba(255, 255, 255, .13); color: var(--text); }
+  .sep { width: 1px; height: 22px; background: var(--line); margin: 0 6px; }
+  .tool { display: flex; align-items: center; gap: 7px; background: none; border: 0; font-size: 13px; font-weight: 500;
+    padding: 9px 13px; border-radius: 999px; cursor: pointer; transition: .2s; white-space: nowrap; }
+  .tool:hover { background: rgba(255, 255, 255, .08); }
+  .tool[aria-pressed="true"], .tool[aria-expanded="true"] { color: var(--accent); }
+  .tool.shot { background: var(--brand); color: #fff; font-weight: 600; margin-left: 4px; }
+  .tool.shot:hover { background: var(--brand-hi); }
+
+  .info { position: absolute; left: 16px; bottom: 20px; width: min(310px, calc(100vw - 32px)); border-radius: 16px;
+    border-left: 3px solid var(--brand); padding: 14px 16px; }
+  .info[hidden] { display: none; }
+  .info .tag { font: 600 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  .info h3 { font-size: 22px; margin: 2px 0 10px; font-weight: 700; }
+  .info h3 span { font-size: 14px; font-weight: 400; color: var(--muted); }
+  .info dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; margin: 0; font-size: 13px; }
+  .info dt { color: var(--muted); }
+  .info dd { margin: 0; }
+  .info .x { position: absolute; top: 8px; right: 10px; background: none; border: 0; color: var(--muted); font-size: 20px; cursor: pointer; line-height: 1; }
+
+  /* pintura */
+  .palette { position: absolute; left: 50%; bottom: 80px; transform: translateX(-50%); border-radius: 18px; padding: 12px 14px;
+    display: flex; flex-direction: column; gap: 10px; max-width: calc(100vw - 24px); }
+  .pal-head { display: flex; justify-content: space-between; align-items: center; gap: 18px; font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .pal-head b { color: var(--text); font-size: 13px; }
+  .pal-actions { display: flex; gap: 2px; }
+  .pal-actions button { background: none; border: 0; color: var(--muted); font-size: 12px; padding: 5px 9px; border-radius: 8px; cursor: pointer; }
+  .pal-actions button:hover { color: var(--text); background: rgba(255, 255, 255, .08); }
+  .pal-actions .done { color: var(--accent); font-weight: 600; }
+  .swatches { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .sw { position: relative; width: 30px; height: 30px; padding: 0; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .14);
+    cursor: pointer; transition: transform .15s var(--ease), border-color .15s; }
+  .sw:hover { transform: scale(1.12); }
+  .sw.on { border-color: #fff; box-shadow: 0 0 0 3px rgba(255, 255, 255, .18); }
+  .sw.orig { background: conic-gradient(#8e959a 0 25%, #ccd0d3 0 50%, #8e959a 0 75%, #ccd0d3 0); }
+  .sw.custom { background: conic-gradient(#ef4444, #eab308, #22c55e, #06b6d4, #3b82f6, #a855f7, #ef4444); overflow: hidden; }
+  .sw.custom input { position: absolute; inset: -4px; width: calc(100% + 8px); height: calc(100% + 8px); opacity: 0; cursor: pointer; border: 0; padding: 0; }
+  .info .swatches { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); gap: 7px; }
+  .info .sw { width: 24px; height: 24px; }
+  .info .opa { display: flex; align-items: center; gap: 10px; margin-top: 12px; font-size: 13px; color: var(--muted); }
+  .info .opa input { flex: 1; min-width: 0; accent-color: var(--accent); }
+  .info .opa b { width: 36px; text-align: right; color: var(--text); font-variant-numeric: tabular-nums; }
+
+  /* chumbadores */
+  .bolts { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--line); }
+  .bolts-head { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .bolts-head span { color: var(--muted); }
+  .bolts-head b { margin-right: auto; font-variant-numeric: tabular-nums; }
+  .link { background: none; border: 0; color: var(--accent); font-size: 13px; font-weight: 600; cursor: pointer; padding: 4px 8px; border-radius: 8px; }
+  .link:hover { background: rgba(79, 181, 130, .1); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 12px; }
+  .chip { font-size: 12px; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255, 255, 255, .04); color: var(--text); cursor: pointer; }
+  .chip:hover { background: rgba(255, 255, 255, .09); }
+  .chip.on { border-color: var(--accent); color: var(--accent); }
+  .bolt-grid { display: grid; grid-template-columns: auto 1fr auto; align-items: center; justify-items: center; gap: 4px 6px; }
+  .bolt-grid .s-t { grid-column: 2; grid-row: 1; }
+  .bolt-grid .s-l { grid-column: 1; grid-row: 2; }
+  .bolt-grid .bolt-map { grid-column: 2; grid-row: 2; width: 100px; height: 80px; }
+  .bolt-grid .s-r { grid-column: 3; grid-row: 2; }
+  .bolt-grid .s-b { grid-column: 2; grid-row: 3; }
+  .bolt-grid .bolt-map:only-child { grid-column: 1 / -1; width: 150px; height: 110px; }
+  .bolt-fields .chip { padding: 4px 9px; }
+  .bolt-cap { text-align: center; font-size: 11px; color: var(--muted); margin: 4px 0 10px; }
+  .stp { display: inline-flex; align-items: center; gap: 1px; background: rgba(255, 255, 255, .05); border: 1px solid var(--line); border-radius: 999px; padding: 2px; }
+  .stp button { width: 22px; height: 22px; border-radius: 50%; border: 0; background: none; color: var(--text); cursor: pointer; font-size: 15px; line-height: 1; }
+  .stp button:hover { background: rgba(255, 255, 255, .12); }
+  .stp b { min-width: 20px; text-align: center; font-size: 13px; font-variant-numeric: tabular-nums; }
+  .stp.u b { min-width: 46px; }
+  .bolt-fields { display: grid; gap: 7px; margin-bottom: 6px; font-size: 13px; }
+  .bolt-fields label { display: flex; justify-content: space-between; align-items: center; gap: 10px; color: var(--muted); }
+  .bolt-fields select { background: #23211f; color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 4px 8px; font: inherit; }
+  .info { max-height: calc(100vh - 96px); overflow-y: auto; overflow-x: hidden; }
+
+  .hint { position: absolute; left: 50%; bottom: 84px; transform: translateX(-50%); font-size: 12px; color: var(--muted);
+    white-space: nowrap; pointer-events: none !important; transition: opacity 1.2s; }
+  .hint.off { opacity: 0; }
+
+  /* etiqueta de grupo: discreta, só um ponto verde; acende ao passar o mouse */
+  .tag3d { pointer-events: auto; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font: 600 11.5px/1 var(--sans);
+    color: #eaf5ef; background: rgba(18, 18, 17, .6); border: 1px solid rgba(79, 181, 130, .45); padding: 5px 9px 5px 7px;
+    border-radius: 999px; backdrop-filter: blur(6px); transition: background .18s var(--ease), color .18s var(--ease); }
+  .tag3d::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .tag3d:hover { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .tag3d:hover::before { background: #fff; }
+  /* nomes das peças: camada própria por cima do 3D; sapatas com linha até a peça, pedestais em cima deles */
+  .name-layer { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  body:not(.viewer) .name-layer { display: none; }
+  .leaders { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .lead { fill: none; stroke: rgba(242, 240, 238, .55); stroke-width: 1; }
+  .lead-dot { fill: #f2f0ee; }
+  .name { position: absolute; left: 0; top: 0; font: 600 11px/1 var(--sans); color: #f2f0ee; background: rgba(18, 18, 17, .72);
+    border: 1px solid rgba(255, 255, 255, .12); padding: 4px 6.5px; border-radius: 5px; white-space: nowrap; will-change: transform; }
+  .name.main { background: rgba(244, 242, 239, .95); color: #393431; border-color: rgba(255, 255, 255, .6); }
+  .dim { font: 600 11px/1 var(--mono); color: #8fdcb2; background: rgba(18, 18, 17, .74); padding: 3px 5px; border-radius: 5px; white-space: nowrap; }
+  .dim.loc { color: var(--warm); }
+
+  /* ---------- desenhos, flash e aviso ---------- */
+  .lightbox { position: fixed; inset: 0; z-index: 40; background: rgba(8, 8, 8, .92); display: flex; align-items: center; justify-content: center; padding: 56px 64px; }
+  .lightbox[hidden] { display: none; }
+  .lightbox figure { margin: 0; max-width: 100%; max-height: 100%; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .lightbox img { max-width: 100%; max-height: calc(100vh - 150px); border-radius: 10px; }
+  .lightbox figcaption { font-size: 13px; color: var(--muted); }
+  .lb-btn { position: absolute; background: rgba(255, 255, 255, .08); border: 1px solid var(--line); color: var(--text);
+    width: 44px; height: 44px; border-radius: 50%; font-size: 22px; cursor: pointer; display: grid; place-items: center; }
+  .lb-btn:hover { background: rgba(255, 255, 255, .16); }
+  .lb-close { top: 16px; right: 16px; }
+  .lb-prev { left: 12px; top: 50%; transform: translateY(-50%); }
+  .lb-next { right: 12px; top: 50%; transform: translateY(-50%); }
+
+  /* editor da foto: a imagem pronta com os nomes por cima, para arrastar e ocultar antes de salvar */
+  .shot-editor { position: fixed; inset: 0; z-index: 48; display: flex; flex-direction: column; background: #0f0f0e; }
+  .se-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px 20px; flex-wrap: wrap; padding: 14px 20px; }
+  .se-title b { display: block; font-size: 15px; margin-bottom: 2px; }
+  .se-title span { font-size: 12.5px; color: var(--muted); }
+  .se-actions { display: flex; align-items: center; gap: 8px; }
+  .se-count { font: 500 12px var(--mono); color: var(--muted); margin-right: 6px; }
+  .se-stage { flex: 1; min-height: 0; display: grid; place-items: center; padding: 0 20px 20px; }
+  .se-frame { position: relative; border-radius: 6px; overflow: hidden; background: #fff; box-shadow: 0 24px 70px rgba(0, 0, 0, .55); }
+  .se-frame img { display: block; width: 100%; height: 100%; user-select: none; -webkit-user-drag: none; }
+  .se-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .se-lead { fill: none; stroke: rgba(57, 52, 49, .55); }
+  .se-dot { fill: #393431; }
+  .se-labels { position: absolute; inset: 0; }
+  .se-label { position: absolute; transform: translate(-50%, -50%); font: 600 calc(11px * var(--s, 1)) / 1 var(--sans); color: #393431;
+    background: #fff; border: 1px solid rgba(57, 52, 49, .16); border-radius: calc(5px * var(--s, 1));
+    padding: calc(4px * var(--s, 1)) calc(6.5px * var(--s, 1)); white-space: nowrap; cursor: grab; user-select: none; touch-action: none;
+    box-shadow: 0 calc(1.5px * var(--s, 1)) calc(6px * var(--s, 1)) rgba(57, 52, 49, .18); transition: box-shadow .15s, opacity .15s; }
+  .se-label:hover { box-shadow: 0 0 0 2px var(--brand); }
+  .se-label.dragging { cursor: grabbing; box-shadow: 0 0 0 2px var(--brand), 0 8px 20px rgba(0, 0, 0, .25); z-index: 2; }
+  .se-x { position: absolute; top: -9px; right: -9px; width: 18px; height: 18px; padding: 0; border: 0; border-radius: 50%; display: none;
+    place-items: center; background: #393431; color: #fff; font-size: 13px; line-height: 1; cursor: pointer; }
+  .se-label:hover .se-x { display: grid; }
+  .se-x:hover { background: #c0392b; }
+  .se-label.off { opacity: .35; border-style: dashed; box-shadow: none; cursor: pointer; }
+  .se-label.off:hover { opacity: .7; }
+  .se-label.off .se-x { display: none; }
+
+  .flash { position: fixed; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 50; }
+  .flash.go { animation: flash .55s ease-out; }
+  @keyframes flash { from { opacity: .75; } to { opacity: 0; } }
+  .toast { position: fixed; left: 50%; top: 18px; transform: translate(-50%, -10px); z-index: 45; border-radius: 999px;
+    padding: 10px 16px; font-size: 13px; opacity: 0; pointer-events: none; transition: .35s var(--ease); white-space: nowrap; }
+  .toast.on { opacity: 1; transform: translate(-50%, 0); }
+
+  @media (max-width: 1100px) {
+    .info { bottom: 84px; max-height: calc(100vh - 160px); }
+  }
+  @media (max-width: 860px) {
+    :root { --hero-h: 84vh; }
+    .hero::before { background: linear-gradient(0deg, var(--bg) 0%, rgba(18, 18, 17, .85) 38%, rgba(18, 18, 17, 0) 70%),
+      linear-gradient(180deg, rgba(18, 18, 17, .7) 0%, rgba(18, 18, 17, 0) 18%); }
+    .hero-text { bottom: 54px; right: 20px; }
+    .vlogo { display: none; }
+  }
+  @media (max-width: 640px) {
+    .logo { height: 44px; }
+    .brand-sep, .brand > span:last-child { display: none; }
+    .tool .lbl { display: none; }
+    .tool.shot .lbl { display: inline; }
+    .seg button { padding: 7px 10px; }
+    .info { bottom: 84px; }
+    .hint { display: none; }
+    .lightbox { padding: 64px 12px; }
+  }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+
+<div class="page">
+  <nav class="nav">
+    <a class="brand" href="#/"><img class="logo" src="Logo/Logo%20Gon%C3%A7alvez%20dias_Branca.png" alt="Gonçalves &amp; Dias Engenharia"><span class="brand-sep"></span><span>Projetos 3D</span></a>
+    <span class="nav-count" id="navCount"></span>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-text" id="heroText">
+      <div class="eyebrow">Projeto em destaque</div>
+      <h1 class="hero-code" id="heroCode"></h1>
+      <p class="hero-title" id="heroTitle"></p>
+      <div class="hero-meta" id="heroMeta"></div>
+      <div class="hero-actions">
+        <a class="btn primary" id="heroOpen" href="#/">Abrir em 3D
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <button class="btn ghost" id="heroRefs" type="button">Ver desenhos</button>
+      </div>
+    </div>
+    <button class="scroll-cue" id="scrollCue" type="button">TODOS OS PROJETOS ↓</button>
+  </section>
+
+  <main class="gallery" id="gallery">
+    <header class="gallery-head"><h2>Projetos</h2><span id="galleryCount"></span></header>
+    <div class="cards" id="cards"></div>
+  </main>
+  <footer class="foot">Modelos montados a partir das plantas de forma e de locação · Gonçalves &amp; Dias</footer>
+</div>
+
+<div class="viewer-ui">
+  <div class="vhead">
+    <a class="round glass" href="#/" aria-label="Voltar para os projetos">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></a>
+    <button class="vtitle glass" id="vtitle" type="button" aria-expanded="false" aria-controls="details">
+      <span class="vcode" id="vcode"></span><span class="vname" id="vname"></span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+  </div>
+  <img class="vlogo" src="Logo/Logo%20Gon%C3%A7alvez%20dias_Branca.png" alt="">
+  <div class="details glass" id="details" hidden></div>
+
+  <div class="toolbar glass">
+    <div class="seg" id="views"></div>
+    <span class="sep"></span>
+    <button class="tool" id="labelsBtn" type="button" aria-expanded="false" aria-controls="labelsMenu" title="Mostrar ou ocultar rótulos">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>
+      <span class="lbl">Rótulos</span></button>
+    <button class="tool" id="paintBtn" type="button" aria-pressed="false" title="Pintar peças">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4.5l5 5L11 18l-5-5z"/><path d="M6 13c-2 .5-3 2-3 4 0 1-.5 2-1 2.5 3 .5 6.5-.5 7-3.5"/><path d="M16.5 2.5l5 5"/></svg>
+      <span class="lbl">Pintar</span></button>
+    <button class="tool" id="refsBtn" type="button" title="Ver desenhos">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 15l5-5 4 4 3-3 6 6"/></svg>
+      <span class="lbl">Desenhos</span></button>
+    <button class="tool shot" id="shotBtn" type="button" title="Salvar foto em JPG">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+      <span class="lbl">Foto</span></button>
+  </div>
+
+  <div class="menu glass" id="labelsMenu" hidden>
+    <label class="opt"><span>Nomes das peças<small>S1, PE.1A… em cima de cada peça</small></span><input class="switch" type="checkbox" id="optNames"></label>
+    <label class="opt"><span>Etiquetas dos grupos<small>os marcadores verdes de cada conjunto</small></span><input class="switch" type="checkbox" id="optTags"></label>
+    <label class="opt" id="optDimsRow"><span>Cotas<small>medidas desenhadas no modelo</small></span><input class="switch" type="checkbox" id="optDims"></label>
+  </div>
+
+  <div class="palette glass" id="palette" hidden>
+    <div class="pal-head"><span><b>Pintar</b> · escolha a cor e clique nas peças</span>
+      <span class="pal-actions">
+        <button type="button" id="undoBtn">Desfazer</button>
+        <button type="button" id="clearBtn">Limpar cores</button>
+        <button type="button" id="doneBtn" class="done">Concluir</button>
+      </span></div>
+    <div class="swatches" id="swatches"></div>
+  </div>
+
+  <div class="palette glass" id="copybar" hidden>
+    <div class="pal-head"><span><b>Copiar chumbadores</b> · <span id="copyInfo"></span></span>
+      <span class="pal-actions"><button type="button" id="copyDone" class="done">Concluir</button></span></div>
+  </div>
+
+  <div class="info glass" id="info" hidden></div>
+  <div class="hint" id="hint">Arraste para girar · role para aproximar · clique numa peça para ver os detalhes</div>
+</div>
+
+<div class="lightbox" id="lightbox" hidden>
+  <button class="lb-btn lb-close" id="lbClose" type="button" aria-label="Fechar">×</button>
+  <button class="lb-btn lb-prev" id="lbPrev" type="button" aria-label="Anterior">‹</button>
+  <figure><img id="lbImg" alt=""><figcaption id="lbCap"></figcaption></figure>
+  <button class="lb-btn lb-next" id="lbNext" type="button" aria-label="Próximo">›</button>
+</div>
+<div class="modal" id="editModal" hidden>
+  <form class="dialog" id="editForm" autocomplete="off">
+    <h3><small id="editCode"></small>Editar projeto</h3>
+    <label>Código<input name="code" required maxlength="40"></label>
+    <label>Título<input name="title" required maxlength="90"></label>
+    <label>Descrição<textarea name="summary" rows="4" maxlength="600" placeholder="Uma ou duas linhas sobre a obra"></textarea></label>
+    <p class="note">As alterações ficam salvas neste navegador, como as cores das peças.</p>
+    <div class="dialog-actions">
+      <button type="button" class="btn ghost sm" id="editReset">Restaurar original</button>
+      <span class="grow"></span>
+      <button type="button" class="btn ghost sm" id="editCancel">Cancelar</button>
+      <button type="submit" class="btn primary sm">Salvar</button>
+    </div>
+  </form>
+</div>
+<div class="shot-editor" id="shotEditor" hidden>
+  <div class="se-bar">
+    <div class="se-title"><b>Editar foto</b>
+      <span>Arraste os nomes · × oculta · clique no apagado para voltar</span></div>
+    <div class="se-actions">
+      <span class="se-count" id="seCount"></span>
+      <button type="button" class="btn ghost sm" id="seReset">Restaurar</button>
+      <button type="button" class="btn ghost sm" id="seCancel">Cancelar</button>
+      <button type="button" class="btn primary sm" id="seSave">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+        Salvar JPG</button>
+    </div>
+  </div>
+  <div class="se-stage" id="seStage">
+    <div class="se-frame" id="seFrame">
+      <img id="seImg" alt="">
+      <svg class="se-lines" id="seLines" preserveAspectRatio="none"><path class="se-lead"/><path class="se-dot"/></svg>
+      <div class="se-labels" id="seLabels"></div>
+    </div>
+  </div>
+</div>
+<div class="flash" id="flash"></div>
+<div class="toast glass" id="toast"></div>
+<script src="marca.js"></script>
+
+<!-- PROJETOS: um arquivo por projeto. Para incluir um novo, adicione a linha dele aqui. -->
+<script src="projetos/tr-2012ks-13/projeto.js"></script>
+<script src="projetos/tr-2012ks-15/projeto.js"></script>
+<script src="projetos/tr-2012ks-11-cc/projeto.js"></script>
+<script src="projetos/tr-2012ks-11/projeto.js"></script>
+<script src="projetos/yy-2012ks-101/projeto.js"></script>
+<script src="projetos/se-2012ks-01a/projeto.js"></script>
+<script src="projetos/tr-2020ks-03/projeto.js"></script>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+
+const COMPANY = 'Gonçalves & Dias';
+const BG = 0x121211;
+const COLORS = { sapata: 0x8e959a, parede: 0xc0c5c8, pedestal: 0xccd0d3, existente: 0x86827c, aco: 0x5f7684 };
+const PROJECTS = (window.PROJETOS || []).slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+// código, título e descrição editados neste navegador valem mais do que os do arquivo do projeto
+const infoKey = (id) => `projetos3d:info:${id}`;
+for (const p of PROJECTS) {
+  p.orig = { code: p.code, title: p.title, summary: p.summary || '' };
+  try { Object.assign(p, JSON.parse(localStorage.getItem(infoKey(p.id))) || {}); } catch { /* sem armazenamento */ }
+}
+const fmt = (v) => v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+const fmtDate = (iso) => {
+  const [y, m, d] = iso.split('-').map(Number);
+  return `${d} ${MONTHS[m - 1]} ${y}`;
+};
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+
+// ---------- cena ----------
+const stage = $('stage');
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 0.75;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+stage.appendChild(renderer.domElement);
+const canvas = renderer.domElement;
+
+const labels = new CSS2DRenderer();
+labels.domElement.className = 'labels';
+stage.appendChild(labels.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(BG);
+scene.fog = new THREE.Fog(BG, 35, 80);
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+
+const camera = new THREE.PerspectiveCamera(45, 1, 0.05, 200);
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.maxPolarAngle = Math.PI * 0.495;
+controls.minDistance = 0.5;
+controls.maxDistance = 50;
+controls.autoRotateSpeed = 0.45;
+
+const hemi = new THREE.HemisphereLight(0xeef1f5, 0x262422, 0.6);
+scene.add(hemi);
+const sun = new THREE.DirectionalLight(0xffffff, 2.2);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.normalBias = 0.02;
+scene.add(sun, sun.target);
+
+const ground = new THREE.Mesh(new THREE.CircleGeometry(45, 64).rotateX(-Math.PI / 2),
+  new THREE.MeshStandardMaterial({ color: 0x1d1c1a, roughness: 1 }));
+ground.position.y = -0.03;
+ground.receiveShadow = true;
+scene.add(ground);
+const grid = new THREE.GridHelper(44, 44, 0x34322f, 0x262422);
+grid.position.y = -0.02;
+scene.add(grid);
+// na foto o fundo fica branco: o chão escuro some e só as sombras aparecem
+const shadowCatcher = new THREE.Mesh(new THREE.PlaneGeometry(90, 90).rotateX(-Math.PI / 2),
+  new THREE.ShadowMaterial({ opacity: 0.2, depthWrite: false }));
+shadowCatcher.position.y = -0.025;
+shadowCatcher.receiveShadow = true;
+shadowCatcher.visible = false;
+scene.add(shadowCatcher);
+
+// ---------- textura de concreto (gerada aqui mesmo, sem imagens externas) ----------
+const mulberry32 = (a) => () => {
+  a = (a + 0x6d2b79f5) | 0;
+  let t = Math.imul(a ^ (a >>> 15), 1 | a);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+};
+function concreteTextures(size = 1024) {
+  const rnd = mulberry32(7);
+  // ruído suave que se repete sem emenda (cells = quantas manchas cabem na largura)
+  const octave = (cells) => {
+    const grid = Float32Array.from({ length: cells * cells }, rnd);
+    const out = new Float32Array(size * size);
+    for (let y = 0; y < size; y++) {
+      const fy = (y / size) * cells, y0 = Math.floor(fy), ty = fy - y0, sy = ty * ty * (3 - 2 * ty);
+      const r0 = (y0 % cells) * cells, r1 = ((y0 + 1) % cells) * cells;
+      for (let x = 0; x < size; x++) {
+        const fx = (x / size) * cells, x0 = Math.floor(fx), tx = fx - x0, sx = tx * tx * (3 - 2 * tx);
+        const c0 = x0 % cells, c1 = (x0 + 1) % cells;
+        const a = grid[r0 + c0] + (grid[r0 + c1] - grid[r0 + c0]) * sx;
+        const b = grid[r1 + c0] + (grid[r1 + c1] - grid[r1 + c0]) * sx;
+        out[y * size + x] = a + (b - a) * sy;
+      }
+    }
+    return out;
+  };
+  const layers = [[3, 0.42], [11, 0.26], [37, 0.18], [131, 0.14]].map(([c, w]) => [octave(c), w]);
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = size;
+  const g = canvas.getContext('2d');
+  const img = g.createImageData(size, size);
+  for (let i = 0; i < size * size; i++) {
+    let n = 0;
+    for (const [o, w] of layers) n += o[i] * w;
+    const v = 0.9 + (n - 0.5) * 0.26 + (rnd() - 0.5) * 0.07;   // manchas + grão fino
+    const c = Math.max(0, Math.min(255, v * 255));
+    img.data[i * 4] = img.data[i * 4 + 1] = img.data[i * 4 + 2] = c;
+    img.data[i * 4 + 3] = 255;
+  }
+  g.putImageData(img, 0, 0);
+  // poros (bolhas de ar), repetidos nas bordas para a emenda não aparecer
+  for (let i = 0; i < 2200; i++) {
+    const x = rnd() * size, y = rnd() * size, r = 0.6 + rnd() ** 3 * 3.4;
+    g.fillStyle = `rgba(55,55,55,${0.25 + rnd() * 0.4})`;
+    for (const dx of [-size, 0, size]) for (const dy of [-size, 0, size]) {
+      if (x + dx < -r || x + dx > size + r || y + dy < -r || y + dy > size + r) continue;
+      g.beginPath();
+      g.arc(x + dx, y + dy, r, 0, Math.PI * 2);
+      g.fill();
+    }
+  }
+  const make = (srgb) => {
+    const t = new THREE.CanvasTexture(canvas);
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+    if (srgb) t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+  };
+  return { map: make(true), bump: make(false) };
+}
+const CONCRETE = concreteTextures();
+const TEX_SIZE = 1.6;   // a textura se repete a cada 1,6 m
+const CHAMFER = 0.02;   // quinas arredondadas de 2 cm
+
+// coordenadas de textura pela posição no mundo: mesma escala em todas as peças, sem esticar
+function worldUV(geo, seed) {
+  const pos = geo.attributes.position, nor = geo.attributes.normal;
+  const uv = new Float32Array(pos.count * 2);
+  const ou = (seed * 0.618) % 1, ov = (seed * 0.382) % 1;
+  for (let i = 0; i < pos.count; i++) {
+    const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
+    const ax = Math.abs(nor.getX(i)), ay = Math.abs(nor.getY(i)), az = Math.abs(nor.getZ(i));
+    const [u, v] = ax >= ay && ax >= az ? [z, y] : ay >= az ? [x, z] : [x, y];
+    uv[i * 2] = u / TEX_SIZE + ou;
+    uv[i * 2 + 1] = v / TEX_SIZE + ov;
+  }
+  geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+}
+
+// ---------- chumbadores no topo dos pedestais ----------
+// dois arranjos:
+//  'lados'  → sides = quantidade por lado na vista de cima: [cima, baixo, esquerda, direita]
+//  'grupos' → grupos de fileiras nas pontas: cols por fileira, rows por grupo, gap entre fileiras (cm),
+//             groups = 1 (no meio) ou 2 (nas duas pontas), along = 'Y' (cima/baixo), 'X' (esquerda/direita) ou 'auto'
+//  points → posições exatas (cm a partir do canto X0/Y0 da peça), como vêm do DWG
+// edge e out em cm, dia em mm
+// plate = chapa gabarito: on, t = espessura (mm), h = altura acima do concreto (cm), margin = folga em volta dos chumbadores (cm),
+//         rects = chapas exatas [x0, x1, y0, y1] (cm a partir do canto da peça), quando vêm do DWG
+const BOLT_DEFAULT = { mode: 'lados', sides: [0, 0, 0, 0], cols: 3, rows: 2, gap: 10, groups: 2, along: 'auto', edge: 15, dia: 25.4, out: 15,
+  plate: { on: false, t: 19, h: 5, margin: 7.5 } };
+const PLATE_TS = [3, 6.3, 9.5, 12.5, 16, 19, 22, 25, 32, 38];
+const PLATE_STEEL = new THREE.MeshStandardMaterial({ color: 0x7f878e, metalness: 0.6, roughness: 0.45 });
+const BOLT_PRESETS = [
+  ['2 fileiras de 3', { mode: 'lados', sides: [3, 3, 0, 0] }],
+  ['3 por lado', { mode: 'lados', sides: [3, 3, 3, 3] }],
+  ['4 cantos', { mode: 'lados', sides: [2, 2, 0, 0] }],
+  ['2 grupos de 2×3', { mode: 'grupos', cols: 3, rows: 2, groups: 2 }],
+  ['Nenhum', { mode: 'lados', sides: [0, 0, 0, 0] }],
+];
+const boltTotal = (cfg) => (cfg.points ? cfg.points.length : cfg.mode === 'grupos' ? cfg.groups * cfg.rows * cfg.cols : cfg.sides.reduce((a, v) => a + v, 0));
+// diâmetros como aparecem nos desenhos: polegadas ou métricos (valor em mm)
+const BOLT_DIAS = [[15.9, 'Ø5/8"'], [16, 'M16'], [19.1, 'Ø3/4"'], [20, 'M20'], [22.2, 'Ø7/8"'], [24, 'M24'], [25.4, 'Ø1"'],
+  [30, 'M30'], [31.8, 'Ø1.1/4"'], [36, 'M36'], [38.1, 'Ø1.1/2"'], [44.5, 'Ø1.3/4"'], [50.8, 'Ø2"'], [63.5, 'Ø2.1/2"'], [76.2, 'Ø3"']];
+const NICHE_MAT = new THREE.MeshStandardMaterial({ color: 0x24282b, roughness: 1 });
+const STEEL = new THREE.MeshStandardMaterial({ color: 0xb9bfc5, metalness: 0.7, roughness: 0.4 });
+const canBolt = (m) => m.userData.type === 'pedestal' && !!m.userData.box;
+
+// n posições entre from e to: de ponta a ponta, ou recuadas das pontas (inset)
+function spread(n, from, to, inset) {
+  if (!n) return [];
+  if (inset) return Array.from({ length: n }, (_, i) => from + ((to - from) * (i + 1)) / (n + 1));
+  if (n === 1) return [(from + to) / 2];
+  return Array.from({ length: n }, (_, i) => from + ((to - from) * i) / (n - 1));
+}
+// os grupos ficam nas pontas do lado maior, a não ser que along diga outra coisa
+const groupsAlongY = ([X0, X1, Y0, Y1], cfg) => (cfg.along === 'auto' || !cfg.along ? Y1 - Y0 >= X1 - X0 : cfg.along === 'Y');
+
+// posição dos chumbadores no topo (cm, coordenadas da planta)
+function boltPoints(box, cfg) {
+  const [X0, X1, Y0, Y1] = box;
+  if (cfg.points) return cfg.points.map(([x, y]) => [X0 + x, Y0 + y]);
+  const a = Math.min(cfg.edge, (X1 - X0) / 2 - 1, (Y1 - Y0) / 2 - 1);
+  if (cfg.mode === 'grupos') {
+    // fileiras paralelas às pontas; cada grupo começa no afastamento e avança gap a gap para dentro
+    const alongY = groupsAlongY(box, cfg);
+    const [c0, c1, l0, l1] = alongY ? [X0, X1, Y0, Y1] : [Y0, Y1, X0, X1];
+    const cols = spread(cfg.cols, c0 + a, c1 - a, false);
+    const rows = [];
+    for (let i = 0; i < cfg.rows; i++) {
+      if (cfg.groups === 1) rows.push((l0 + l1) / 2 + (i - (cfg.rows - 1) / 2) * cfg.gap);
+      else rows.push(l0 + a + i * cfg.gap, l1 - a - i * cfg.gap);
+    }
+    return rows.flatMap((r) => cols.map((c) => (alongY ? [c, r] : [r, c])));
+  }
+  // nos lados: uma fileira vai de canto a canto; se os lados vizinhos também têm chumbadores,
+  // ela recua para os cantos não se encontrarem
+  const [nt, nb, nl, nr] = cfg.sides;
+  const xs = (n) => spread(n, X0 + a, X1 - a, nl + nr > 0);
+  const ys = (n) => spread(n, Y0 + a, Y1 - a, nt + nb > 0);
+  return [
+    ...xs(nt).map((x) => [x, Y0 + a]), ...xs(nb).map((x) => [x, Y1 - a]),
+    ...ys(nl).map((y) => [X0 + a, y]), ...ys(nr).map((y) => [X1 - a, y]),
+  ];
+}
+// um chumbador: barra rosqueada saindo do concreto, com arruela e porca.
+// Com chapa gabarito, as porcas ficam acima e abaixo da chapa e a barra cresce se precisar atravessá-la.
+function boltGeometry(cfg) {
+  const r = cfg.dia / 2000, nutH = r * 1.6;
+  const washer = (y) => new THREE.CylinderGeometry(r * 2.4, r * 2.4, r * 0.4, 24).translate(0, y + r * 0.2, 0);
+  const nut = (y) => new THREE.CylinderGeometry(r * 1.75, r * 1.75, nutH, 6).translate(0, y + nutH / 2, 0);
+  const plate = cfg.plate?.on ? cfg.plate : null;
+  if (!plate) {
+    const out = cfg.out / 100;
+    return mergeGeometries([new THREE.CylinderGeometry(r, r, out, 14).translate(0, out / 2, 0), washer(0), nut(r * 0.4)]);
+  }
+  const ph = plate.h / 100, pt = plate.t / 1000;
+  const out = Math.max(cfg.out / 100, ph + pt + r * 0.4 + nutH + 0.02);
+  const parts = [new THREE.CylinderGeometry(r, r, out, 14).translate(0, out / 2, 0), washer(ph + pt), nut(ph + pt + r * 0.4)];
+  if (ph > nutH * 1.2) parts.push(nut(ph - nutH));
+  return mergeGeometries(parts);
+}
+// chapas gabarito: uma por grupo (ou uma só para os chumbadores nos lados), com folga em volta
+function plateRects(box, cfg, pts) {
+  if (!pts.length) return [];
+  const [X0, X1, Y0, Y1] = box, mg = cfg.plate.margin;
+  if (cfg.plate.rects) return cfg.plate.rects.map(([a, b, c, d]) => [X0 + a, X0 + b, Y0 + c, Y0 + d]);
+  const rect = (ps) => {
+    const xs = ps.map((p) => p[0]), ys = ps.map((p) => p[1]);
+    return [Math.max(X0, Math.min(...xs) - mg), Math.min(X1, Math.max(...xs) + mg),
+      Math.max(Y0, Math.min(...ys) - mg), Math.min(Y1, Math.max(...ys) + mg)];
+  };
+  if (cfg.mode === 'grupos' && cfg.groups === 2) {
+    const alongY = groupsAlongY(box, cfg);
+    const mid = alongY ? (Y0 + Y1) / 2 : (X0 + X1) / 2;
+    const side = (p) => (alongY ? p[1] : p[0]) < mid;
+    return [pts.filter(side), pts.filter((p) => !side(p))].filter((g) => g.length).map(rect);
+  }
+  return [rect(pts)];
+}
+const boltStoreKey = (id) => `projetos3d:chumbadores:${id}`;
+function loadBolts(id) {
+  try { return JSON.parse(localStorage.getItem(boltStoreKey(id))) || {}; } catch { return {}; }
+}
+function saveBolts(b) {
+  try { localStorage.setItem(boltStoreKey(b.p.id), JSON.stringify(b.bolts)); } catch { /* sem armazenamento: vale só nesta sessão */ }
+}
+// o que foi ajustado neste navegador vale mais do que o que vem no arquivo do projeto
+const boltCfg = (b, m) => b.bolts[m.userData.key] ?? m.userData.bolts ?? null;
+// chumbadores (e chapas gabarito) de um retângulo [X0, X1, Y0, Y1, H0, H1]: saem do topo H1
+function boltMeshes(b, box, cfg, at, name) {
+  const pts = boltPoints(box, cfg), meshes = [];
+  let plates = 0;
+  if (!pts.length) return { meshes, bolts: 0, plates };
+  if (cfg.plate?.on) {
+    const top = box[5], t = cfg.plate.t / 1000;
+    const rects = plateRects(box, cfg, pts);
+    const geo = mergeGeometries(rects.map(([x0, x1, y0, y1]) => {
+      const c = b.toWorld((x0 + x1) / 2, (y0 + y1) / 2, top + cfg.plate.h + cfg.plate.t / 20, at);
+      return new RoundedBoxGeometry((x1 - x0) / 100, t, (y1 - y0) / 100, 1, Math.min(0.004, t / 3)).translate(c.x, c.y, c.z);
+    }));
+    const plate = new THREE.Mesh(geo, PLATE_STEEL);
+    plate.castShadow = plate.receiveShadow = true;
+    plate.name = `Chapa gabarito ${name}`;
+    meshes.push(plate);
+    plates = rects.length;
+  }
+  const inst = new THREE.InstancedMesh(boltGeometry(cfg), STEEL, pts.length);
+  const mat = new THREE.Matrix4();
+  pts.forEach(([X, Y], i) => inst.setMatrixAt(i, mat.makeTranslation(b.toWorld(X, Y, box[5], at))));
+  inst.castShadow = inst.receiveShadow = true;
+  inst.name = `Chumbadores ${name}`;
+  meshes.push(inst);
+  meshes.forEach((x) => b.group.add(x));
+  return { meshes, bolts: pts.length, plates };
+}
+function updateBolts(b, m) {
+  for (const old of m.userData.boltMeshes || []) {
+    b.group.remove(old);
+    old.geometry.dispose();
+  }
+  const cfg = boltCfg(b, m);
+  const r = cfg ? boltMeshes(b, m.userData.box, cfg, m.userData.at, m.userData.id) : { meshes: [], bolts: 0, plates: 0 };
+  m.userData.boltMeshes = r.meshes;
+  m.userData.boltCount = r.bolts;
+  m.userData.plateCount = r.plates;
+}
+
+// ---------- monta um projeto a partir do arquivo de dados ----------
+function build(p) {
+  const [OX, OY] = p.center;
+  const P = (X, Y, H) => new THREE.Vector3((X - OX) / 100, H / 100, (Y - OY) / 100);
+  const shift = (at) => (at ? new THREE.Vector3(at[0] / 100, at[2] / 100, at[1] / 100) : new THREE.Vector3());
+  const box = (X0, X1, Y0, Y1, H0, H1) => {
+    const c = P((X0 + X1) / 2, (Y0 + Y1) / 2, (H0 + H1) / 2);
+    const w = (X1 - X0) / 100, h = (H1 - H0) / 100, d = (Y1 - Y0) / 100;
+    return new RoundedBoxGeometry(w, h, d, 2, Math.min(CHAMFER, w / 4, h / 4, d / 4)).translate(c.x, c.y, c.z);
+  };
+  // extrusão com quina arredondada sem mudar a medida: o chanfro fica para dentro do contorno
+  const bevelled = (shape, len) => {
+    const r = Math.min(CHAMFER, len / 4);
+    return [new THREE.ExtrudeGeometry(shape, { depth: len - 2 * r, bevelEnabled: true, bevelThickness: r,
+      bevelSize: r, bevelOffset: -r, bevelSegments: 2 }), r];
+  };
+  // polígono em planta (X, Y) extrudado na altura, com furos opcionais (pilares que atravessam a laje)
+  const v2 = ([X, Y]) => new THREE.Vector2((X - OX) / 100, -(Y - OY) / 100);
+  const planPrism = (pts, H0, H1, holes = []) => {
+    const shape = new THREE.Shape(pts.map(v2));
+    shape.holes = holes.map((h) => new THREE.Path(h.map(v2)));
+    const [geo, r] = bevelled(shape, (H1 - H0) / 100);
+    return geo.rotateX(-Math.PI / 2).translate(0, H0 / 100 + r, 0);
+  };
+  // laje inclinada em Y: slope = [Ya, dHa, Yb, dHb] sobe ou desce a peça inteira (topo e fundo paralelos)
+  const slopeAt = (s, Y) => (s ? s[1] + (Y - s[0]) * (s[3] - s[1]) / (s[2] - s[0]) : 0);
+  const tilt = (geo, s) => {
+    if (!s) return geo;
+    const k = (s[3] - s[1]) / (s[2] - s[0]), c = (s[1] + (OY - s[0]) * k) / 100;
+    return geo.applyMatrix4(new THREE.Matrix4().set(1, 0, 0, 0, 0, 1, k, c, 0, 0, 1, 0, 0, 0, 0, 1));
+  };
+  // perfil em corte (Y, H) extrudado ao longo de X
+  const sectionPrism = (pts, X0, X1) => {
+    const [geo, r] = bevelled(new THREE.Shape(pts.map(([Y, H]) => new THREE.Vector2((Y - OY) / 100, H / 100))), (X1 - X0) / 100);
+    return geo.rotateY(-Math.PI / 2).translate((X1 - OX) / 100 - r, 0, 0);
+  };
+  // área do polígono em m² (fórmula do laço)
+  const area = (pts) => Math.abs(pts.reduce((a, [x, y], i) => {
+    const [x2, y2] = pts[(i + 1) % pts.length];
+    return a + x * y2 - x2 * y;
+  }, 0)) / 2 / 1e4;
+
+  const group = new THREE.Group();
+  group.name = p.code;
+  const pieces = [];
+  const seen = new Map();
+  const paint = loadPaint(p.id);
+  const opa = loadOpacity(p.id);
+  for (const d of p.pieces) {
+    let geo, vol;
+    if (d.plan) {
+      geo = planPrism(d.plan, ...d.h, d.holes);
+      vol = (area(d.plan) - (d.holes || []).reduce((a, h) => a + area(h), 0)) * (d.h[1] - d.h[0]) / 100;
+    } else if (d.section) {
+      geo = sectionPrism(d.section, ...d.x);
+      vol = area(d.section) * (d.x[1] - d.x[0]) / 100;
+    } else {
+      geo = box(...d.box);
+      vol = (d.box[1] - d.box[0]) * (d.box[3] - d.box[2]) * (d.box[5] - d.box[4]) / 1e6;
+    }
+    tilt(geo, d.slope);
+    const o = shift(d.at);
+    geo.translate(o.x, o.y, o.z);
+    // chave única da peça para guardar a pintura (ids repetidos ganham #2, #3…)
+    const n = (seen.get(d.id) || 0) + 1;
+    seen.set(d.id, n);
+    const key = n > 1 ? `${d.id}#${n}` : d.id;
+    const baseColor = d.color ?? COLORS[d.existing ? 'existente' : d.steel ? 'aco' : d.type] ?? COLORS.pedestal;
+    worldUV(geo, pieces.length + 1);
+    // peças de aço (steel: true): pintura metálica lisa e fora do volume de concreto
+    const mesh = new THREE.Mesh(geo, d.steel
+      ? new THREE.MeshStandardMaterial({ color: paint[key] ?? baseColor, metalness: 0.35, roughness: 0.5 })
+      : new THREE.MeshStandardMaterial({ color: paint[key] ?? baseColor, roughness: 0.92, map: CONCRETE.map, bumpMap: CONCRETE.bump, bumpScale: 1.5 }));
+    mesh.name = d.id;
+    mesh.castShadow = mesh.receiveShadow = true;
+    // com o projeto amarrado a uma elevação (datum), cada peça mostra fundo e topo em EL.
+    // uma peça pode ter o próprio datum (obras em locais diferentes, cada uma apoiada no chão do modelo)
+    let rows = d.rows || [];
+    const datum = d.datum ?? p.datum;
+    if (datum != null) {
+      const hs = d.plan ? d.h : d.section ? d.section.map((q) => q[1]) : [d.box[4], d.box[5]];
+      const dh = d.at ? d.at[2] : 0;
+      const fmtEL = (H) => (datum + (H + dh) / 100).toFixed(3).replace('.', ',');
+      // peça inclinada: a elevação vai de um lado ao outro
+      const ys = d.plan ? d.plan.map((q) => q[1]) : d.box ? [d.box[2], d.box[3]] : [0];
+      const offs = [slopeAt(d.slope, Math.min(...ys)), slopeAt(d.slope, Math.max(...ys))].sort((a, b) => a - b);
+      const el = (H) => (offs[1] - offs[0] < 0.05 ? `EL. ${fmtEL(H + offs[0])}` : `EL. ${fmtEL(H + offs[0])} a ${fmtEL(H + offs[1])}`);
+      rows = [...rows, ['Fundo', el(Math.min(...hs))], ['Topo', el(Math.max(...hs))]];
+    }
+    mesh.userData = { ...d, rows, vol, key, baseColor };
+    group.add(mesh);
+    pieces.push(mesh);
+    // nichos no topo da peça: [x0, x1, y0, y1, profundidade] em cm a partir do canto (em planta, do canto do contorno)
+    const corner = d.box ? [d.box[0], d.box[2], d.box[5]]
+      : d.plan ? [Math.min(...d.plan.map((q) => q[0])), Math.min(...d.plan.map((q) => q[1])), d.h[1]] : null;
+    for (const [x0, x1, y0, y1, depth] of (corner && d.niches) || []) {
+      const [X0, Y0, H1] = corner;
+      const nb = tilt(box(X0 + x0, X0 + x1, Y0 + y0, Y0 + y1, H1 - depth, H1 + 0.15), d.slope);
+      nb.translate(o.x, o.y, o.z);
+      const niche = new THREE.Mesh(nb, NICHE_MAT);
+      niche.receiveShadow = true;
+      niche.name = `Nicho ${d.id}`;
+      group.add(niche);
+      (mesh.userData.nicheMeshes ||= []).push(niche);
+    }
+    // bases elevadas no topo da peça (graute sob as chapas): [x0, x1, y0, y1, altura] em cm a partir do canto;
+    // mesmo material da peça (pintura e transparência valem para elas) e fora do volume de concreto
+    for (const [x0, x1, y0, y1, hh] of (corner && d.pads) || []) {
+      const [X0, Y0, H1] = corner;
+      const pg = tilt(box(X0 + x0, X0 + x1, Y0 + y0, Y0 + y1, H1, H1 + hh), d.slope);
+      pg.translate(o.x, o.y, o.z);
+      worldUV(pg, pieces.length + 11);
+      const pad = new THREE.Mesh(pg, mesh.material);
+      pad.castShadow = pad.receiveShadow = true;
+      pad.name = `Graute ${d.id}`;
+      group.add(pad);
+      (mesh.userData.padMeshes ||= []).push(pad);
+    }
+    applyOpacity(mesh, opa[key] ?? baseOpacity(d));
+  }
+
+  // cotas: linhas no 3D + rótulos
+  const dims = new THREE.Group();
+  dims.visible = false;
+  const dimLabels = [];
+  const dimMat = new THREE.LineBasicMaterial({ color: 0xe6edf2, transparent: true, opacity: 0.7, depthTest: false });
+  const locMat = new THREE.LineBasicMaterial({ color: 0xffd38a, transparent: true, opacity: 0.8, depthTest: false });
+  const TICK = 0.06;
+  for (const [a, b, off, text, at, kind] of p.dims || []) {
+    const A = P(...a).add(shift(at)), B = P(...b).add(shift(at));
+    const o = new THREE.Vector3(off[0] / 100, off[2] / 100, off[1] / 100);
+    const A2 = A.clone().add(o), B2 = B.clone().add(o);
+    const ext = o.lengthSq() ? o.clone().setLength(o.length() + TICK * 1.3) : o.clone();
+    const dir = B2.clone().sub(A2).normalize();
+    const side = o.lengthSq() ? o.clone().normalize() : new THREE.Vector3(0, 1, 0).cross(dir);
+    const t = dir.clone().add(side).setLength(TICK);
+    const pts = [A, A.clone().add(ext), B, B.clone().add(ext), A2, B2,
+      A2.clone().sub(t), A2.clone().add(t), B2.clone().sub(t), B2.clone().add(t)];
+    const line = new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(pts), kind === 'loc' ? locMat : dimMat);
+    line.renderOrder = 10;
+    const el = document.createElement('div');
+    el.className = kind === 'loc' ? 'dim loc' : 'dim';
+    el.textContent = text;
+    const label = new CSS2DObject(el);
+    label.position.copy(A2).lerp(B2, 0.5);
+    label.visible = false;
+    label.userData.kind = kind;
+    dims.add(line, label);
+    dimLabels.push(label);
+  }
+
+  // etiquetas clicáveis das sapatas
+  const tags = (p.tags || []).map((t) => {
+    const el = document.createElement('div');
+    const button = document.createElement('button');
+    button.className = 'tag3d';
+    button.type = 'button';
+    button.textContent = t.text;
+    el.appendChild(button);
+    const obj = new CSS2DObject(el);
+    obj.position.copy(P(...t.at));
+    group.add(obj);
+    return { ...t, obj, button };
+  });
+
+  const bounds = new THREE.Box3().setFromObject(group);
+  // nome das peças principais novas (sapatas, blocos, radier, paredes): o pedestal fica sem nome, a sapata já identifica o conjunto
+  // (name: texto no lugar do id; noName: peça sem rótulo)
+  const names = pieces.filter((m) => !m.userData.existing && !m.userData.noName && m.userData.type !== 'pedestal' && !m.userData.steel).map((m) => {
+    const box = new THREE.Box3().setFromObject(m);
+    const top = new THREE.Vector3((box.min.x + box.max.x) / 2, box.max.y, (box.min.z + box.max.z) / 2);
+    return { mesh: m, text: m.userData.name ?? m.userData.id, box, top, main: m.userData.type !== 'pedestal' && !m.userData.steel };
+  });
+  // volumes e contagens só do concreto novo; a estrutura existente e o aço aparecem mas não entram na conta
+  const novas = pieces.filter((m) => !m.userData.existing && !m.userData.steel);
+  const groups = new Map();
+  for (const m of novas) {
+    const g = m.userData.group || p.code;
+    const e = groups.get(g) || { vol: 0, n: 0 };
+    e.vol += m.userData.vol;
+    e.n += 1;
+    groups.set(g, e);
+  }
+  const vol = novas.reduce((a, m) => a + m.userData.vol, 0);
+  const b = { p, group, pieces, count: novas.length, dims, dimLabels, tags, names, bounds, groups, vol, paint, opacity: opa, dimMat, locMat,
+    bolts: loadBolts(p.id), toWorld: (X, Y, H, at) => P(X, Y, H).add(shift(at)) };
+  pieces.filter(canBolt).forEach((m) => updateBolts(b, m));
+  // chumbadores fixos direto na laje (sem pedestal): anchors = [{ id, box: [X0, X1, Y0, Y1, H0, H1], bolts }]
+  for (const m of pieces) {
+    for (const a of m.userData.anchors || []) {
+      const r = boltMeshes(b, a.box, a.bolts, m.userData.at, `${m.userData.id} · ${a.id}`);
+      m.userData.boltCount = (m.userData.boltCount || 0) + r.bolts;
+      m.userData.plateCount = (m.userData.plateCount || 0) + r.plates;
+    }
+  }
+  b.views = p.views || autoViews(b);
+  tags.forEach((t) => t.button.addEventListener('click', () => focusTag(b, t)));
+  return b;
+}
+
+// vistas automáticas para projetos que não definem as suas
+function autoViews(b) {
+  const c = b.bounds.getCenter(new THREE.Vector3()), s = b.bounds.getSize(new THREE.Vector3());
+  const r = Math.max(s.x, s.y, s.z);
+  const target = [c.x, s.y * 0.35, c.z];
+  return {
+    '3D': [[c.x - r * 0.8, r * 0.85, c.z + r * 1.15], target],
+    'Planta': [[c.x, r * 1.9, c.z + 0.01], [c.x, 0, c.z]],
+    'Frente': [[c.x, s.y * 0.8, c.z + r * 1.6], target],
+  };
+}
+
+const cache = new Map();
+const get = (p) => {
+  if (!cache.has(p.id)) cache.set(p.id, build(p));
+  return cache.get(p.id);
+};
+let cur = null;
+// rótulos HTML do projeto que sai de cena também saem da tela
+const detachLabels = (obj) => obj.traverse((o) => { if (o.isCSS2DObject) o.element.remove(); });
+function use(p) {
+  const b = get(p);
+  if (cur === b) return b;
+  if (cur) {
+    detachLabels(cur.group);
+    detachLabels(cur.dims);
+    scene.remove(cur.group, cur.dims);
+  }
+  cur = b;
+  scene.add(b.group, b.dims);
+  // a sombra acompanha o tamanho do projeto
+  const c = b.bounds.getCenter(new THREE.Vector3()), s = b.bounds.getSize(new THREE.Vector3());
+  const r = Math.max(s.x, s.z) * 0.75 + 1.5;
+  sun.target.position.copy(c);
+  sun.position.copy(c).add(new THREE.Vector3(-0.5, 1, 0.65).multiplyScalar(r * 1.3));
+  Object.assign(sun.shadow.camera, { left: -r, right: r, top: r, bottom: -r, near: 0.5, far: r * 4 });
+  sun.shadow.camera.updateProjectionMatrix();
+  // névoa e distância máxima da câmera crescem com a obra, para obras grandes não ficarem apagadas
+  scene.fog.near = Math.max(35, r * 3);
+  scene.fog.far = Math.max(80, r * 7);
+  controls.maxDistance = Math.max(50, r * 5);
+  // chão, grade e alcance da câmera também, para obras compridas (centenas de metros) aparecerem inteiras
+  const k = Math.max(1, r / 40);
+  ground.scale.setScalar(k);
+  grid.scale.setScalar(k);
+  shadowCatcher.scale.setScalar(k);
+  camera.far = Math.max(200, r * 12);
+  camera.updateProjectionMatrix();
+  return b;
+}
+
+// ---------- tamanho e câmera ----------
+let W = 1, H = 1;
+function resize() {
+  W = Math.max(1, stage.clientWidth);
+  H = Math.max(1, stage.clientHeight);
+  renderer.setSize(W, H, false);
+  labels.setSize(W, H);
+  camera.aspect = W / H;
+}
+new ResizeObserver(resize).observe(stage);
+resize();
+
+let tween = null;
+// em tela estreita (celular, painel em pé) afasta a câmera para o modelo caber
+function fitPos(pos, target) {
+  const t = new THREE.Vector3(...target);
+  const k = Math.min(3, Math.max(1, 1.25 / camera.aspect));
+  return new THREE.Vector3(...pos).sub(t).multiplyScalar(k).add(t);
+}
+function fly(pos, target, instant) {
+  const p1 = fitPos(pos, target), t1 = new THREE.Vector3(...target);
+  if (instant) {
+    camera.position.copy(p1);
+    controls.target.copy(t1);
+    tween = null;
+    return;
+  }
+  tween = { t: 0, p0: camera.position.clone(), t0: controls.target.clone(), p1, t1 };
+}
+const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+
+// na galeria o modelo fica à direita do texto (ou acima dele, no celular)
+let mode = 'gallery';
+let offX = 0, offY = 0;
+const offsetTarget = () => {
+  if (mode !== 'gallery') return [0, 0];
+  return W > 860 ? [-W * 0.2, -H * 0.03] : [0, H * 0.16];
+};
+
+// ---------- galeria ----------
+function renderGallery() {
+  $('navCount').textContent = plural(PROJECTS.length, 'projeto', 'projetos');
+  $('galleryCount').textContent = plural(PROJECTS.length, 'projeto', 'projetos');
+  const cards = PROJECTS.map((p) => {
+    const b = get(p);
+    return `<article class="card">
+      <a class="card-link" href="#/p/${p.id}">
+        <div class="thumb"><img alt="" data-id="${p.id}"></div>
+        <div class="card-body">
+          <div class="card-code">${esc(p.code)}</div>
+          <div class="card-title">${esc(p.title)}</div>
+          <div class="card-meta"><span><b>${b.count}</b> ${b.count === 1 ? 'peça' : 'peças'}</span><span><b>${fmt(b.vol)}</b> m³</span><span>${fmtDate(p.date)}</span></div>
+        </div></a>
+      <button class="card-edit" type="button" data-edit="${p.id}" title="Editar título e descrição" aria-label="Editar ${esc(p.code)}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+    </article>`;
+  });
+  cards.push(`<div class="card new">
+      <div class="plus">+</div>
+      <div class="card-title">Novo projeto</div>
+      <p>Mande a planta de forma, os cortes e a locação. O modelo 3D é montado a partir deles e entra aqui na galeria.</p></div>`);
+  $('cards').innerHTML = cards.join('');
+
+  const hero = PROJECTS[0];
+  if (!hero) {
+    $('heroText').innerHTML = '<div class="eyebrow">Projetos 3D</div><h1 class="hero-code">Nenhum projeto ainda</h1>';
+    return;
+  }
+  const b = get(hero);
+  $('heroCode').textContent = hero.code;
+  $('heroTitle').textContent = hero.title;
+  $('heroMeta').innerHTML = `<span><b>${b.count}</b> ${b.count === 1 ? 'peça' : 'peças'}</span><span><b>${fmt(b.vol)} m³</b> de concreto</span><span>${fmtDate(hero.date)}</span>`;
+  $('heroOpen').href = `#/p/${hero.id}`;
+  $('heroRefs').hidden = true;
+  availableRefs(hero).then((l) => { if (PROJECTS[0] === hero) $('heroRefs').hidden = !l.length; });
+}
+
+// miniaturas dos cartões, renderizadas a partir do próprio modelo
+function thumbnail(p) {
+  const prev = cur;
+  const b = use(p);
+  const tw = 960, th = 600;
+  // mesma direção do destaque, mas com a distância ajustada para o modelo preencher a miniatura
+  const [pos, target] = p.hero || b.views['3D'];
+  const sphere = b.bounds.getBoundingSphere(new THREE.Sphere());
+  const cam = new THREE.PerspectiveCamera(45, tw / th, 0.05, Math.max(200, sphere.radius * 6));
+  const dir = new THREE.Vector3(...pos).sub(new THREE.Vector3(...target)).normalize();
+  cam.position.copy(sphere.center).addScaledVector(dir, sphere.radius / Math.sin(THREE.MathUtils.degToRad(22.5)) * 0.82);
+  cam.lookAt(sphere.center);
+  const pr = renderer.getPixelRatio();
+  renderer.setPixelRatio(1);
+  renderer.setSize(tw, th, false);
+  renderer.render(scene, cam);
+  const url = renderer.domElement.toDataURL('image/jpeg', 0.86);
+  renderer.setPixelRatio(pr);
+  renderer.setSize(W, H, false);
+  if (prev && prev !== b) use(prev.p);
+  return url;
+}
+function renderThumbs() {
+  document.querySelectorAll('.thumb img[data-id]').forEach((img) => {
+    img.onload = () => img.classList.add('ready');
+    img.src = thumbnail(PROJECTS.find((p) => p.id === img.dataset.id));
+  });
+}
+
+// ---------- modos: galeria e projeto aberto ----------
+let dimsOn = false;
+function applyDims(on) {
+  if (!cur) return;
+  cur.dims.visible = on;
+  cur.dimLabels.forEach((l) => { l.visible = on; });
+}
+
+function openGallery() {
+  mode = 'gallery';
+  document.body.classList.remove('viewer');
+  document.title = `Projetos 3D · ${COMPANY}`;
+  select(null);
+  hover(null);
+  toggleDetails(false);
+  setPainting(false);
+  setCopying(null);
+  controls.enabled = false;
+  controls.autoRotate = true;
+  canvas.style.touchAction = 'pan-y';
+  const p = PROJECTS[0];
+  if (!p) return;
+  const b = use(p);
+  applyDims(false);
+  fly(...(p.hero || b.views['3D']));
+  renderThumbs();
+}
+
+let hintTimer = 0;
+function openViewer(p) {
+  if (window.scrollY > 0) window.scrollTo(0, 0);
+  mode = 'viewer';
+  document.body.classList.add('viewer');
+  document.title = `${p.code} · Projetos 3D`;
+  controls.enabled = true;
+  controls.autoRotate = false;
+  canvas.style.touchAction = 'none';
+  select(null);
+  toggleDetails(false);
+  setPainting(false);
+  setCopying(null);
+  const b = use(p);
+  applyDims(dimsOn);
+  $('optDimsRow').hidden = !b.dimLabels.length;
+  toggleLabelsMenu(false);
+  $('vcode').textContent = p.code;
+  $('vname').textContent = p.title;
+  $('refsBtn').hidden = true;
+  availableRefs(p).then((l) => { if (cur?.p === p) $('refsBtn').hidden = !l.length; });
+  $('views').innerHTML = Object.keys(b.views).map((k) => `<button type="button" data-view="${k}">${k}</button>`).join('');
+  renderDetails(b);
+  fly(...b.views['3D']);
+  markView('3D');
+  const hint = $('hint');
+  hint.classList.remove('off');
+  clearTimeout(hintTimer);
+  hintTimer = setTimeout(() => hint.classList.add('off'), 5000);
+}
+
+function route() {
+  const m = location.hash.match(/^#\/p\/([\w-]+)/);
+  const p = m && PROJECTS.find((x) => x.id === m[1]);
+  if (p) openViewer(p);
+  else if (mode !== 'gallery') openGallery();
+}
+addEventListener('hashchange', route);
+
+// ---------- interface do projeto ----------
+function markView(name) {
+  document.querySelectorAll('#views button').forEach((b) => b.classList.toggle('on', b.dataset.view === name));
+}
+$('views').addEventListener('click', (e) => {
+  const k = e.target.closest('button')?.dataset.view;
+  if (!k || !cur) return;
+  fly(...cur.views[k]);
+  markView(k);
+});
+
+// menu Rótulos: nomes das peças e etiquetas dos grupos ligados de saída (dá para ocultar); cotas só quando o projeto tem
+const pref = (k, def) => { try { const v = localStorage.getItem(`projetos3d:rotulos:${k}`); return v == null ? def : v === '1'; } catch { return def; } };
+const setPref = (k, v) => { try { localStorage.setItem(`projetos3d:rotulos:${k}`, v ? '1' : '0'); } catch { /* sem armazenamento */ } };
+let namesOn = pref('nomes', true), tagsOn = pref('grupos', true);
+dimsOn = pref('cotas', false);
+$('optNames').checked = namesOn;
+$('optTags').checked = tagsOn;
+$('optDims').checked = dimsOn;
+function toggleLabelsMenu(open = $('labelsMenu').hidden) {
+  $('labelsMenu').hidden = !open;
+  $('labelsBtn').setAttribute('aria-expanded', open);
+}
+$('labelsBtn').addEventListener('click', (e) => { e.stopPropagation(); toggleLabelsMenu(); });
+$('labelsMenu').addEventListener('click', (e) => e.stopPropagation());
+addEventListener('pointerdown', (e) => { if (!$('labelsMenu').hidden && !e.target.closest('#labelsMenu, #labelsBtn')) toggleLabelsMenu(false); });
+$('optNames').addEventListener('change', (e) => { namesOn = e.target.checked; setPref('nomes', namesOn); });
+$('optTags').addEventListener('change', (e) => { tagsOn = e.target.checked; setPref('grupos', tagsOn); namesAt = 0; });
+$('optDims').addEventListener('change', (e) => { dimsOn = e.target.checked; setPref('cotas', dimsOn); applyDims(dimsOn); });
+
+// nomes das peças. As principais (sapatas, blocos, radier) sempre aparecem: o nome vai para fora da peça
+// (embaixo, do lado ou em cima, onde cobrir menos) e uma linha fina liga ele à peça.
+// Pedestais e bases ganham nome em cima deles só quando sobra espaço.
+// Vale para a tela e para a foto (s = escala dos rótulos, w × h = tamanho da imagem, avoid = áreas já ocupadas)
+const measure = document.createElement('canvas').getContext('2d');
+const textWidth = new Map();
+function nameWidth(text, s) {
+  const k = `${text}|${s}`;
+  if (!textWidth.has(k)) { measure.font = `600 ${11 * s}px Inter`; textWidth.set(k, measure.measureText(text).width + 13 * s); }
+  return textWidth.get(k);
+}
+const overlap = (r, q) => Math.max(0, Math.min(r[2], q[2]) - Math.max(r[0], q[0])) * Math.max(0, Math.min(r[3], q[3]) - Math.max(r[1], q[1]));
+function layoutNames(b, cam, w, h, s = 1, avoid = []) {
+  const v = new THREE.Vector3(), items = [];
+  for (const n of b.names) {
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity, behind = false;
+    for (let i = 0; i < 8 && !behind; i++) {
+      v.set(i & 1 ? n.box.max.x : n.box.min.x, i & 2 ? n.box.max.y : n.box.min.y, i & 4 ? n.box.max.z : n.box.min.z).project(cam);
+      if (v.z > 1) { behind = true; break; }
+      const x = (v.x + 1) / 2 * w, y = (1 - v.y) / 2 * h;
+      x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+    }
+    if (behind || x1 < 0 || x0 > w || y1 < 0 || y0 > h) continue;
+    v.copy(n.top).project(cam);
+    items.push({ n, r: [x0, y0, x1, y1], top: [(v.x + 1) / 2 * w, (1 - v.y) / 2 * h], area: (x1 - x0) * (y1 - y0) });
+  }
+  const hh = 10 * s, gap = 9 * s, out = [], placed = [...avoid];
+  const mains = items.filter((it) => it.n.main).sort((a, c) => c.area - a.area);
+  for (const it of mains) {
+    const hw = nameWidth(it.n.text, s) / 2, [x0, y0, x1, y1] = it.r, cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+    const cands = [[cx, y1 + gap + hh], [x0 - gap - hw, cy], [x1 + gap + hw, cy], [cx, y0 - gap - hh],
+      [x0 - gap - hw, y1], [x1 + gap + hw, y1], [cx, y1 + gap * 4 + hh], [x0 - gap * 4 - hw, cy], [x1 + gap * 4 + hw, cy]];
+    let best = null;
+    cands.forEach(([x, y], i) => {
+      const r = [x - hw, y - hh, x + hw, y + hh];
+      let score = i;   // na dúvida, embaixo da peça
+      for (const q of placed) score += overlap(r, q) * 6;
+      for (const o of mains) if (o !== it) score += overlap(r, o.r) * 0.5;
+      if (r[0] < 0 || r[2] > w || r[1] < 0 || r[3] > h) score += 1e7;
+      if (!best || score < best.score) best = { x, y, r, score };
+    });
+    placed.push(best.r);
+    // ponta da linha: o ponto da peça mais perto do rótulo, um pouco para dentro dela
+    const ax = Math.min(Math.max(best.x, x0 + (x1 - x0) * 0.3), x1 - (x1 - x0) * 0.3);
+    const ay = Math.min(Math.max(best.y, y0 + (y1 - y0) * 0.3), y1 - (y1 - y0) * 0.3);
+    out.push({ n: it.n, x: best.x, y: best.y, ax, ay, lead: true });
+  }
+  return out;
+}
+// camada dos nomes na tela: rótulos HTML e as linhas num SVG por baixo deles, refeitos a cada quadro
+const SVGNS = 'http://www.w3.org/2000/svg';
+const nameLayer = document.createElement('div');
+nameLayer.className = 'name-layer';
+const leaderSvg = document.createElementNS(SVGNS, 'svg');
+leaderSvg.classList.add('leaders');
+const leaderPath = document.createElementNS(SVGNS, 'path'), leaderDots = document.createElementNS(SVGNS, 'path');
+leaderPath.classList.add('lead');
+leaderDots.classList.add('lead-dot');
+leaderSvg.append(leaderPath, leaderDots);
+nameLayer.appendChild(leaderSvg);
+stage.appendChild(nameLayer);
+const nameEls = new Map();
+let chipRects = [];
+function drawNames() {
+  const show = cur && mode === 'viewer' && namesOn;
+  nameLayer.hidden = !show;
+  if (!show) return;
+  const list = layoutNames(cur, camera, W, H, 1, chipRects), used = new Set();
+  let d = '', dots = '';
+  for (const c of list) {
+    let el = nameEls.get(c.n);
+    if (!el) {
+      el = document.createElement('div');
+      el.className = 'name';
+      el.textContent = c.n.text;
+      nameLayer.appendChild(el);
+      nameEls.set(c.n, el);
+    }
+    used.add(c.n);
+    el.style.display = '';
+    el.classList.toggle('main', c.n.main);
+    el.style.transform = `translate(${(c.x).toFixed(1)}px, ${(c.y).toFixed(1)}px) translate(-50%, -50%)`;
+    if (c.lead) {
+      d += `M${c.ax.toFixed(1)} ${c.ay.toFixed(1)}L${c.x.toFixed(1)} ${c.y.toFixed(1)}`;
+      dots += `M${(c.ax - 2).toFixed(1)} ${c.ay.toFixed(1)}a2 2 0 1 0 4 0a2 2 0 1 0 -4 0`;
+    }
+  }
+  for (const [n, el] of nameEls) if (!used.has(n)) el.style.display = 'none';
+  leaderPath.setAttribute('d', d);
+  leaderDots.setAttribute('d', dots);
+}
+let namesAt = 0;
+function updateNames(now) {
+  if (!cur || now - namesAt < 150) return;
+  namesAt = now;
+  // etiquetas de grupo: de longe, uma que cobriria outra se esconde até a câmera chegar mais perto;
+  // os nomes desviam das que ficaram
+  const v = new THREE.Vector3(), chips = [];
+  for (const t of cur.tags) {
+    v.copy(t.obj.position).project(camera);
+    if (!tagsOn || v.z > 1) { t.obj.visible = false; continue; }
+    const x = (v.x + 1) / 2 * W, y = (1 - v.y) / 2 * H, hw = t.text.length * 3.4 + 16;
+    const r = [x - hw, y - 12, x + hw, y + 12];
+    t.obj.visible = !chips.some((q) => r[0] < q[2] && r[2] > q[0] && r[1] < q[3] && r[3] > q[1]);
+    if (t.obj.visible) chips.push(r);
+  }
+  chipRects = chips;
+}
+// painel do projeto: descrição (editável), volumes e totais; clicar num grupo leva a câmera até ele
+function renderDetails(b) {
+  const p = b.p;
+  const bolts = b.pieces.reduce((a, m) => a + (m.userData.boltCount || 0), 0);
+  const plates = b.pieces.reduce((a, m) => a + (m.userData.plateCount || 0), 0);
+  const groups = [...b.groups].map(([g, e]) =>
+    `<button type="button" class="d-group" data-group="${esc(g)}">${esc(g)}<b>${fmt(e.vol)} m³</b>${plural(e.n, 'peça', 'peças')}</button>`).join('');
+  const steel = b.pieces.filter((m) => m.userData.steel), kg = steel.reduce((a, m) => a + (m.userData.weight || 0), 0);
+  $('details').innerHTML = `
+    <div class="d-head"><span class="d-label">Descrição</span><button type="button" class="link" data-act="edit">Editar</button></div>
+    <p class="d-sum${p.summary ? '' : ' empty'}">${p.summary ? esc(p.summary) : 'Sem descrição.'}</p>
+    <div class="d-total main"><span>Concreto · ${plural(b.count, 'peça', 'peças')}</span><b>${fmt(b.vol)} m³</b></div>
+    ${b.groups.size > 1 ? `<div class="d-groups">${groups}</div>` : ''}
+    ${steel.length ? `<div class="d-total"><span>Estrutura metálica · ${plural(steel.length, 'peça', 'peças')}</span><b>${fmt(kg)} kg</b></div>` : ''}
+    ${bolts ? `<div class="d-total"><span>Chumbadores</span><b>${bolts} un.</b></div>` : ''}
+    ${plates ? `<div class="d-total"><span>Chapas gabarito</span><b>${plates} un.</b></div>` : ''}
+    <div class="d-date">Atualizado em ${fmtDate(p.date)}</div>`;
+}
+$('details').addEventListener('click', (e) => {
+  if (!cur) return;
+  if (e.target.closest('[data-act="edit"]')) { openEdit(cur.p); return; }
+  const g = e.target.closest('.d-group')?.dataset.group;
+  if (g) focusTag(cur, cur.tags.find((t) => t.text === g) || { text: g });
+});
+
+// ---------- edição de código, título e descrição ----------
+let editing = null;
+function openEdit(p) {
+  editing = p;
+  const f = $('editForm');
+  $('editCode').textContent = p.orig.code;
+  f.code.value = p.code;
+  f.title.value = p.title;
+  f.summary.value = p.summary || '';
+  $('editModal').hidden = false;
+  f.title.focus();
+}
+const closeEdit = () => { $('editModal').hidden = true; editing = null; };
+function saveInfo(p, info) {
+  Object.assign(p, info);
+  const changed = Object.fromEntries(Object.entries(info).filter(([k, v]) => v !== p.orig[k]));
+  try {
+    if (Object.keys(changed).length) localStorage.setItem(infoKey(p.id), JSON.stringify(changed));
+    else localStorage.removeItem(infoKey(p.id));
+  } catch { /* sem armazenamento: vale só nesta sessão */ }
+  renderGallery();
+  renderThumbs();
+  if (mode === 'viewer' && cur?.p === p) {
+    $('vcode').textContent = p.code;
+    $('vname').textContent = p.title;
+    document.title = `${p.code} · Projetos 3D`;
+    renderDetails(cur);
+  }
+}
+$('editForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const f = e.target;
+  saveInfo(editing, { code: f.code.value.trim() || editing.orig.code, title: f.title.value.trim() || editing.orig.title, summary: f.summary.value.trim() });
+  toast('Projeto atualizado');
+  closeEdit();
+});
+$('editReset').addEventListener('click', () => {
+  const f = $('editForm');
+  f.code.value = editing.orig.code;
+  f.title.value = editing.orig.title;
+  f.summary.value = editing.orig.summary;
+});
+$('editCancel').addEventListener('click', closeEdit);
+$('editModal').addEventListener('pointerdown', (e) => { if (e.target.id === 'editModal') closeEdit(); });
+$('cards').addEventListener('click', (e) => {
+  const id = e.target.closest('[data-edit]')?.dataset.edit;
+  if (!id) return;
+  e.preventDefault();
+  openEdit(PROJECTS.find((p) => p.id === id));
+});
+function toggleDetails(open = $('details').hidden) {
+  $('details').hidden = !open;
+  $('vtitle').setAttribute('aria-expanded', open);
+}
+$('vtitle').addEventListener('click', () => toggleDetails());
+
+// ---------- pintura das peças ----------
+const PALETTE = [
+  // tons um pouco escuros: a luz da cena clareia as faces de cima
+  ['Verde', '#139a3c'], ['Amarelo', '#c2b80f'], ['Vermelho', '#c41a1a'],
+  ['Laranja', '#d9680f'], ['Azul', '#1f5fd6'], ['Roxo', '#7a35d9'], ['Cinza', '#7f878d'],
+];
+const paintKey = (id) => `projetos3d:pintura:${id}`;
+function loadPaint(id) {
+  try { return JSON.parse(localStorage.getItem(paintKey(id))) || {}; } catch { return {}; }
+}
+function savePaint(b) {
+  try { localStorage.setItem(paintKey(b.p.id), JSON.stringify(b.paint)); } catch { /* sem armazenamento: vale só nesta sessão */ }
+}
+
+// ---------- transparência das peças ----------
+const opacityKey = (id) => `projetos3d:transparencia:${id}`;
+function loadOpacity(id) {
+  try { return JSON.parse(localStorage.getItem(opacityKey(id))) || {}; } catch { return {}; }
+}
+function saveOpacity(b) {
+  try { localStorage.setItem(opacityKey(b.p.id), JSON.stringify(b.opacity)); } catch { /* sem armazenamento: vale só nesta sessão */ }
+}
+// opacidade inicial: a do projeto; a estrutura existente começa bem apagada
+function baseOpacity(u) {
+  return u.opacity ?? (u.existing ? 0.3 : 1);
+}
+function applyOpacity(m, o) {
+  const mat = m.material, see = o < 0.999;
+  if (mat.transparent !== see) { mat.transparent = see; mat.needsUpdate = true; }
+  mat.opacity = o;
+  mat.depthWrite = !see;
+  m.castShadow = o > 0.75;
+  m.userData.currentOpacity = o;
+  for (const n of m.userData.nicheMeshes || []) n.visible = !see;
+  for (const p of m.userData.padMeshes || []) p.castShadow = m.castShadow;
+}
+function setPieceOpacity(meshes, o, save) {
+  for (const m of meshes) {
+    if (Math.abs(o - baseOpacity(m.userData)) < 0.001) delete cur.opacity[m.userData.key];
+    else cur.opacity[m.userData.key] = o;
+    applyOpacity(m, o);
+  }
+  if (save) saveOpacity(cur);
+}
+// controle no cartão: 0% = sólido, 90% = quase invisível
+function opacityHTML(meshes) {
+  const pct = Math.round((1 - (meshes[0].userData.currentOpacity ?? 1)) * 100);
+  return `<label class="opa"><span>Transparência</span><input type="range" min="0" max="90" step="5" value="${pct}" aria-label="Transparência"><b>${pct}%</b></label>`;
+}
+function wireOpacity(row, meshes) {
+  const input = row.querySelector('input'), out = row.querySelector('b');
+  input.addEventListener('input', () => {
+    setPieceOpacity(meshes, 1 - input.value / 100, false);
+    out.textContent = `${input.value}%`;
+  });
+  input.addEventListener('change', () => saveOpacity(cur));
+}
+function applyColor(b, m, hex) {
+  if (hex) b.paint[m.userData.key] = hex;
+  else delete b.paint[m.userData.key];
+  m.material.color.set(hex || m.userData.baseColor);
+}
+const paintHistory = [];
+function paintPieces(meshes, hex) {
+  if (!cur || !meshes.length) return;
+  paintHistory.push({ b: cur, items: meshes.map((m) => [m, cur.paint[m.userData.key] ?? null]) });
+  if (paintHistory.length > 200) paintHistory.shift();
+  meshes.forEach((m) => applyColor(cur, m, hex));
+  savePaint(cur);
+}
+function undoPaint() {
+  const h = paintHistory.pop();
+  if (!h) { toast('Nada para desfazer'); return; }
+  h.items.forEach(([m, hex]) => applyColor(h.b, m, hex));
+  savePaint(h.b);
+  if (selected) select(selected);
+}
+function clearPaint() {
+  if (!cur) return;
+  const painted = cur.pieces.filter((m) => cur.paint[m.userData.key]);
+  if (!painted.length) { toast('Nenhuma peça pintada'); return; }
+  paintPieces(painted, null);
+  toast('Cores originais restauradas · Desfazer volta atrás');
+}
+
+// bolinhas de cor: paleta, outra cor (seletor do sistema) e cor original
+function swatchesHTML(active) {
+  const custom = active && active !== 'orig' && !PALETTE.some(([, h]) => h === active);
+  return PALETTE.map(([name, hex]) =>
+    `<button type="button" class="sw${active === hex ? ' on' : ''}" data-color="${hex}" style="background:${hex}" title="${name}" aria-label="${name}"></button>`).join('')
+    + `<label class="sw custom${custom ? ' on' : ''}" title="Outra cor"><input type="color" value="${custom ? active : '#3ddc84'}" aria-label="Outra cor"></label>`
+    + `<button type="button" class="sw orig${active === 'orig' ? ' on' : ''}" data-color="orig" title="Cor original (concreto)" aria-label="Cor original"></button>`;
+}
+function markSwatch(box, color) {
+  box.querySelectorAll('.sw').forEach((el) => el.classList.toggle('on',
+    color === 'custom' ? el.classList.contains('custom') : el.dataset.color === color));
+}
+// liga as bolinhas a uma ação: onPick recebe '#rrggbb' ou null (cor original)
+function wireSwatches(box, onPick) {
+  box.addEventListener('click', (e) => {
+    const c = e.target.closest('[data-color]')?.dataset.color;
+    if (!c) return;
+    onPick(c === 'orig' ? null : c);
+    markSwatch(box, c);
+  });
+  box.addEventListener('change', (e) => {
+    if (e.target.type !== 'color') return;
+    onPick(e.target.value);
+    markSwatch(box, 'custom');
+  });
+}
+const colorOf = (meshes) => {
+  const set = new Set(meshes.map((m) => cur.paint[m.userData.key] || 'orig'));
+  return set.size === 1 ? [...set][0] : null;
+};
+
+// modo pincel: escolhe a cor uma vez e pinta clicando nas peças
+let painting = false, brush = PALETTE[0][1];
+function setPainting(on) {
+  painting = on;
+  if (on && copying) setCopying(null);
+  $('paintBtn').setAttribute('aria-pressed', on);
+  $('palette').hidden = !on;
+  hover(null);
+  if (on) {
+    select(null);
+    $('swatches').innerHTML = swatchesHTML(brush ?? 'orig');
+    $('hint').classList.add('off');
+  }
+}
+wireSwatches($('swatches'), (hex) => { brush = hex; });
+$('swatches').addEventListener('input', (e) => { if (e.target.type === 'color') { brush = e.target.value; markSwatch($('swatches'), 'custom'); } });
+$('paintBtn').addEventListener('click', () => setPainting(!painting));
+$('doneBtn').addEventListener('click', () => setPainting(false));
+$('undoBtn').addEventListener('click', undoPaint);
+$('clearBtn').addEventListener('click', clearPaint);
+
+// cartão de informação (com as cores para pintar o que está selecionado)
+const info = $('info');
+let infoTargets = [];   // peças do cartão aberto: a foto enquadra nelas
+function showInfo(tag, id, rows, targets, extra) {
+  infoTargets = targets || [];
+  info.innerHTML = `<button class="x" type="button" aria-label="Fechar">×</button>
+    <div class="tag">${tag}</div>
+    <h3>${id}</h3>
+    <dl>${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>
+    ${extra?.html ?? ''}
+    ${targets?.length ? `<div class="swatches">${swatchesHTML(colorOf(targets))}</div>${opacityHTML(targets)}` : ''}`;
+  info.querySelector('.x').onclick = () => select(null);
+  if (targets?.length) {
+    wireSwatches(info.querySelector('.swatches'), (hex) => paintPieces(targets, hex));
+    wireOpacity(info.querySelector('.opa'), targets);
+  }
+  extra?.wire(info);
+  info.hidden = false;
+}
+
+// ---------- editor de chumbadores (dentro do cartão do pedestal) ----------
+let boltEditing = false;
+const sameSides = (a, b) => a.every((v, i) => v === b[i]);
+function setBolts(m, cfg) {
+  cur.bolts[m.userData.key] = cfg;
+  saveBolts(cur);
+  updateBolts(cur, m);
+  renderDetails(cur);
+}
+// aproxima a câmera do topo do pedestal
+function flyToTop(m) {
+  const [X0, X1, Y0, Y1, , H1] = m.userData.box;
+  const c = cur.toWorld((X0 + X1) / 2, (Y0 + Y1) / 2, H1, m.userData.at);
+  const size = Math.max(X1 - X0, Y1 - Y0) / 100;
+  const pos = c.clone().add(new THREE.Vector3(-0.75, 1.1, 1.1).normalize().multiplyScalar(Math.max(1.6, size * 2.6)));
+  fly(pos.toArray(), c.toArray());
+  markView(null);
+}
+// desenho do topo visto de cima, com os chumbadores na posição real
+function boltMapSVG(m, cfg) {
+  const [X0, X1, Y0, Y1] = m.userData.box;
+  const W = X1 - X0, D = Y1 - Y0, s = Math.min(104 / W, 80 / D);
+  const ox = (120 - W * s) / 2, oy = (96 - D * s) / 2;
+  const dots = boltPoints(m.userData.box, cfg).map(([x, y]) =>
+    `<circle cx="${ox + (x - X0) * s}" cy="${oy + (y - Y0) * s}" r="${Math.max(2.2, (cfg.dia / 20) * s)}" fill="#cfd6db"/>`).join('');
+  return `<svg class="bolt-map" viewBox="0 0 120 96" aria-hidden="true">
+    <rect x="${ox}" y="${oy}" width="${W * s}" height="${D * s}" rx="2" fill="rgba(255,255,255,.06)" stroke="rgba(255,255,255,.35)"/>${dots}</svg>`;
+}
+const stepper = (name, value, unit) =>
+  `<span class="stp${unit ? ' u' : ''}"><button type="button" data-step="${name}" data-d="-1" aria-label="Menos">−</button><b>${value}${unit ? ` ${unit}` : ''}</b><button type="button" data-step="${name}" data-d="1" aria-label="Mais">+</button></span>`;
+
+function boltSection(m) {
+  const cfg = { ...BOLT_DEFAULT, ...(boltCfg(cur, m) ?? {}) };
+  const n = m.userData.boltCount || 0, plates = m.userData.plateCount || 0;
+  const cm = (v) => String(v).replace('.', ',');
+  let html = `<div class="bolts"><div class="bolts-head"><span>Chumbadores</span><b>${n ? `${n} un.${plates ? ` · ${plural(plates, 'chapa', 'chapas')}` : ''}` : 'nenhum'}</b>
+    <button type="button" class="link" data-act="toggle">${boltEditing ? 'Fechar' : n ? 'Editar' : 'Adicionar'}</button></div>`;
+  if (boltEditing) {
+    const [nt, nb, nl, nr] = cfg.sides;
+    const presetOn = (pre) => !cfg.points && pre.mode === cfg.mode && (pre.mode === 'grupos'
+      ? pre.cols === cfg.cols && pre.rows === cfg.rows && pre.groups === cfg.groups
+      : sameSides(pre.sides, cfg.sides));
+    const alongY = groupsAlongY(m.userData.box, cfg);
+    html += `
+      <div class="chips">${m.userData.bolts?.points ? `<button type="button" class="chip${cfg.points ? ' on' : ''}" data-act="project">Do projeto</button>` : ''}${BOLT_PRESETS.map(([name, pre], i) =>
+        `<button type="button" class="chip${presetOn(pre) ? ' on' : ''}" data-preset="${i}">${name}</button>`).join('')}</div>
+      ${cfg.points ? `
+      <div class="bolt-grid">${boltMapSVG(m, cfg)}</div>
+      <div class="bolt-cap">posições do desenho do projeto · vista de cima</div>
+      <div class="bolt-fields">` : cfg.mode === 'grupos' ? `
+      <div class="bolt-grid">${boltMapSVG(m, cfg)}</div>
+      <div class="bolt-cap">${cfg.groups === 2 ? `2 grupos de ${cfg.rows}×${cfg.cols}` : `1 grupo de ${cfg.rows}×${cfg.cols}`} · vista de cima</div>
+      <div class="bolt-fields">
+        <label>Chumbadores por fileira ${stepper('cols', cfg.cols)}</label>
+        <label>Fileiras por grupo ${stepper('rows', cfg.rows)}</label>
+        <label>Espaço entre fileiras ${stepper('gap', String(cfg.gap).replace('.', ','), 'cm')}</label>
+        <label>Grupos ${stepper('groups', cfg.groups)}</label>
+        ${cfg.groups === 2 ? `<label>Grupos nas pontas <button type="button" class="chip" data-act="rotate">${alongY ? 'de cima e de baixo' : 'da esquerda e da direita'} ⟲</button></label>` : ''}` : `
+      <div class="bolt-grid">
+        <div class="s-t">${stepper('0', nt)}</div>
+        <div class="s-l">${stepper('2', nl)}</div>
+        ${boltMapSVG(m, cfg)}
+        <div class="s-r">${stepper('3', nr)}</div>
+        <div class="s-b">${stepper('1', nb)}</div>
+      </div>
+      <div class="bolt-cap">quantidade em cada lado · vista de cima</div>
+      <div class="bolt-fields">`}
+        ${cfg.points ? '' : `<label>Afastamento da borda ${stepper('edge', cfg.edge, 'cm')}</label>`}
+        <label>Altura livre ${stepper('out', cm(cfg.out), 'cm')}</label>
+        <label>Diâmetro <select data-field="dia">${BOLT_DIAS.map(([mm, pol]) => `<option value="${mm}"${Math.abs(mm - cfg.dia) < 0.05 ? ' selected' : ''}>${pol}</option>`).join('')}</select></label>
+        <label>Chapa gabarito <button type="button" class="chip${cfg.plate.on ? ' on' : ''}" data-act="plate">${cfg.plate.on ? 'Com chapa' : 'Sem chapa'}</button></label>
+        ${cfg.plate.on ? `
+        <label>Espessura da chapa <select data-field="plateT">${PLATE_TS.map((t) => `<option value="${t}"${t === cfg.plate.t ? ' selected' : ''}>${cm(t)} mm</option>`).join('')}</select></label>
+        <label>Altura acima do concreto ${stepper('plateH', cm(cfg.plate.h), 'cm')}</label>
+        ${cfg.plate.rects ? '' : `<label>Folga em volta ${stepper('plateM', cm(cfg.plate.margin), 'cm')}</label>`}` : ''}
+      </div>
+      ${n ? '<button type="button" class="link" data-act="copy">Copiar para outros pedestais →</button>' : ''}`;
+  }
+  html += '</div>';
+
+  const wire = (card) => {
+    const box = card.querySelector('.bolts');
+    const change = (next) => { setBolts(m, next); select(m); };
+    box.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      if (btn.dataset.act === 'toggle') {
+        boltEditing = !boltEditing;
+        if (boltEditing) flyToTop(m);
+        select(m);
+      } else if (btn.dataset.act === 'copy') {
+        setCopying(cfg);
+      } else if (btn.dataset.act === 'project') {
+        // volta para o que está no desenho do projeto
+        delete cur.bolts[m.userData.key];
+        saveBolts(cur);
+        updateBolts(cur, m);
+        renderDetails(cur);
+        select(m);
+      } else if (btn.dataset.act === 'plate') {
+        change({ ...cfg, plate: { ...cfg.plate, on: !cfg.plate.on } });
+      } else if (btn.dataset.act === 'rotate') {
+        change({ ...cfg, along: groupsAlongY(m.userData.box, cfg) ? 'X' : 'Y' });
+      } else if (btn.dataset.preset) {
+        const pre = BOLT_PRESETS[+btn.dataset.preset][1];
+        change({ ...cfg, ...pre, points: undefined, sides: [...(pre.sides ?? cfg.sides)], plate: { ...cfg.plate, rects: undefined } });
+      } else if (btn.dataset.step) {
+        const d = +btn.dataset.d, k = btn.dataset.step;
+        const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+        if (k === 'edge') change({ ...cfg, edge: clamp(cfg.edge + d * 5, 5, 60) });
+        else if (k === 'out') change({ ...cfg, out: clamp(cfg.out + d * 5, 5, 80) });
+        else if (k === 'cols') change({ ...cfg, cols: clamp(cfg.cols + d, 1, 8) });
+        else if (k === 'rows') change({ ...cfg, rows: clamp(cfg.rows + d, 1, 4) });
+        else if (k === 'gap') change({ ...cfg, gap: clamp(cfg.gap + d * 2.5, 5, 40) });
+        else if (k === 'groups') change({ ...cfg, groups: clamp(cfg.groups + d, 1, 2) });
+        else if (k === 'plateH') change({ ...cfg, plate: { ...cfg.plate, h: clamp(cfg.plate.h + d * 2.5, 0, 60) } });
+        else if (k === 'plateM') change({ ...cfg, plate: { ...cfg.plate, margin: clamp(cfg.plate.margin + d * 2.5, 2.5, 30) } });
+        else {
+          const sides = [...cfg.sides];
+          sides[+k] = Math.min(12, Math.max(0, sides[+k] + d));
+          change({ ...cfg, sides });
+        }
+      }
+    });
+    box.addEventListener('change', (e) => {
+      const f = e.target.dataset.field;
+      if (f === 'dia') change({ ...cfg, dia: +e.target.value });
+      if (f === 'plateT') change({ ...cfg, plate: { ...cfg.plate, t: +e.target.value } });
+    });
+  };
+  return { html, wire };
+}
+
+// modo copiar: aplica o mesmo arranjo clicando em outros pedestais
+let copying = null;
+function setCopying(cfg) {
+  copying = cfg ? { ...cfg, sides: [...cfg.sides], plate: { ...cfg.plate } } : null;
+  $('copybar').hidden = !copying;
+  hover(null);
+  if (!copying) return;
+  if (painting) setPainting(false);
+  boltEditing = false;
+  select(null);
+  $('copyInfo').textContent = `clique nos pedestais (${boltTotal(copying)} em cada)`;
+}
+$('copyDone').addEventListener('click', () => setCopying(null));
+function focusTag(b, t) {
+  if (mode !== 'viewer') return;
+  const items = b.pieces.filter((m) => m.userData.group === t.text);
+  if (painting) { paintPieces(items, brush); return; }
+  if (t.view) fly(...t.view);
+  else if (items.length) {
+    // sem vista no projeto: enquadra o conjunto de cima, pela frente e pela esquerda
+    const bb = new THREE.Box3();
+    items.forEach((m) => bb.expandByObject(m));
+    const c = bb.getCenter(new THREE.Vector3()), size = bb.getSize(new THREE.Vector3()).length();
+    const pos = c.clone().add(new THREE.Vector3(-0.45, 0.75, 1).normalize().multiplyScalar(Math.max(3, size * 0.95)));
+    fly(pos.toArray(), c.toArray());
+  }
+  markView(null);
+  select(null);
+  if (!items.length) return;
+  const conc = items.filter((m) => !m.userData.steel), aco = items.filter((m) => m.userData.steel);
+  showInfo('Conjunto', t.text, [
+    ['Peças', items.map((m) => m.userData.id).join(', ')],
+    ...(conc.length ? [['Concreto', `${fmt(conc.reduce((a, m) => a + m.userData.vol, 0))} m³`]] : []),
+    ...(aco.length ? [['Aço', `${fmt(aco.reduce((a, m) => a + (m.userData.weight || 0), 0))} kg`]] : []),
+  ], items);
+}
+
+// seleção e destaque das peças
+const ray = new THREE.Raycaster();
+const ndc = new THREE.Vector2();
+let selected = null, hovered = null, down = null;
+function pick(e) {
+  if (mode !== 'viewer' || !cur) return null;
+  const r = canvas.getBoundingClientRect();
+  ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  return ray.intersectObjects(cur.pieces, false)[0]?.object ?? null;
+}
+// brilho branco discreto: aparece sobre qualquer cor de pintura
+function glow(m) {
+  if (!m) return;
+  const on = m === selected ? 0.22 : m === hovered ? 0.1 : 0;
+  m.material.emissive.set(on ? 0xffffff : 0x000000);
+  m.material.emissiveIntensity = on;
+}
+function hover(m) {
+  if (m === hovered) return;
+  const prev = hovered;
+  hovered = m;
+  glow(prev);
+  glow(m);
+  canvas.style.cursor = m ? (painting ? 'crosshair' : copying ? (canBolt(m) ? 'copy' : 'not-allowed') : 'pointer') : '';
+}
+function select(m) {
+  const prev = selected;
+  if (m !== prev) boltEditing = false;
+  selected = m;
+  glow(prev);
+  glow(m);
+  if (!m) { info.hidden = true; return; }
+  const u = m.userData;
+  showInfo(`${u.group ? `${u.group} · ` : ''}${u.kind}`, u.id, [...u.rows, u.steel ? ['Peso', `${fmt(u.weight || 0)} kg`] : ['Concreto', `${fmt(u.vol)} m³`]], [m],
+    canBolt(m) ? boltSection(m) : null);
+}
+canvas.addEventListener('pointerdown', (e) => {
+  down = [e.clientX, e.clientY];
+  $('hint').classList.add('off');
+});
+canvas.addEventListener('pointerup', (e) => {
+  if (!down) return;
+  const moved = Math.hypot(e.clientX - down[0], e.clientY - down[1]);
+  down = null;
+  if (moved >= 5) return;
+  if (mode === 'gallery') {
+    if (PROJECTS[0]) location.hash = `#/p/${PROJECTS[0].id}`;
+    return;
+  }
+  const m = pick(e);
+  if (painting) { if (m) paintPieces([m], brush); return; }
+  if (copying) {
+    if (m && canBolt(m)) {
+      setBolts(m, { ...copying, sides: [...copying.sides], plate: { ...copying.plate } });
+      toast(`${m.userData.id}: ${m.userData.boltCount} chumbadores`);
+    } else if (m) toast('Só os pedestais recebem chumbadores');
+    return;
+  }
+  select(m);
+});
+canvas.addEventListener('pointermove', (e) => {
+  if (mode === 'gallery') { canvas.style.cursor = 'pointer'; return; }
+  if (!e.buttons) hover(pick(e));
+});
+canvas.addEventListener('pointerleave', () => hover(null));
+
+// ---------- desenhos de referência ----------
+let lbList = [], lbIdx = 0;
+function showLb() {
+  const [src, cap] = lbList[lbIdx];
+  $('lbImg').src = src;
+  $('lbCap').textContent = lbList.length > 1 ? `${cap} · ${lbIdx + 1} de ${lbList.length}` : cap;
+  $('lbPrev').hidden = $('lbNext').hidden = lbList.length < 2;
+}
+// só entram os desenhos cujas imagens existem (no GitHub elas não vão, então lá o botão Desenhos some)
+const refsOk = new Map();
+function availableRefs(p) {
+  if (!p) return Promise.resolve([]);
+  if (!refsOk.has(p.id)) {
+    refsOk.set(p.id, Promise.all((p.references || []).map(([src, cap]) => new Promise((ok) => {
+      const img = new Image();
+      img.onload = () => ok([src, cap]);
+      img.onerror = () => ok(null);
+      img.src = src;
+    }))).then((l) => l.filter(Boolean)));
+  }
+  return refsOk.get(p.id);
+}
+async function openRefs(p) {
+  lbList = await availableRefs(p);
+  if (!lbList.length) return;
+  lbIdx = 0;
+  showLb();
+  $('lightbox').hidden = false;
+}
+const stepLb = (d) => { lbIdx = (lbIdx + d + lbList.length) % lbList.length; showLb(); };
+$('refsBtn').addEventListener('click', () => openRefs(cur?.p));
+$('heroRefs').addEventListener('click', () => openRefs(PROJECTS[0]));
+$('lbClose').addEventListener('click', () => { $('lightbox').hidden = true; });
+$('lbPrev').addEventListener('click', () => stepLb(-1));
+$('lbNext').addEventListener('click', () => stepLb(1));
+$('lightbox').addEventListener('click', (e) => { if (e.target.id === 'lightbox') $('lightbox').hidden = true; });
+$('scrollCue').addEventListener('click', () => $('gallery').scrollIntoView({ behavior: 'smooth' }));
+
+addEventListener('keydown', (e) => {
+  const lb = !$('lightbox').hidden;
+  if (lb && e.key === 'ArrowLeft') stepLb(-1);
+  if (lb && e.key === 'ArrowRight') stepLb(1);
+  const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName);
+  if (mode === 'viewer' && !typing && !shot && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+    e.preventDefault();
+    undoPaint();
+  }
+  if (e.key !== 'Escape') return;
+  if (shot) closeShotEditor();
+  else if (!$('editModal').hidden) closeEdit();
+  else if (!$('labelsMenu').hidden) toggleLabelsMenu(false);
+  else if (lb) $('lightbox').hidden = true;
+  else if (painting) setPainting(false);
+  else if (copying) setCopying(null);
+  else if (!$('details').hidden) toggleDetails(false);
+  else if (!info.hidden) select(null);
+});
+
+// ---------- foto em JPG ----------
+const pad2 = (n) => String(n).padStart(2, '0');
+function toast(text) {
+  const t = $('toast');
+  t.textContent = text;
+  t.classList.add('on');
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => t.classList.remove('on'), 2600);
+}
+function roundRect(g, x, y, w, h, r) {
+  r = Math.min(r, w / 2, h / 2);
+  g.beginPath();
+  g.moveTo(x + r, y);
+  g.arcTo(x + w, y, x + w, y + h, r);
+  g.arcTo(x + w, y + h, x, y + h, r);
+  g.arcTo(x, y + h, x, y, r);
+  g.arcTo(x, y, x + w, y, r);
+  g.closePath();
+}
+// recorte da foto em volta das peças que aparecem na tela: com folga, espaço para a legenda e na proporção da foto
+function photoCrop(meshes, PW, PH) {
+  const v = new THREE.Vector3(), box = new THREE.Box3();
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const m of meshes) {
+    box.setFromObject(m);
+    box.getCenter(v).project(camera);
+    if (v.z > 1 || Math.abs(v.x) > 1 || Math.abs(v.y) > 1) continue;
+    for (let i = 0; i < 8; i++) {
+      v.set(i & 1 ? box.max.x : box.min.x, i & 2 ? box.max.y : box.min.y, i & 4 ? box.max.z : box.min.z).project(camera);
+      if (v.z > 1) continue;
+      x0 = Math.min(x0, v.x); x1 = Math.max(x1, v.x); y0 = Math.min(y0, v.y); y1 = Math.max(y1, v.y);
+    }
+  }
+  if (!isFinite(x0)) return null;
+  let left = (x0 + 1) / 2 * PW, right = (x1 + 1) / 2 * PW, top = (1 - y1) / 2 * PH, bottom = (1 - y0) / 2 * PH;
+  const mw = (right - left) * 0.08, mh = (bottom - top) * 0.08;
+  left -= mw; right += mw; top -= mh * 1.8; bottom += mh;   // mais folga em cima, onde ficam os nomes
+  // a legenda ocupa o rodapé da foto: o recorte desce para o conteúdo ficar acima dela
+  const cap = 150 * (PW / 1600) / PH;
+  bottom += (bottom - top) * cap / (1 - cap);
+  let cw = right - left, ch = bottom - top;
+  const A = PW / PH;
+  if (cw / ch < A) cw = ch * A; else ch = cw / A;
+  if (cw < PW * 0.15) { cw = PW * 0.15; ch = cw / A; }   // no máximo uns 6× de aproximação
+  if (cw >= PW * 0.97) return null;
+  const cx = (left + right) / 2, cy = (top + bottom) / 2;
+  return [cx - cw / 2, cy - ch / 2, cw, ch];
+}
+// logo da marca para o rodapé da foto (data URI: funciona mesmo abrindo o index.html direto do disco)
+const LOGO = new Image();
+if (window.MARCA) LOGO.src = window.MARCA.original;
+
+async function takePhoto() {
+  if (!cur) return;
+  await Promise.all([document.fonts.load('700 30px Inter'), document.fonts.load('600 13px Inter'),
+    document.fonts.load('600 22px "JetBrains Mono"'), LOGO.decode?.().catch(() => {})]).catch(() => {});
+  hover(null);
+  toggleLabelsMenu(false);
+  // se a câmera ainda está indo para uma vista, a foto já sai na vista final
+  if (tween) {
+    camera.position.copy(tween.p1);
+    controls.target.copy(tween.t1);
+    tween = null;
+  }
+  controls.update();
+  camera.updateMatrixWorld();   // o enquadramento usa a posição final da câmera, não a do último quadro desenhado
+  // foto final com 3200 px de largura; cada quarto dela é desenhado no tamanho cheio e reduzido pela metade
+  // (quatro amostras por pixel: arestas lisas e textura nítida)
+  const PW = 3200, PH = Math.round(PW * H / W / 2) * 2;
+  const gl = renderer.getContext();
+  const lim = Math.min(gl.getParameter(gl.MAX_RENDERBUFFER_SIZE), ...gl.getParameter(gl.MAX_VIEWPORT_DIMS));
+  const k = Math.min(1, lim / Math.max(PW, PH)), TW = Math.round(PW * k), TH = Math.round(PH * k);
+  const pr = renderer.getPixelRatio();
+  renderer.setPixelRatio(1);
+  renderer.setSize(TW, TH, false);
+  camera.aspect = PW / PH;
+  camera.clearViewOffset();
+  camera.updateProjectionMatrix();
+  // a foto fecha no assunto: as peças do cartão aberto (uma peça ou um grupo) ou, sem cartão, as peças novas na tela
+  const novas = cur.pieces.filter((m) => !m.userData.existing);
+  const crop = (!info.hidden && infoTargets.length && photoCrop(infoTargets, PW, PH)) || photoCrop(novas, PW, PH) || [0, 0, PW, PH];
+  if (selected) selected.material.emissive.set(0x000000);   // sem o brilho de peça selecionada
+
+  // a sombra é refeita só em volta do que aparece na foto, com mais resolução, e fica logo embaixo das peças
+  const v = new THREE.Vector3(), bb = new THREE.Box3(), sub = new THREE.Box3();
+  for (const m of novas) {
+    bb.setFromObject(m);
+    bb.getCenter(v).project(camera);
+    const x = (v.x + 1) / 2 * PW, y = (1 - v.y) / 2 * PH;
+    if (v.z < 1 && x >= crop[0] && x <= crop[0] + crop[2] && y >= crop[1] && y <= crop[1] + crop[3]) sub.union(bb);
+  }
+  const prev = { bg: scene.background, fog: [scene.fog.near, scene.fog.far], dim: cur.dimMat.color.getHex(), loc: cur.locMat.color.getHex(),
+    sun: sun.position.clone(), tgt: sun.target.position.clone(), cam: { ...sun.shadow.camera }, catcherY: shadowCatcher.position.y,
+    hemi: hemi.groundColor.getHex(), exposure: renderer.toneMappingExposure };
+  const shadowSize = (n) => { sun.shadow.mapSize.set(n, n); sun.shadow.map?.dispose(); sun.shadow.map = null; };
+  if (!sub.isEmpty()) {
+    const sph = sub.getBoundingSphere(new THREE.Sphere()), r = sph.radius * 1.3 + 0.4;
+    const dir = sun.position.clone().sub(sun.target.position).normalize();
+    sun.target.position.copy(sph.center);
+    sun.position.copy(sph.center).addScaledVector(dir, r * 2);
+    Object.assign(sun.shadow.camera, { left: -r, right: r, top: r, bottom: -r, near: 0.1, far: r * 4 });
+    sun.shadow.camera.updateProjectionMatrix();
+    shadowSize(4096);
+  }
+  // "chão" das sombras: um por nível, embaixo de cada grupo de peças apoiadas na mesma cota,
+  // para a sombra ficar colada na peça mesmo quando as peças estão em alturas diferentes
+  const floors = [];
+  if (!sub.isEmpty()) {
+    const levels = [];
+    for (const m of novas) {
+      if (m.userData.type === 'pedestal' || m.userData.steel) continue;
+      bb.setFromObject(m);
+      if (!sub.intersectsBox(bb)) continue;
+      const lv = levels.find((l) => Math.abs(l.y - bb.min.y) < 0.3);
+      if (lv) lv.box.union(bb); else levels.push({ y: bb.min.y, box: bb.clone() });
+    }
+    if (!levels.length) levels.push({ y: sub.min.y, box: sub.clone() });
+    for (const l of levels) {
+      const c = l.box.getCenter(new THREE.Vector3()), sz = l.box.getSize(new THREE.Vector3()), mg = 2.5;
+      const f = new THREE.Mesh(new THREE.PlaneGeometry(sz.x + mg * 2, sz.z + mg * 2).rotateX(-Math.PI / 2), shadowCatcher.material);
+      f.position.set(c.x, l.y - 0.004, c.z);
+      f.receiveShadow = true;
+      scene.add(f);
+      floors.push(f);
+    }
+  }
+  // fundo branco só na foto: sem chão, sem grade, sem névoa; luz de baixo clara (como se o chão fosse branco); cotas escuras
+  scene.background = new THREE.Color(0xffffff);
+  scene.fog.near = scene.fog.far = 1e7;
+  ground.visible = grid.visible = false;
+  shadowCatcher.visible = !floors.length;
+  hemi.groundColor.setHex(0xb9b5b0);
+  renderer.toneMappingExposure = 0.82;
+  cur.dimMat.color.set(0x393431);
+  cur.locMat.color.set(0xb7791f);
+
+  const out = document.createElement('canvas');
+  out.width = PW;
+  out.height = PH;
+  const g = out.getContext('2d');
+  g.imageSmoothingEnabled = true;
+  g.imageSmoothingQuality = 'high';
+  const [cx, cy, cw, ch] = crop;
+  for (let j = 0; j < 2; j++) {
+    for (let i = 0; i < 2; i++) {
+      camera.setViewOffset(PW, PH, cx + i * cw / 2, cy + j * ch / 2, cw / 2, ch / 2);
+      renderer.render(scene, camera);
+      g.drawImage(renderer.domElement, 0, 0, TW, TH, i * PW / 2, j * PH / 2, PW / 2, PH / 2);
+    }
+  }
+  camera.setViewOffset(PW, PH, cx, cy, cw, ch);   // para posicionar os rótulos na foto
+
+  scene.background = prev.bg;
+  [scene.fog.near, scene.fog.far] = prev.fog;
+  ground.visible = grid.visible = true;
+  shadowCatcher.visible = false;
+  shadowCatcher.position.y = prev.catcherY;
+  for (const f of floors) { scene.remove(f); f.geometry.dispose(); }
+  hemi.groundColor.setHex(prev.hemi);
+  renderer.toneMappingExposure = prev.exposure;
+  cur.dimMat.color.setHex(prev.dim);
+  cur.locMat.color.setHex(prev.loc);
+  if (!sub.isEmpty()) {
+    sun.position.copy(prev.sun);
+    sun.target.position.copy(prev.tgt);
+    Object.assign(sun.shadow.camera, { left: prev.cam.left, right: prev.cam.right, top: prev.cam.top, bottom: prev.cam.bottom, near: prev.cam.near, far: prev.cam.far });
+    sun.shadow.camera.updateProjectionMatrix();
+    shadowSize(2048);
+  }
+
+  // rótulos que estão visíveis na tela entram na foto
+  const s = PW / W;
+  const label = (obj, text, font, bg, color, padX, padY, radius) => {
+    v.setFromMatrixPosition(obj.matrixWorld).project(camera);
+    if (v.z < -1 || v.z > 1) return;
+    const x = (v.x + 1) / 2 * PW, y = (1 - v.y) / 2 * PH;
+    g.font = font;
+    const tw = g.measureText(text).width;
+    const bw = tw + padX * 2, bh = parseFloat(font.match(/(\d+(\.\d+)?)px/)[1]) + padY * 2;
+    roundRect(g, x - bw / 2, y - bh / 2, bw, bh, radius);
+    g.fillStyle = bg;
+    g.fill();
+    g.fillStyle = color;
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.fillText(text, x, y + 0.5 * s);
+  };
+  if (cur.dims.visible) {
+    for (const l of cur.dimLabels) {
+      label(l, l.element.textContent, `600 ${11 * s}px "JetBrains Mono"`, 'rgba(255,255,255,0.92)',
+        l.userData.kind === 'loc' ? '#9a5800' : '#1d6b44', 5 * s, 3 * s, 5 * s);
+    }
+  }
+  // nomes das sapatas, como na tela; eles só entram na imagem ao salvar, depois de arrumados no editor da foto
+  const ns = PW / 1250;
+  const shotLabels = namesOn
+    ? layoutNames(cur, camera, PW, PH, ns, [[0, PH - 150 * (PW / 1600), PW, PH]])
+      .map((c) => ({ text: c.n.text, x: c.x, y: c.y, ax: c.ax, ay: c.ay, x0: c.x, y0: c.y, hidden: false }))
+    : [];
+  camera.clearViewOffset();
+  glow(selected);
+
+  // rodapé da marca: traço verde, código e data à esquerda, título embaixo, logo à direita
+  const u = PW / 1600, padX = 56 * u, band = 132 * u, top = PH - band, now = new Date();
+  g.fillStyle = '#ffffff';
+  g.fillRect(0, top, PW, band);
+  g.fillStyle = '#e8e5e1';
+  g.fillRect(padX, top, PW - padX * 2, Math.max(1, 1.2 * u));
+  g.fillStyle = '#247e51';
+  g.fillRect(padX, top - 1.2 * u, 72 * u, 3.6 * u);
+  const lh = 70 * u, lw = LOGO.naturalWidth ? lh * LOGO.naturalWidth / LOGO.naturalHeight : 0;
+  if (lw) g.drawImage(LOGO, PW - padX - lw, top + (band - lh) / 2 + 4 * u, lw, lh);
+  g.textAlign = 'left';
+  g.textBaseline = 'alphabetic';
+  g.font = `600 ${16 * u}px "JetBrains Mono"`;
+  g.fillStyle = '#247e51';
+  g.fillText(cur.p.code, padX, top + 50 * u);
+  const cw0 = g.measureText(cur.p.code).width;
+  g.fillStyle = '#9a958f';
+  g.fillText(`  ·  ${now.toLocaleDateString('pt-BR')}`, padX + cw0, top + 50 * u);
+  g.font = `700 ${30 * u}px Inter`;
+  g.fillStyle = '#393431';
+  let title = cur.p.title;
+  const maxW = PW - padX * 2 - lw - 60 * u;
+  while (title.length > 4 && g.measureText(title).width > maxW) title = title.slice(0, -2).trimEnd() + '…';
+  g.fillText(title, padX, top + 92 * u);
+
+  renderer.setPixelRatio(pr);
+  renderer.setSize(W, H, false);
+  camera.aspect = W / H;
+  camera.updateProjectionMatrix();
+  renderer.render(scene, camera);
+
+  const name = `${cur.p.code}_${now.getFullYear()}-${pad2(now.getMonth() + 1)}-${pad2(now.getDate())}_${pad2(now.getHours())}h${pad2(now.getMinutes())}.jpg`;
+  const flash = $('flash');
+  flash.classList.remove('go');
+  void flash.offsetWidth;
+  flash.classList.add('go');
+  openShotEditor({ base: out, labels: shotLabels, ns, name, PW, PH });
+}
+$('shotBtn').addEventListener('click', takePhoto);
+
+// nomes na foto: linha fina com ponto na peça e etiqueta branca com o nome
+function drawShotNames(g, labels, ns) {
+  g.strokeStyle = 'rgba(57,52,49,0.55)';
+  g.fillStyle = '#393431';
+  g.lineWidth = Math.max(1, 1.1 * ns);
+  for (const c of labels) {
+    g.beginPath();
+    g.moveTo(c.ax, c.ay);
+    g.lineTo(c.x, c.y);
+    g.stroke();
+    g.beginPath();
+    g.arc(c.ax, c.ay, 2.2 * ns, 0, Math.PI * 2);
+    g.fill();
+  }
+  g.font = `600 ${11 * ns}px Inter`;
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+  for (const c of labels) {
+    const bw = g.measureText(c.text).width + 13 * ns, bh = 19 * ns;
+    g.save();
+    g.shadowColor = 'rgba(57,52,49,0.18)';
+    g.shadowBlur = 6 * ns;
+    g.shadowOffsetY = 1.5 * ns;
+    roundRect(g, c.x - bw / 2, c.y - bh / 2, bw, bh, 5 * ns);
+    g.fillStyle = '#ffffff';
+    g.fill();
+    g.restore();
+    g.lineWidth = Math.max(1, 0.8 * ns);
+    g.strokeStyle = 'rgba(57,52,49,0.16)';
+    g.stroke();
+    g.fillStyle = '#393431';
+    g.fillText(c.text, c.x, c.y + 0.5 * ns);
+  }
+}
+
+// ---------- editor da foto: arrastar e ocultar os nomes antes de salvar ----------
+let shot = null;
+function fitShot() {
+  if (!shot) return;
+  const st = $('seStage'), aw = st.clientWidth - 40, ah = st.clientHeight - 24;
+  const k = Math.min(aw / shot.PW, ah / shot.PH);
+  const fr = $('seFrame');
+  fr.style.width = `${Math.round(shot.PW * k)}px`;
+  fr.style.height = `${Math.round(shot.PH * k)}px`;
+  fr.style.setProperty('--s', shot.ns * k);
+  shot.k = k;
+}
+function drawShotEditor() {
+  const svg = $('seLines');
+  let d = '', dots = '';
+  for (const c of shot.labels) {
+    c.el.style.left = `${(c.x / shot.PW) * 100}%`;
+    c.el.style.top = `${(c.y / shot.PH) * 100}%`;
+    c.el.classList.toggle('off', c.hidden);
+    if (c.hidden) continue;
+    d += `M${c.ax.toFixed(1)} ${c.ay.toFixed(1)}L${c.x.toFixed(1)} ${c.y.toFixed(1)}`;
+    dots += `M${(c.ax - 2.2 * shot.ns).toFixed(1)} ${c.ay.toFixed(1)}a${2.2 * shot.ns} ${2.2 * shot.ns} 0 1 0 ${4.4 * shot.ns} 0a${2.2 * shot.ns} ${2.2 * shot.ns} 0 1 0 ${-4.4 * shot.ns} 0`;
+  }
+  svg.querySelector('.se-lead').setAttribute('d', d);
+  svg.querySelector('.se-dot').setAttribute('d', dots);
+  const off = shot.labels.filter((c) => c.hidden).length;
+  $('seCount').textContent = shot.labels.length ? `${shot.labels.length - off} de ${shot.labels.length} nomes na foto` : 'Sem nomes nesta foto';
+}
+function openShotEditor(s) {
+  shot = s;
+  const svg = $('seLines');
+  svg.setAttribute('viewBox', `0 0 ${s.PW} ${s.PH}`);
+  svg.querySelector('.se-lead').setAttribute('stroke-width', Math.max(1, 1.1 * s.ns));
+  const box = $('seLabels');
+  box.innerHTML = '';
+  for (const c of s.labels) {
+    const el = document.createElement('div');
+    el.className = 'se-label';
+    el.innerHTML = `<span></span><button type="button" class="se-x" aria-label="Ocultar">×</button>`;
+    el.firstChild.textContent = c.text;
+    el.title = 'Arraste para mover · × para ocultar';
+    box.appendChild(el);
+    c.el = el;
+    wireShotLabel(c);
+  }
+  s.base.toBlob((blob) => {
+    s.url = URL.createObjectURL(blob);
+    $('seImg').src = s.url;
+  }, 'image/jpeg', 0.92);
+  $('shotEditor').hidden = false;
+  drawShotEditor();
+  fitShot();
+  requestAnimationFrame(fitShot);
+}
+function wireShotLabel(c) {
+  let drag = null;
+  c.el.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('.se-x')) return;
+    e.preventDefault();
+    c.el.setPointerCapture(e.pointerId);
+    drag = { sx: e.clientX, sy: e.clientY, x: c.x, y: c.y, moved: false };
+    c.el.classList.add('dragging');
+  });
+  c.el.addEventListener('pointermove', (e) => {
+    if (!drag) return;
+    const dx = (e.clientX - drag.sx) / shot.k, dy = (e.clientY - drag.sy) / shot.k;
+    if (Math.hypot(e.clientX - drag.sx, e.clientY - drag.sy) > 3) drag.moved = true;
+    c.x = Math.min(shot.PW, Math.max(0, drag.x + dx));
+    c.y = Math.min(shot.PH, Math.max(0, drag.y + dy));
+    drawShotEditor();
+  });
+  const end = () => {
+    if (!drag) return;
+    if (!drag.moved && c.hidden) { c.hidden = false; drawShotEditor(); }   // clique num nome apagado: volta para a foto
+    drag = null;
+    c.el.classList.remove('dragging');
+  };
+  c.el.addEventListener('pointerup', end);
+  c.el.addEventListener('pointercancel', end);
+  c.el.querySelector('.se-x').addEventListener('click', (e) => {
+    e.stopPropagation();
+    c.hidden = true;
+    drawShotEditor();
+  });
+}
+function closeShotEditor() {
+  if (!shot) return;
+  $('shotEditor').hidden = true;
+  if (shot.url) URL.revokeObjectURL(shot.url);
+  $('seImg').removeAttribute('src');
+  shot = null;
+}
+$('seCancel').addEventListener('click', closeShotEditor);
+$('seReset').addEventListener('click', () => {
+  for (const c of shot.labels) { c.x = c.x0; c.y = c.y0; c.hidden = false; }
+  drawShotEditor();
+});
+$('seSave').addEventListener('click', () => {
+  const out = document.createElement('canvas');
+  out.width = shot.PW;
+  out.height = shot.PH;
+  const g = out.getContext('2d');
+  g.drawImage(shot.base, 0, 0);
+  drawShotNames(g, shot.labels.filter((c) => !c.hidden), shot.ns);
+  const name = shot.name;
+  out.toBlob((blob) => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  }, 'image/jpeg', 0.95);
+  closeShotEditor();
+  toast(`Foto salva · ${name}`);
+});
+addEventListener('resize', () => { if (shot) fitShot(); });
+
+// ---------- início ----------
+renderGallery();
+if (PROJECTS[0]) {
+  const b = use(PROJECTS[0]);
+  fly(...(PROJECTS[0].hero || b.views['3D']), true);
+}
+controls.autoRotate = true;
+controls.enabled = false;
+canvas.style.touchAction = 'pan-y';
+route();
+requestAnimationFrame(renderThumbs);
+
+const clock = new THREE.Clock();
+renderer.setAnimationLoop(() => {
+  const dt = Math.min(clock.getDelta(), 0.05);
+  const k = 1 - Math.exp(-dt * 6);
+  if (tween) {
+    tween.t = Math.min(1, tween.t + dt / 1.1);
+    const e = ease(tween.t);
+    camera.position.lerpVectors(tween.p0, tween.p1, e);
+    controls.target.lerpVectors(tween.t0, tween.t1, e);
+    if (tween.t === 1) tween = null;
+  }
+  const [tx, ty] = offsetTarget();
+  offX += (tx - offX) * k;
+  offY += (ty - offY) * k;
+  camera.aspect = W / H;
+  if (Math.abs(offX) > 0.5 || Math.abs(offY) > 0.5) camera.setViewOffset(W, H, offX, offY, W, H);
+  else camera.clearViewOffset();
+  controls.update(dt);
+  renderer.render(scene, camera);
+  updateNames(performance.now());
+  if (mode === 'viewer') labels.render(scene, camera);
+  drawNames();
+});
+</script>
+</body>
+</html>
