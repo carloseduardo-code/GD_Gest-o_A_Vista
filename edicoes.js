@@ -1,4 +1,178 @@
 // Edições publicadas da plataforma: cores, transparência, títulos e chumbadores que todo mundo vê.
-// Gerado pelo botão "Publicar edições" do site. Ainda não há nada publicado.
+// Gerado pelo botão "Publicar edições" em 04/11/2026, 11:11:13.
 // Para mudar: edite no site, clique em "Publicar edições" e envie o arquivo novo para o GitHub no lugar deste.
-window.EDICOES = {};
+window.EDICOES = {
+  "tr-2012ks-13": {
+    "pintura": {
+      "SD5-1": "#c41a1a",
+      "PE.D5-1A": "#c41a1a",
+      "PE.D5-1B": "#c41a1a",
+      "PE.D5-1C": "#c41a1a",
+      "SD5-2": "#139a3c",
+      "PE.D5-2A": "#c2b80f",
+      "PE.D5-2B": "#c2b80f",
+      "PE.D5-2C": "#c2b80f"
+    }
+  },
+  "tr-2012ks-15": {
+    "pintura": {
+      "RD1": "#c2b80f"
+    }
+  },
+  "tr-2012ks-11-cc": {
+    "pintura": {
+      "S4": "#139a3c",
+      "PES.4": "#139a3c",
+      "S5": "#139a3c",
+      "PES.5": "#139a3c",
+      "S8": "#139a3c",
+      "PES.8": "#139a3c",
+      "S9": "#139a3c",
+      "PES.9": "#139a3c",
+      "S19": "#139a3c",
+      "PES.19": "#139a3c",
+      "S21": "#139a3c",
+      "PES.21": "#139a3c",
+      "S20": "#139a3c",
+      "PES.20": "#139a3c",
+      "S22": "#139a3c",
+      "PES.22": "#139a3c",
+      "S23": "#139a3c",
+      "PES.23": "#c2b80f",
+      "S24": "#139a3c",
+      "PES.24": "#c2b80f",
+      "S25": "#139a3c",
+      "PES.25": "#c2b80f",
+      "S26": "#139a3c",
+      "PES.26": "#c2b80f",
+      "S29": "#c41a1a",
+      "PES.29": "#c41a1a",
+      "S30": "#c41a1a",
+      "PES.30": "#c41a1a",
+      "S33": "#c41a1a",
+      "PES.33": "#c41a1a",
+      "S34": "#c41a1a",
+      "PES.34": "#c41a1a"
+    }
+  },
+  "tr-2012ks-11": {
+    "pintura": {
+      "S100": "#139a3c",
+      "PE100A": "#139a3c",
+      "PE100B": "#139a3c",
+      "PE100C": "#139a3c",
+      "PE100D": "#139a3c",
+      "S101": "#c41a1a",
+      "PE101A": "#c41a1a",
+      "PE101B": "#c41a1a",
+      "PE101C": "#c41a1a",
+      "PE101D": "#c41a1a",
+      "S102": "#c41a1a",
+      "PE102A": "#c41a1a",
+      "PE102B": "#c41a1a",
+      "PE102C": "#c41a1a",
+      "PE102D": "#c41a1a",
+      "S103": "#139a3c",
+      "PE103A": "#139a3c",
+      "PE103B": "#139a3c",
+      "PE103C": "#139a3c",
+      "PE103D": "#139a3c",
+      "S104": "#139a3c",
+      "PE104A": "#139a3c",
+      "PE104B": "#139a3c",
+      "PE104C": "#139a3c",
+      "PE104D": "#139a3c",
+      "S105": "#139a3c",
+      "PE105A": "#139a3c",
+      "PE105B": "#139a3c",
+      "PE105C": "#139a3c",
+      "PE105D": "#139a3c",
+      "S106": "#139a3c",
+      "PE106A": "#139a3c",
+      "PE106B": "#139a3c",
+      "PE106C": "#139a3c",
+      "PE106D": "#139a3c",
+      "S107": "#139a3c",
+      "PE107A": "#139a3c",
+      "PE107B": "#139a3c",
+      "PE107C": "#139a3c",
+      "PE107D": "#139a3c",
+      "RD.101": "#139a3c"
+    }
+  },
+  "yy-2012ks-101": {
+    "pintura": {
+      "S1 · P1": "#139a3c",
+      "PE.1A · P1": "#139a3c",
+      "PE.1B · P1": "#139a3c",
+      "PE.1C · P1": "#139a3c",
+      "PE.1D · P1": "#139a3c",
+      "S2 · P1": "#139a3c",
+      "PE.2 · P1": "#139a3c",
+      "S3 · P1": "#139a3c",
+      "PE.3 · P1": "#139a3c",
+      "BE.1 · P1": "#139a3c"
+    }
+  },
+  "se-2012ks-01a": {
+    "pintura": {
+      "S1": "#139a3c",
+      "PE.1": "#139a3c",
+      "S2": "#139a3c",
+      "PE.2": "#139a3c",
+      "S3": "#c41a1a",
+      "PE.3": "#c41a1a",
+      "S4": "#c41a1a",
+      "PE.4": "#c41a1a",
+      "S5": "#139a3c",
+      "PE.5": "#139a3c",
+      "S6": "#139a3c",
+      "PE.6": "#139a3c",
+      "S7": "#139a3c",
+      "PE.7": "#139a3c",
+      "S8": "#139a3c",
+      "PE.8": "#139a3c",
+      "S9": "#139a3c",
+      "PE.9": "#139a3c",
+      "S10": "#c41a1a",
+      "PE.10": "#c41a1a",
+      "S11": "#139a3c",
+      "PE.11": "#139a3c",
+      "S12": "#139a3c",
+      "PE.12": "#139a3c",
+      "S13": "#139a3c",
+      "PE.13": "#139a3c",
+      "S14": "#139a3c",
+      "PE.14": "#139a3c",
+      "S15": "#c41a1a",
+      "PE.15": "#c41a1a",
+      "S16": "#139a3c",
+      "PE.16": "#139a3c",
+      "S17": "#139a3c",
+      "PE.17": "#139a3c",
+      "S18": "#139a3c",
+      "PE.18": "#139a3c",
+      "S19": "#139a3c",
+      "PE.19": "#139a3c",
+      "S20": "#139a3c",
+      "PE.20": "#139a3c",
+      "S21": "#139a3c",
+      "PE.21": "#139a3c"
+    }
+  },
+  "tr-2020ks-03": {
+    "pintura": {
+      "S1": "#c2b80f",
+      "PE.1A": "#c2b80f",
+      "PE.1C": "#c2b80f",
+      "PE.1B": "#c2b80f",
+      "S2": "#139a3c",
+      "VA.1": "#c2b80f",
+      "VA.2": "#c2b80f",
+      "PE.2A": "#c2b80f",
+      "PE.2B": "#c2b80f",
+      "S3": "#139a3c",
+      "BE.1": "#139a3c"
+    }
+  }
+};
