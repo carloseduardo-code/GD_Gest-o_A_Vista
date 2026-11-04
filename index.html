@@ -54,7 +54,11 @@
   .brand { display: flex; align-items: center; gap: 14px; color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 500; }
   .logo { display: block; height: 54px; width: auto; }
   .brand-sep { width: 1px; height: 24px; background: rgba(255, 255, 255, .16); }
-  .nav-count { font: 500 12px var(--mono); color: var(--muted); letter-spacing: .04em; }
+  .nav-links { display: flex; align-items: center; gap: 4px; }
+  .nav-link { background: none; border: 0; color: var(--muted); font-size: 13px; font-weight: 500; padding: 8px 12px; border-radius: 999px;
+    cursor: pointer; transition: .2s; }
+  .nav-link:hover { color: var(--text); background: rgba(255, 255, 255, .06); }
+  .nav-links .btn { margin-left: 8px; }
 
   .hero { position: relative; height: var(--hero-h); }
   .hero::before { content: ''; position: absolute; inset: 0; pointer-events: none;
@@ -82,10 +86,49 @@
     color: var(--muted); font: 500 12px var(--mono); letter-spacing: .08em; cursor: pointer; }
   .scroll-cue:hover { color: var(--text); }
 
+  /* visão geral: o que todos os projetos somam, para a gestão à vista */
+  .overview { max-width: 1240px; margin: 0 auto; padding: 48px clamp(20px, 6vw, 88px) 8px; }
+  .sec-title { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .sec-title h2 { font-size: 26px; font-weight: 700; letter-spacing: -.02em; margin: 0; }
+  .sec-title span { font: 500 12px var(--mono); color: var(--muted); }
+  .overview .sec-title { margin-bottom: 22px; }
+  .kpis { display: grid; grid-template-columns: 1.7fr repeat(4, 1fr); gap: 14px; }
+  .kpi { display: flex; flex-direction: column; justify-content: space-between; gap: 18px; min-height: 136px; padding: 18px 20px;
+    background: var(--bg2); border: 1px solid var(--line); border-radius: 18px; }
+  .kpi > span { font-size: 13px; color: var(--muted); }
+  .kpi b { font-size: 34px; font-weight: 700; letter-spacing: -.02em; line-height: 1; }
+  .kpi b small { font-size: 15px; font-weight: 600; color: var(--muted); margin-left: 5px; letter-spacing: 0; }
+  .kpi em { font-style: normal; font-size: 12.5px; color: var(--muted); margin-top: 8px; display: block; }
+  .kpi.total { background: linear-gradient(135deg, rgba(36, 126, 81, .16), rgba(36, 126, 81, 0) 60%), var(--bg2); border-color: rgba(79, 181, 130, .28); }
+  .kpi.total b { font-size: clamp(48px, 5vw, 64px); }
+  /* concreto por projeto: barras e números lado a lado (a barra compara, a coluna dá o valor) */
+  .rank { margin-top: 14px; padding: 16px 12px 10px; background: var(--bg2); border: 1px solid var(--line); border-radius: 18px; }
+  .rank-cap { display: flex; justify-content: space-between; gap: 12px; padding: 0 10px 12px; font-size: 14px; font-weight: 600; }
+  .rank-cap span { font-weight: 400; font-size: 12.5px; color: var(--muted); }
+  .rank-head, .rank-row { display: grid; grid-template-columns: minmax(170px, 290px) 1fr 92px 64px 104px; align-items: center; gap: 16px; }
+  .rank-head { font-size: 12px; color: var(--muted); padding: 0 10px 8px; border-bottom: 1px solid var(--line); margin-bottom: 4px; }
+  .rank .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .rank-row { padding: 9px 10px; border-radius: 10px; color: inherit; text-decoration: none; font-size: 13.5px; transition: background .2s; }
+  .rank-row:hover, .rank-row:focus-visible { background: rgba(255, 255, 255, .045); outline: none; }
+  .rank-row:focus-visible { box-shadow: inset 0 0 0 1px var(--accent); }
+  .rank-name { min-width: 0; }
+  .rank-name b { display: block; font: 600 12px var(--mono); color: var(--accent); letter-spacing: .04em; }
+  .rank-name span { display: block; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #dcd9d5; }
+  .bar { height: 14px; }
+  .bar i { display: block; height: 100%; min-width: 3px; background: var(--brand-hi); border-radius: 0 4px 4px 0; transition: background .2s; }
+  .rank-row:hover .bar i, .rank-row:focus-visible .bar i { background: var(--accent); }
+  .rank-row .num.main { font-weight: 600; }
+  .rank-row .num:not(.main) { color: var(--muted); }
+
   .gallery { max-width: 1240px; margin: 0 auto; padding: 40px clamp(20px, 6vw, 88px) 24px; }
-  .gallery-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 22px; }
-  .gallery-head h2 { font-size: 26px; font-weight: 700; letter-spacing: -.02em; margin: 0; }
-  .gallery-head span { font: 500 12px var(--mono); color: var(--muted); }
+  .gallery-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px 20px; margin-bottom: 22px; }
+  .g-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .search { display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border-radius: 999px; color: var(--muted);
+    background: rgba(255, 255, 255, .05); border: 1px solid var(--line); transition: border-color .2s; }
+  .search:focus-within { border-color: var(--accent); }
+  .search input { width: 230px; min-width: 0; background: none; border: 0; outline: none; color: var(--text); font: inherit; font-size: 13.5px; }
+  .search input::placeholder { color: var(--muted); }
+  .empty { margin: 0; padding: 36px 0 8px; text-align: center; color: var(--muted); font-size: 14px; }
   .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 20px; }
   .card { position: relative; display: flex; flex-direction: column; background: var(--bg2); border: 1px solid var(--line); border-radius: 18px;
     overflow: hidden; color: inherit; transition: transform .25s var(--ease), border-color .25s; }
@@ -146,6 +189,17 @@
   .d-group b { display: block; color: var(--text); font-size: 14px; margin: 2px 0; font-variant-numeric: tabular-nums; }
   .d-label { font: 600 11px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
   .d-date { font-size: 12px; color: var(--muted); }
+  /* notas do modelo: de onde vêm as medidas e o que foi estimado ou ficou de fora */
+  .d-notes { border-top: 1px solid var(--line); padding: 10px 0 12px; }
+  .d-notes summary { display: flex; align-items: center; gap: 8px; cursor: pointer; list-style: none; font-size: 13px; color: var(--muted); }
+  .d-notes summary::-webkit-details-marker { display: none; }
+  .d-notes summary::after { content: ''; width: 7px; height: 7px; margin-left: auto; border-right: 1.6px solid currentColor; border-bottom: 1.6px solid currentColor;
+    transform: translateY(-2px) rotate(45deg); transition: transform .2s; }
+  .d-notes[open] summary::after { transform: translateY(1px) rotate(-135deg); }
+  .d-notes summary:hover { color: var(--text); }
+  .d-notes summary b { font: 600 11px var(--mono); color: var(--text); background: rgba(255, 255, 255, .08); border-radius: 999px; padding: 2px 7px; }
+  .d-notes ul { margin: 10px 0 0; padding-left: 16px; display: grid; gap: 8px; font-size: 12.5px; line-height: 1.5; color: #cfccc8; }
+  .d-notes li::marker { color: var(--accent); }
 
   /* menu Rótulos: interruptores para nomes, etiquetas de grupo e cotas */
   .menu { position: absolute; left: 50%; bottom: 80px; transform: translateX(-50%); border-radius: 16px; padding: 8px; min-width: 250px; }
@@ -322,8 +376,41 @@
     padding: 10px 16px; font-size: 13px; opacity: 0; pointer-events: none; transition: .35s var(--ease); white-space: nowrap; }
   .toast.on { opacity: 1; transform: translate(-50%, 0); }
 
+  /* ---------- modo apresentação: para deixar numa TV, passando os projetos sozinho ---------- */
+  body.tv { overflow: hidden; }
+  body.tv #stage { position: fixed; height: 100vh; height: 100dvh; }
+  body.tv .page { opacity: 0; visibility: hidden; }
+  body.tv-idle, body.tv-idle * { cursor: none !important; }
+  .tv-fade { position: fixed; inset: 0; z-index: 11; background: var(--bg); opacity: 0; pointer-events: none; transition: opacity .6s; }
+  .tv-fade.on { opacity: 1; }
+  .tv-ui { position: fixed; inset: 0; z-index: 12; pointer-events: none; }
+  .tv-ui::before { content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(18, 18, 17, .86) 0%, rgba(18, 18, 17, .45) 32%, rgba(18, 18, 17, 0) 58%),
+      linear-gradient(0deg, rgba(18, 18, 17, .9) 0%, rgba(18, 18, 17, 0) 38%),
+      linear-gradient(180deg, rgba(18, 18, 17, .6) 0%, rgba(18, 18, 17, 0) 16%); }
+  .tv-logo { position: absolute; top: 26px; left: clamp(24px, 5vw, 80px); height: clamp(50px, 5vw, 76px); width: auto; }
+  .tv-ctrl { position: absolute; top: 24px; right: 24px; display: flex; align-items: center; gap: 2px; padding: 5px; border-radius: 999px;
+    pointer-events: auto; transition: opacity .4s; }
+  .tv-ctrl .round { width: 38px; height: 38px; background: none; border: 0; cursor: pointer; }
+  .tv-ctrl .sep { margin: 0 4px; }
+  .tv-pos { font: 500 12px var(--mono); color: var(--muted); padding: 0 10px 0 6px; font-variant-numeric: tabular-nums; }
+  body.tv-idle .tv-ctrl { opacity: 0; }
+  .tv-info { position: absolute; left: clamp(24px, 5vw, 80px); bottom: clamp(52px, 10vh, 120px); max-width: min(820px, 50vw);
+    transition: opacity .5s var(--ease), transform .5s var(--ease); }
+  .tv-info.out { opacity: 0; transform: translateY(12px); }
+  .tv-code { font: 800 clamp(44px, 5.6vw, 108px)/.92 var(--sans); letter-spacing: -.035em; margin: 0; }
+  .tv-title { font-size: clamp(20px, 2.1vw, 32px); font-weight: 600; margin: 16px 0 12px; color: #dcd9d5; }
+  .tv-sum { font-size: clamp(15px, 1.3vw, 20px); line-height: 1.5; color: var(--muted); margin: 0 0 28px; }
+  .tv-kpis { display: flex; flex-wrap: wrap; gap: 16px 44px; }
+  .tv-kpis b { display: block; font-size: clamp(30px, 3.2vw, 50px); font-weight: 700; letter-spacing: -.02em; line-height: 1; }
+  .tv-kpis span { display: block; margin-top: 8px; font-size: clamp(12px, 1vw, 15px); color: var(--muted); }
+  .tv-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255, 255, 255, .06); }
+  .tv-bar i { display: block; height: 100%; background: var(--brand-hi); transform-origin: left; transform: scaleX(0); }
+
   @media (max-width: 1100px) {
     .info { bottom: 84px; max-height: calc(100vh - 160px); }
+    .kpis { grid-template-columns: repeat(4, 1fr); }
+    .kpi.total { grid-column: 1 / -1; min-height: 0; }
   }
   @media (max-width: 860px) {
     :root { --hero-h: 84vh; }
@@ -331,10 +418,29 @@
       linear-gradient(180deg, rgba(18, 18, 17, .7) 0%, rgba(18, 18, 17, 0) 18%); }
     .hero-text { bottom: 54px; right: 20px; }
     .vlogo { display: none; }
+    .tv-info { max-width: none; right: 24px; }
+    .tv-ui::before { background: linear-gradient(0deg, rgba(18, 18, 17, .95) 0%, rgba(18, 18, 17, .8) 40%, rgba(18, 18, 17, 0) 66%),
+      linear-gradient(180deg, rgba(18, 18, 17, .6) 0%, rgba(18, 18, 17, 0) 16%); }
+    .tv-sum { display: none; }
+  }
+  @media (max-width: 760px) {
+    .kpis { grid-template-columns: 1fr 1fr; }
+    .kpi { min-height: 0; }
+    .kpi b { font-size: 30px; }
+    .rank-head, .rank-row { grid-template-columns: 1fr 92px; gap: 8px 12px; }
+    .rank .opt-col { display: none; }
+    .rank-row .rank-name { grid-column: 1 / -1; }
+    .g-tools, .search { width: 100%; }
+    .search { flex: 1 1 100%; }
+    .search input { width: 100%; }
   }
   @media (max-width: 640px) {
     .logo { height: 44px; }
     .brand-sep, .brand > span:last-child { display: none; }
+    .nav-link { display: none; }
+    .tv-logo { height: 42px; top: 20px; left: 20px; }
+    .tv-ctrl { top: 16px; right: 16px; }
+    .tv-info { left: 20px; right: 20px; bottom: 40px; }
     .tool .lbl { display: none; }
     .tool.shot .lbl { display: inline; }
     .seg button { padding: 7px 10px; }
@@ -350,7 +456,13 @@
 <div class="page">
   <nav class="nav">
     <a class="brand" href="#/"><img class="logo" src="Logo/Logo%20Gon%C3%A7alvez%20dias_Branca.png" alt="Gonçalves &amp; Dias Engenharia"><span class="brand-sep"></span><span>Projetos 3D</span></a>
-    <span class="nav-count" id="navCount"></span>
+    <div class="nav-links">
+      <button class="nav-link" type="button" data-go="overview">Visão geral</button>
+      <button class="nav-link" type="button" data-go="gallery">Projetos</button>
+      <button class="btn ghost sm" type="button" id="tvBtn" title="Passa os projetos um a um, em tela cheia (para deixar numa TV)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M8 21h8M12 17v4M10 8.5v5l4.5-2.5z"/></svg>
+        Apresentação</button>
+    </div>
   </nav>
 
   <section class="hero">
@@ -368,9 +480,28 @@
     <button class="scroll-cue" id="scrollCue" type="button">TODOS OS PROJETOS ↓</button>
   </section>
 
+  <section class="overview" id="overview" aria-labelledby="overviewTitle">
+    <div class="sec-title"><h2 id="overviewTitle">Visão geral</h2><span>soma dos modelos 3D · só o concreto novo</span></div>
+    <div class="kpis" id="kpis"></div>
+    <div class="rank" id="rank"></div>
+  </section>
+
   <main class="gallery" id="gallery">
-    <header class="gallery-head"><h2>Projetos</h2><span id="galleryCount"></span></header>
+    <header class="gallery-head">
+      <div class="sec-title"><h2>Projetos</h2><span id="galleryCount"></span></div>
+      <div class="g-tools">
+        <label class="search">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+          <input type="search" id="search" placeholder="Buscar código, nome ou peça" aria-label="Buscar projetos" autocomplete="off"></label>
+        <div class="seg" id="sortSeg" role="group" aria-label="Ordenar projetos">
+          <button type="button" data-sort="recentes" class="on">Recentes</button>
+          <button type="button" data-sort="concreto">Concreto</button>
+          <button type="button" data-sort="codigo">Código</button>
+        </div>
+      </div>
+    </header>
     <div class="cards" id="cards"></div>
+    <p class="empty" id="emptyMsg" hidden>Nenhum projeto encontrado.</p>
   </main>
   <footer class="foot">Modelos montados a partir das plantas de forma e de locação · Gonçalves &amp; Dias</footer>
 </div>
@@ -470,6 +601,25 @@
       <div class="se-labels" id="seLabels"></div>
     </div>
   </div>
+</div>
+<div class="tv-fade" id="tvFade"></div>
+<div class="tv-ui" id="tvUi" hidden>
+  <img class="tv-logo" src="Logo/Logo%20Gon%C3%A7alvez%20dias_Branca.png" alt="Gonçalves &amp; Dias Engenharia">
+  <div class="tv-ctrl glass">
+    <span class="tv-pos" id="tvPos"></span>
+    <button class="round" type="button" id="tvPrev" aria-label="Projeto anterior">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+    <button class="round" type="button" id="tvPlay" aria-label="Pausar">
+      <svg class="i-pause" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+      <svg class="i-play" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" hidden><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg></button>
+    <button class="round" type="button" id="tvNext" aria-label="Próximo projeto">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+    <span class="sep"></span>
+    <a class="round" href="#/" aria-label="Sair da apresentação" title="Sair (Esc)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg></a>
+  </div>
+  <div class="tv-info" id="tvInfo"></div>
+  <div class="tv-bar"><i id="tvProgress"></i></div>
 </div>
 <div class="flash" id="flash"></div>
 <div class="toast glass" id="toast"></div>
@@ -1082,18 +1232,60 @@ const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 // na galeria o modelo fica à direita do texto (ou acima dele, no celular)
 let mode = 'gallery';
 let offX = 0, offY = 0;
+// (na apresentação também: o texto fica embaixo à esquerda)
 const offsetTarget = () => {
-  if (mode !== 'gallery') return [0, 0];
+  if (mode === 'viewer') return [0, 0];
   return W > 860 ? [-W * 0.2, -H * 0.03] : [0, H * 0.16];
 };
 
+// totais de um projeto montado: chumbadores, chapas e aço (o concreto e as peças já vêm em b.vol e b.count)
+function totals(b) {
+  const steel = b.pieces.filter((m) => m.userData.steel);
+  return {
+    bolts: b.pieces.reduce((a, m) => a + (m.userData.boltCount || 0), 0),
+    plates: b.pieces.reduce((a, m) => a + (m.userData.plateCount || 0), 0),
+    steel: steel.length,
+    kg: steel.reduce((a, m) => a + (m.userData.weight || 0), 0),
+  };
+}
+const int = (n) => n.toLocaleString('pt-BR');
+
+// ---------- visão geral: números de todos os projetos e o concreto de cada um ----------
+function renderOverview() {
+  const list = PROJECTS.map((p) => { const b = get(p); return { p, b, ...totals(b) }; });
+  const sum = (f) => list.reduce((a, x) => a + f(x), 0);
+  const vol = sum((x) => x.b.vol), pieces = sum((x) => x.b.count), bolts = sum((x) => x.bolts), plates = sum((x) => x.plates);
+  const kg = sum((x) => x.kg), steel = sum((x) => x.steel);
+  const tile = (label, value, unit = '') => `<div class="kpi"><span>${label}</span><b>${value}${unit ? `<small>${unit}</small>` : ''}</b></div>`;
+  $('kpis').innerHTML = `
+    <div class="kpi total"><span>Concreto nos projetos</span>
+      <div><b>${fmt(vol)}<small>m³</small></b><em>${plural(pieces, 'peça nova', 'peças novas')} em ${plural(list.length, 'projeto', 'projetos')}</em></div></div>
+    ${tile('Projetos', int(list.length))}
+    ${tile('Peças de concreto', int(pieces))}
+    ${tile('Chumbadores', int(bolts), 'un.')}
+    ${tile('Chapas gabarito', int(plates), 'un.')}
+    ${steel ? tile('Estrutura metálica', fmt(kg), 'kg') : ''}`;
+  const max = Math.max(...list.map((x) => x.b.vol), 1e-9);
+  const rows = list.slice().sort((a, c) => c.b.vol - a.b.vol).map(({ p, b, bolts: n }) => `
+    <a class="rank-row" href="#/p/${p.id}" aria-label="${esc(`${p.code}, ${p.title}: ${fmt(b.vol)} m³, ${plural(b.count, 'peça', 'peças')}, ${n} chumbadores. Abrir em 3D`)}">
+      <span class="rank-name"><b>${esc(p.code)}</b><span>${esc(p.title)}</span></span>
+      <span class="bar"><i style="width:${((b.vol / max) * 100).toFixed(2)}%"></i></span>
+      <span class="num main">${fmt(b.vol)}</span>
+      <span class="num opt-col">${int(b.count)}</span>
+      <span class="num opt-col">${n ? int(n) : '—'}</span>
+    </a>`).join('');
+  $('rank').innerHTML = list.length ? `
+    <div class="rank-cap">Concreto por projeto<span>clique para abrir em 3D</span></div>
+    <div class="rank-head" aria-hidden="true"><span>Projeto</span><span class="opt-col"></span><span class="num">m³</span><span class="num opt-col">Peças</span><span class="num opt-col">Chumbadores</span></div>
+    ${rows}` : '';
+  $('overview').hidden = !list.length;
+}
+
 // ---------- galeria ----------
 function renderGallery() {
-  $('navCount').textContent = plural(PROJECTS.length, 'projeto', 'projetos');
-  $('galleryCount').textContent = plural(PROJECTS.length, 'projeto', 'projetos');
   const cards = PROJECTS.map((p) => {
     const b = get(p);
-    return `<article class="card">
+    return `<article class="card" data-card="${p.id}">
       <a class="card-link" href="#/p/${p.id}">
         <div class="thumb"><img alt="" data-id="${p.id}"></div>
         <div class="card-body">
@@ -1110,6 +1302,8 @@ function renderGallery() {
       <div class="card-title">Novo projeto</div>
       <p>Mande a planta de forma, os cortes e a locação. O modelo 3D é montado a partir deles e entra aqui na galeria.</p></div>`);
   $('cards').innerHTML = cards.join('');
+  applyGalleryView();
+  renderOverview();
 
   const hero = PROJECTS[0];
   if (!hero) {
@@ -1124,6 +1318,43 @@ function renderGallery() {
   $('heroRefs').hidden = true;
   availableRefs(hero).then((l) => { if (PROJECTS[0] === hero) $('heroRefs').hidden = !l.length; });
 }
+
+// busca e ordem dos cartões: só esconde e reordena os que já existem (as miniaturas não são refeitas)
+let sortBy = 'recentes';
+const norm = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+// a busca acha o projeto pelo código, título, descrição ou pelo nome de uma peça ou grupo dele (S10, RD1, Fila A…)
+const haystack = new Map();
+const searchText = (p) => {
+  if (!haystack.has(p.id)) haystack.set(p.id, norm([p.orig.code, p.orig.title, p.orig.summary, ...p.pieces.flatMap((d) => [d.id, d.name, d.group])].join(' ')));
+  return `${norm(`${p.code} ${p.title} ${p.summary}`)} ${haystack.get(p.id)}`;
+};
+function applyGalleryView() {
+  const box = $('cards'), q = norm($('search').value).trim();
+  const order = PROJECTS.slice();
+  if (sortBy === 'concreto') order.sort((a, c) => get(c).vol - get(a).vol);
+  if (sortBy === 'codigo') order.sort((a, c) => a.code.localeCompare(c.code, 'pt-BR', { numeric: true }));
+  let shown = 0;
+  for (const p of order) {
+    const card = box.querySelector(`[data-card="${p.id}"]`);
+    const hit = !q || q.split(/\s+/).every((w) => searchText(p).includes(w));
+    card.hidden = !hit;
+    if (hit) shown++;
+    box.appendChild(card);
+  }
+  const add = box.querySelector('.card.new');
+  if (add) { box.appendChild(add); add.hidden = !!q; }
+  $('emptyMsg').hidden = shown > 0 || !PROJECTS.length;
+  $('galleryCount').textContent = q ? `${shown} de ${PROJECTS.length}` : plural(PROJECTS.length, 'projeto', 'projetos');
+}
+$('search').addEventListener('input', applyGalleryView);
+$('sortSeg').addEventListener('click', (e) => {
+  const k = e.target.closest('[data-sort]')?.dataset.sort;
+  if (!k) return;
+  sortBy = k;
+  $('sortSeg').querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.sort === k));
+  applyGalleryView();
+});
+document.querySelectorAll('[data-go]').forEach((el) => el.addEventListener('click', () => $(el.dataset.go).scrollIntoView({ behavior: 'smooth' })));
 
 // miniaturas dos cartões, renderizadas a partir do próprio modelo
 function thumbnail(p) {
@@ -1162,15 +1393,21 @@ function applyDims(on) {
   cur.dimLabels.forEach((l) => { l.visible = on; });
 }
 
-function openGallery() {
-  mode = 'gallery';
-  document.body.classList.remove('viewer');
-  document.title = `Projetos 3D · ${COMPANY}`;
+// fecha o que estiver aberto no projeto (cartão, painel, pintura, cópia de chumbadores)
+function clearViewer() {
   select(null);
   hover(null);
   toggleDetails(false);
   setPainting(false);
   setCopying(null);
+}
+function openGallery() {
+  stopTV();
+  mode = 'gallery';
+  document.body.classList.remove('viewer');
+  document.title = `Projetos 3D · ${COMPANY}`;
+  clearViewer();
+  renderOverview();   // chumbadores ajustados no projeto mudam os totais
   controls.enabled = false;
   controls.autoRotate = true;
   canvas.style.touchAction = 'pan-y';
@@ -1184,6 +1421,7 @@ function openGallery() {
 
 let hintTimer = 0;
 function openViewer(p) {
+  stopTV();
   if (window.scrollY > 0) window.scrollTo(0, 0);
   mode = 'viewer';
   document.body.classList.add('viewer');
@@ -1214,12 +1452,102 @@ function openViewer(p) {
 }
 
 function route() {
+  if (/^#\/tv\/?$/.test(location.hash) && PROJECTS.length) { if (mode !== 'tv') startTV(); return; }
   const m = location.hash.match(/^#\/p\/([\w-]+)/);
   const p = m && PROJECTS.find((x) => x.id === m[1]);
   if (p) openViewer(p);
   else if (mode !== 'gallery') openGallery();
 }
 addEventListener('hashchange', route);
+
+// ---------- modo apresentação (#/tv): um projeto por vez, girando, com os números grandes ----------
+const TV_SECONDS = 20;
+let tv = null, tvIdle = 0, wakeLock = null;
+function startTV() {
+  if (window.scrollY > 0) window.scrollTo(0, 0);
+  clearViewer();
+  toggleLabelsMenu(false);
+  mode = 'tv';
+  document.body.classList.remove('viewer');
+  document.body.classList.add('tv');
+  document.title = `Apresentação · Projetos 3D`;
+  controls.enabled = false;
+  controls.autoRotate = true;
+  tv = { i: 0, t: 0, paused: false, switching: false };
+  $('tvUi').hidden = false;
+  setTVPaused(false);
+  showTV();
+  wakeTV();
+  // a tela não apaga enquanto a apresentação está aberta (quando o navegador deixa)
+  navigator.wakeLock?.request('screen').then((l) => { if (tv) wakeLock = l; else l.release(); }).catch(() => {});
+}
+function stopTV() {
+  if (mode !== 'tv') return;
+  tv = null;
+  document.body.classList.remove('tv', 'tv-idle');
+  $('tvUi').hidden = true;
+  $('tvFade').classList.remove('on');
+  clearTimeout(tvIdle);
+  wakeLock?.release().catch(() => {});
+  wakeLock = null;
+  if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+}
+function showTV() {
+  const p = PROJECTS[tv.i], b = use(p), t = totals(b);
+  applyDims(false);
+  fly(...(p.hero || b.views['3D']), true);
+  tv.t = 0;
+  $('tvPos').textContent = `${tv.i + 1} / ${PROJECTS.length}`;
+  const kpi = (v, label) => `<div><b>${v}</b><span>${label}</span></div>`;
+  $('tvInfo').innerHTML = `
+    <div class="eyebrow">Projeto ${tv.i + 1} de ${PROJECTS.length}</div>
+    <h1 class="tv-code">${esc(p.code)}</h1>
+    <p class="tv-title">${esc(p.title)}</p>
+    ${p.summary ? `<p class="tv-sum">${esc(p.summary)}</p>` : ''}
+    <div class="tv-kpis">
+      ${kpi(`${fmt(b.vol)} m³`, 'de concreto')}
+      ${kpi(int(b.count), b.count === 1 ? 'peça' : 'peças')}
+      ${t.bolts ? kpi(int(t.bolts), 'chumbadores') : ''}
+      ${t.plates ? kpi(int(t.plates), t.plates === 1 ? 'chapa gabarito' : 'chapas gabarito') : ''}
+      ${t.steel ? kpi(`${fmt(t.kg)} kg`, 'de aço') : ''}
+    </div>`;
+}
+// troca de projeto: escurece, troca o modelo e a câmera, e clareia de novo
+function stepTV(d) {
+  if (!tv || tv.switching) return;
+  tv.switching = true;
+  $('tvFade').classList.add('on');
+  $('tvInfo').classList.add('out');
+  setTimeout(() => {
+    if (!tv) return;
+    tv.i = (tv.i + d + PROJECTS.length) % PROJECTS.length;
+    showTV();
+    $('tvFade').classList.remove('on');
+    $('tvInfo').classList.remove('out');
+    tv.switching = false;
+  }, 650);
+}
+function setTVPaused(on) {
+  if (!tv) return;
+  tv.paused = on;
+  $('tvPlay').setAttribute('aria-label', on ? 'Continuar' : 'Pausar');
+  $('tvPlay').querySelector('.i-pause').toggleAttribute('hidden', on);
+  $('tvPlay').querySelector('.i-play').toggleAttribute('hidden', !on);
+}
+// sem mexer o mouse por uns segundos, os botões e o cursor somem
+function wakeTV() {
+  document.body.classList.remove('tv-idle');
+  clearTimeout(tvIdle);
+  tvIdle = setTimeout(() => { if (tv) document.body.classList.add('tv-idle'); }, 3000);
+}
+addEventListener('pointermove', () => { if (tv) wakeTV(); });
+$('tvPrev').addEventListener('click', () => stepTV(-1));
+$('tvNext').addEventListener('click', () => stepTV(1));
+$('tvPlay').addEventListener('click', () => setTVPaused(!tv?.paused));
+$('tvBtn').addEventListener('click', () => {
+  document.documentElement.requestFullscreen?.().catch(() => {});
+  location.hash = '#/tv';
+});
 
 // ---------- interface do projeto ----------
 function markView(name) {
@@ -1361,20 +1689,22 @@ function updateNames(now) {
 }
 // painel do projeto: descrição (editável), volumes e totais; clicar num grupo leva a câmera até ele
 function renderDetails(b) {
-  const p = b.p;
-  const bolts = b.pieces.reduce((a, m) => a + (m.userData.boltCount || 0), 0);
-  const plates = b.pieces.reduce((a, m) => a + (m.userData.plateCount || 0), 0);
+  const p = b.p, { bolts, plates, steel, kg } = totals(b);
   const groups = [...b.groups].map(([g, e]) =>
     `<button type="button" class="d-group" data-group="${esc(g)}">${esc(g)}<b>${fmt(e.vol)} m³</b>${plural(e.n, 'peça', 'peças')}</button>`).join('');
-  const steel = b.pieces.filter((m) => m.userData.steel), kg = steel.reduce((a, m) => a + (m.userData.weight || 0), 0);
+  const notes = p.notes || [];
+  // a nota fica aberta ou fechada como a pessoa deixou, entre um projeto e outro
+  const notesOpen = $('details').querySelector('.d-notes')?.open ?? false;
   $('details').innerHTML = `
     <div class="d-head"><span class="d-label">Descrição</span><button type="button" class="link" data-act="edit">Editar</button></div>
     <p class="d-sum${p.summary ? '' : ' empty'}">${p.summary ? esc(p.summary) : 'Sem descrição.'}</p>
     <div class="d-total main"><span>Concreto · ${plural(b.count, 'peça', 'peças')}</span><b>${fmt(b.vol)} m³</b></div>
     ${b.groups.size > 1 ? `<div class="d-groups">${groups}</div>` : ''}
-    ${steel.length ? `<div class="d-total"><span>Estrutura metálica · ${plural(steel.length, 'peça', 'peças')}</span><b>${fmt(kg)} kg</b></div>` : ''}
+    ${steel ? `<div class="d-total"><span>Estrutura metálica · ${plural(steel, 'peça', 'peças')}</span><b>${fmt(kg)} kg</b></div>` : ''}
     ${bolts ? `<div class="d-total"><span>Chumbadores</span><b>${bolts} un.</b></div>` : ''}
     ${plates ? `<div class="d-total"><span>Chapas gabarito</span><b>${plates} un.</b></div>` : ''}
+    ${notes.length ? `<details class="d-notes"${notesOpen ? ' open' : ''}><summary>Notas do modelo <b>${notes.length}</b></summary>
+      <ul>${notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul></details>` : ''}
     <div class="d-date">Atualizado em ${fmtDate(p.date)}</div>`;
 }
 $('details').addEventListener('click', (e) => {
@@ -1812,7 +2142,7 @@ canvas.addEventListener('pointerup', (e) => {
   if (!down) return;
   const moved = Math.hypot(e.clientX - down[0], e.clientY - down[1]);
   down = null;
-  if (moved >= 5) return;
+  if (moved >= 5 || mode === 'tv') return;
   if (mode === 'gallery') {
     if (PROJECTS[0]) location.hash = `#/p/${PROJECTS[0].id}`;
     return;
@@ -1873,6 +2203,14 @@ $('lightbox').addEventListener('click', (e) => { if (e.target.id === 'lightbox')
 $('scrollCue').addEventListener('click', () => $('gallery').scrollIntoView({ behavior: 'smooth' }));
 
 addEventListener('keydown', (e) => {
+  if (tv) {
+    wakeTV();
+    if (e.key === 'Escape') location.hash = '#/';
+    else if (e.key === 'ArrowRight') stepTV(1);
+    else if (e.key === 'ArrowLeft') stepTV(-1);
+    else if (e.key === ' ' && !e.target.closest('button')) { e.preventDefault(); setTVPaused(!tv.paused); }
+    return;
+  }
   const lb = !$('lightbox').hidden;
   if (lb && e.key === 'ArrowLeft') stepLb(-1);
   if (lb && e.key === 'ArrowRight') stepLb(1);
@@ -2302,7 +2640,7 @@ requestAnimationFrame(renderThumbs);
 
 const clock = new THREE.Clock();
 renderer.setAnimationLoop(() => {
-  const dt = Math.min(clock.getDelta(), 0.05);
+  const raw = clock.getDelta(), dt = Math.min(raw, 0.05);
   const k = 1 - Math.exp(-dt * 6);
   if (tween) {
     tween.t = Math.min(1, tween.t + dt / 1.1);
@@ -2310,6 +2648,11 @@ renderer.setAnimationLoop(() => {
     camera.position.lerpVectors(tween.p0, tween.p1, e);
     controls.target.lerpVectors(tween.t0, tween.t1, e);
     if (tween.t === 1) tween = null;
+  }
+  if (tv && !tv.paused && !tv.switching) {
+    tv.t += Math.min(raw, 1);   // tempo real: em aparelho lento (TV) o projeto não fica mais tempo na tela
+    $('tvProgress').style.transform = `scaleX(${Math.min(1, tv.t / TV_SECONDS).toFixed(4)})`;
+    if (tv.t >= TV_SECONDS) stepTV(1);
   }
   const [tx, ty] = offsetTarget();
   offX += (tx - offX) * k;
