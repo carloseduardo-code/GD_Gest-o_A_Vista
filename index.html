@@ -86,39 +86,9 @@
     color: var(--muted); font: 500 12px var(--mono); letter-spacing: .08em; cursor: pointer; }
   .scroll-cue:hover { color: var(--text); }
 
-  /* visão geral: o que todos os projetos somam, para a gestão à vista */
-  .overview { max-width: 1240px; margin: 0 auto; padding: 48px clamp(20px, 6vw, 88px) 8px; }
   .sec-title { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
   .sec-title h2 { font-size: 26px; font-weight: 700; letter-spacing: -.02em; margin: 0; }
   .sec-title span { font: 500 12px var(--mono); color: var(--muted); }
-  .overview .sec-title { margin-bottom: 22px; }
-  .kpis { display: grid; grid-template-columns: 1.7fr repeat(4, 1fr); gap: 14px; }
-  .kpi { display: flex; flex-direction: column; justify-content: space-between; gap: 18px; min-height: 136px; padding: 18px 20px;
-    background: var(--bg2); border: 1px solid var(--line); border-radius: 18px; }
-  .kpi > span { font-size: 13px; color: var(--muted); }
-  .kpi b { font-size: 34px; font-weight: 700; letter-spacing: -.02em; line-height: 1; }
-  .kpi b small { font-size: 15px; font-weight: 600; color: var(--muted); margin-left: 5px; letter-spacing: 0; }
-  .kpi em { font-style: normal; font-size: 12.5px; color: var(--muted); margin-top: 8px; display: block; }
-  .kpi.total { background: linear-gradient(135deg, rgba(36, 126, 81, .16), rgba(36, 126, 81, 0) 60%), var(--bg2); border-color: rgba(79, 181, 130, .28); }
-  .kpi.total b { font-size: clamp(48px, 5vw, 64px); }
-  /* concreto por projeto: barras e números lado a lado (a barra compara, a coluna dá o valor) */
-  .rank { margin-top: 14px; padding: 16px 12px 10px; background: var(--bg2); border: 1px solid var(--line); border-radius: 18px; }
-  .rank-cap { display: flex; justify-content: space-between; gap: 12px; padding: 0 10px 12px; font-size: 14px; font-weight: 600; }
-  .rank-cap span { font-weight: 400; font-size: 12.5px; color: var(--muted); }
-  .rank-head, .rank-row { display: grid; grid-template-columns: minmax(170px, 290px) 1fr 92px 64px 104px; align-items: center; gap: 16px; }
-  .rank-head { font-size: 12px; color: var(--muted); padding: 0 10px 8px; border-bottom: 1px solid var(--line); margin-bottom: 4px; }
-  .rank .num { text-align: right; font-variant-numeric: tabular-nums; }
-  .rank-row { padding: 9px 10px; border-radius: 10px; color: inherit; text-decoration: none; font-size: 13.5px; transition: background .2s; }
-  .rank-row:hover, .rank-row:focus-visible { background: rgba(255, 255, 255, .045); outline: none; }
-  .rank-row:focus-visible { box-shadow: inset 0 0 0 1px var(--accent); }
-  .rank-name { min-width: 0; }
-  .rank-name b { display: block; font: 600 12px var(--mono); color: var(--accent); letter-spacing: .04em; }
-  .rank-name span { display: block; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #dcd9d5; }
-  .bar { height: 14px; }
-  .bar i { display: block; height: 100%; min-width: 3px; background: var(--brand-hi); border-radius: 0 4px 4px 0; transition: background .2s; }
-  .rank-row:hover .bar i, .rank-row:focus-visible .bar i { background: var(--accent); }
-  .rank-row .num.main { font-weight: 600; }
-  .rank-row .num:not(.main) { color: var(--muted); }
 
   .gallery { max-width: 1240px; margin: 0 auto; padding: 40px clamp(20px, 6vw, 88px) 24px; }
   .gallery-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px 20px; margin-bottom: 22px; }
@@ -226,6 +196,20 @@
   .dialog .note { margin: 0; font-size: 12px; color: var(--muted); }
   .dialog-actions { display: flex; gap: 8px; align-items: center; }
   .dialog-actions .grow { flex: 1; }
+  .pub-n { margin-left: 2px; min-width: 20px; padding: 1px 6px; border-radius: 999px; background: rgba(255, 255, 255, .22);
+    font: 600 11px/1.5 var(--mono); text-align: center; }
+  .pub-lead { margin: 0; font-size: 14px; line-height: 1.5; color: #d9d6d2; }
+  .pub-list { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; max-height: 190px; overflow-y: auto; }
+  .pub-list li { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 8px 12px; border-radius: 10px;
+    background: rgba(255, 255, 255, .04); font-size: 13px; }
+  .pub-list li > span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #d9d6d2; }
+  .pub-list b { font: 600 12px var(--mono); color: var(--accent); margin-right: 4px; }
+  .pub-list em { flex: none; font-style: normal; font-size: 12px; color: var(--muted); }
+  .pub-steps { margin: 0; padding: 0; list-style: none; counter-reset: passo; display: grid; gap: 10px; }
+  .pub-steps li { counter-increment: passo; display: flex; align-items: center; gap: 12px; font-size: 13.5px; line-height: 1.45; }
+  .pub-steps li::before { content: counter(passo); flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center;
+    background: rgba(79, 181, 130, .14); color: var(--accent); font: 600 12px var(--mono); }
+  .pub-steps li > span { flex: 1; }
 
   .toolbar { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); display: flex; align-items: center; gap: 2px;
     padding: 6px; border-radius: 999px; max-width: calc(100vw - 24px); }
@@ -409,8 +393,6 @@
 
   @media (max-width: 1100px) {
     .info { bottom: 84px; max-height: calc(100vh - 160px); }
-    .kpis { grid-template-columns: repeat(4, 1fr); }
-    .kpi.total { grid-column: 1 / -1; min-height: 0; }
   }
   @media (max-width: 860px) {
     :root { --hero-h: 84vh; }
@@ -424,12 +406,6 @@
     .tv-sum { display: none; }
   }
   @media (max-width: 760px) {
-    .kpis { grid-template-columns: 1fr 1fr; }
-    .kpi { min-height: 0; }
-    .kpi b { font-size: 30px; }
-    .rank-head, .rank-row { grid-template-columns: 1fr 92px; gap: 8px 12px; }
-    .rank .opt-col { display: none; }
-    .rank-row .rank-name { grid-column: 1 / -1; }
     .g-tools, .search { width: 100%; }
     .search { flex: 1 1 100%; }
     .search input { width: 100%; }
@@ -437,7 +413,7 @@
   @media (max-width: 640px) {
     .logo { height: 44px; }
     .brand-sep, .brand > span:last-child { display: none; }
-    .nav-link { display: none; }
+    .nav-link, .nav-links .lbl-x { display: none; }
     .tv-logo { height: 42px; top: 20px; left: 20px; }
     .tv-ctrl { top: 16px; right: 16px; }
     .tv-info { left: 20px; right: 20px; bottom: 40px; }
@@ -457,11 +433,13 @@
   <nav class="nav">
     <a class="brand" href="#/"><img class="logo" src="Logo/Logo%20Gon%C3%A7alvez%20dias_Branca.png" alt="Gonçalves &amp; Dias Engenharia"><span class="brand-sep"></span><span>Projetos 3D</span></a>
     <div class="nav-links">
-      <button class="nav-link" type="button" data-go="overview">Visão geral</button>
       <button class="nav-link" type="button" data-go="gallery">Projetos</button>
-      <button class="btn ghost sm" type="button" id="tvBtn" title="Passa os projetos um a um, em tela cheia (para deixar numa TV)">
+      <button class="btn primary sm" type="button" id="pubBtn" hidden title="Levar as cores e edições deste navegador para todo mundo ver">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V4M7 9l5-5 5 5M5 20h14"/></svg>
+        <span>Publicar<span class="lbl-x"> edições</span></span><span class="pub-n" id="pubN"></span></button>
+      <button class="btn ghost sm" type="button" id="tvBtn" aria-label="Apresentação" title="Passa os projetos um a um, em tela cheia (para deixar numa TV)">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M8 21h8M12 17v4M10 8.5v5l4.5-2.5z"/></svg>
-        Apresentação</button>
+        <span class="lbl-x">Apresentação</span></button>
     </div>
   </nav>
 
@@ -478,12 +456,6 @@
       </div>
     </div>
     <button class="scroll-cue" id="scrollCue" type="button">TODOS OS PROJETOS ↓</button>
-  </section>
-
-  <section class="overview" id="overview" aria-labelledby="overviewTitle">
-    <div class="sec-title"><h2 id="overviewTitle">Visão geral</h2><span>soma dos modelos 3D · só o concreto novo</span></div>
-    <div class="kpis" id="kpis"></div>
-    <div class="rank" id="rank"></div>
   </section>
 
   <main class="gallery" id="gallery">
@@ -572,7 +544,7 @@
     <label>Código<input name="code" required maxlength="40"></label>
     <label>Título<input name="title" required maxlength="90"></label>
     <label>Descrição<textarea name="summary" rows="4" maxlength="600" placeholder="Uma ou duas linhas sobre a obra"></textarea></label>
-    <p class="note">As alterações ficam salvas neste navegador, como as cores das peças.</p>
+    <p class="note">Fica salvo neste navegador. Para todo mundo ver, use <b>Publicar edições</b> no início.</p>
     <div class="dialog-actions">
       <button type="button" class="btn ghost sm" id="editReset">Restaurar original</button>
       <span class="grow"></span>
@@ -580,6 +552,21 @@
       <button type="submit" class="btn primary sm">Salvar</button>
     </div>
   </form>
+</div>
+<div class="modal" id="pubModal" hidden>
+  <div class="dialog" role="dialog" aria-labelledby="pubTitle">
+    <h3 id="pubTitle"><small id="pubCount"></small>Publicar edições</h3>
+    <p class="pub-lead">As cores, transparências, títulos e chumbadores que você mudou neste navegador vão para o site, e todo mundo passa a ver.</p>
+    <ul class="pub-list" id="pubList"></ul>
+    <ol class="pub-steps">
+      <li><span>Baixe o arquivo <b>edicoes.js</b>.</span><button type="button" class="btn primary sm" id="pubDownload">Baixar</button></li>
+      <li><span>No GitHub, arraste o arquivo para a página e clique em <b>Commit changes</b>.</span>
+        <a class="btn ghost sm" id="pubOpen" target="_blank" rel="noopener">Abrir GitHub ↗</a></li>
+      <li><span>Em alguns minutos o site atualiza para todos.</span></li>
+    </ol>
+    <p class="note">Só quem tem acesso ao repositório consegue enviar. Sem acesso, mande o arquivo para quem tem.</p>
+    <div class="dialog-actions"><span class="grow"></span><button type="button" class="btn ghost sm" id="pubClose">Fechar</button></div>
+  </div>
 </div>
 <div class="shot-editor" id="shotEditor" hidden>
   <div class="se-bar">
@@ -634,6 +621,9 @@
 <script src="projetos/se-2012ks-01a/projeto.js"></script>
 <script src="projetos/tr-2020ks-03/projeto.js"></script>
 
+<!-- EDIÇÕES PUBLICADAS: cores, transparência, títulos e chumbadores que todo mundo vê (gerado pelo botão Publicar edições) -->
+<script src="edicoes.js"></script>
+
 <script type="importmap">
 { "imports": {
   "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
@@ -654,11 +644,31 @@ const COLORS = { sapata: 0x8e959a, parede: 0xc0c5c8, pedestal: 0xccd0d3, existen
 const PROJECTS = (window.PROJETOS || []).slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-// código, título e descrição editados neste navegador valem mais do que os do arquivo do projeto
+// edições publicadas (edicoes.js, no GitHub): cores, transparência, títulos e chumbadores que todo mundo vê.
+// Elas valem mais do que o arquivo do projeto; o que foi mexido neste navegador vale mais do que elas.
+const REPO = 'carloseduardo-code/GD_Gest-o_A_Vista';
+const PUBLICADO = window.EDICOES || {};
+const pub = (id) => PUBLICADO[id] || {};
+// JSON com as chaves em ordem, para comparar edições sem depender da ordem em que foram feitas
+const canon = (v) => JSON.stringify(v, (k, x) => (x && typeof x === 'object' && !Array.isArray(x)
+  ? Object.fromEntries(Object.entries(x).sort(([a], [c]) => (a < c ? -1 : a > c ? 1 : 0))) : x));
+// código, título e descrição: arquivo do projeto → publicado → este navegador ("Restaurar original" volta para o publicado)
 const infoKey = (id) => `projetos3d:info:${id}`;
+const INFO = ['code', 'title', 'summary'];
 for (const p of PROJECTS) {
+  p.file = { code: p.code, title: p.title, summary: p.summary || '' };
+  Object.assign(p, pub(p.id).info);
   p.orig = { code: p.code, title: p.title, summary: p.summary || '' };
-  try { Object.assign(p, JSON.parse(localStorage.getItem(infoKey(p.id))) || {}); } catch { /* sem armazenamento */ }
+  try {
+    const local = JSON.parse(localStorage.getItem(infoKey(p.id))) || {};
+    // o que já está publicado igual sai deste navegador, para uma publicação nova aparecer aqui
+    const keep = Object.fromEntries(Object.entries(local).filter(([k, v]) => v !== p.orig[k]));
+    if (Object.keys(keep).length < Object.keys(local).length) {
+      if (Object.keys(keep).length) localStorage.setItem(infoKey(p.id), JSON.stringify(keep));
+      else localStorage.removeItem(infoKey(p.id));
+    }
+    Object.assign(p, keep);
+  } catch { /* sem armazenamento */ }
 }
 const fmt = (v) => v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
@@ -903,9 +913,14 @@ const boltStoreKey = (id) => `projetos3d:chumbadores:${id}`;
 function loadBolts(id) {
   try { return JSON.parse(localStorage.getItem(boltStoreKey(id))) || {}; } catch { return {}; }
 }
-function saveBolts(b) {
-  try { localStorage.setItem(boltStoreKey(b.p.id), JSON.stringify(b.bolts)); } catch { /* sem armazenamento: vale só nesta sessão */ }
+// guarda as edições de um projeto neste navegador; sem nenhuma, a chave sai
+function store(key, obj) {
+  try {
+    if (Object.keys(obj).length) localStorage.setItem(key, JSON.stringify(obj));
+    else localStorage.removeItem(key);
+  } catch { /* sem armazenamento: vale só nesta sessão */ }
 }
+const saveBolts = (b) => store(boltStoreKey(b.p.id), b.bolts);
 // o que foi ajustado neste navegador vale mais do que o que vem no arquivo do projeto
 const boltCfg = (b, m) => b.bolts[m.userData.key] ?? m.userData.bolts ?? null;
 // chumbadores (e chapas gabarito) de um retângulo [X0, X1, Y0, Y1, H0, H1]: saem do topo H1
@@ -995,6 +1010,8 @@ function build(p) {
   const seen = new Map();
   const paint = loadPaint(p.id);
   const opa = loadOpacity(p.id);
+  const pb = pub(p.id);
+  let pruned = false;   // edições deste navegador iguais às publicadas: saem daqui (ver o fim do build)
   for (const d of p.pieces) {
     let geo, vol;
     if (d.plan) {
@@ -1015,11 +1032,15 @@ function build(p) {
     seen.set(d.id, n);
     const key = n > 1 ? `${d.id}#${n}` : d.id;
     const baseColor = d.color ?? COLORS[d.existing ? 'existente' : d.steel ? 'aco' : d.type] ?? COLORS.pedestal;
+    // cor pintada: a deste navegador (null = voltou para o concreto) ou, se não mexeu, a publicada
+    const pubColor = pb.pintura?.[key] ?? null;
+    if (key in paint && paint[key] === pubColor) { delete paint[key]; pruned = true; }
+    const color = (key in paint ? paint[key] : pubColor) ?? baseColor;
     worldUV(geo, pieces.length + 1);
     // peças de aço (steel: true): pintura metálica lisa e fora do volume de concreto
     const mesh = new THREE.Mesh(geo, d.steel
-      ? new THREE.MeshStandardMaterial({ color: paint[key] ?? baseColor, metalness: 0.35, roughness: 0.5 })
-      : new THREE.MeshStandardMaterial({ color: paint[key] ?? baseColor, roughness: 0.92, map: CONCRETE.map, bumpMap: CONCRETE.bump, bumpScale: 1.5 }));
+      ? new THREE.MeshStandardMaterial({ color, metalness: 0.35, roughness: 0.5 })
+      : new THREE.MeshStandardMaterial({ color, roughness: 0.92, map: CONCRETE.map, bumpMap: CONCRETE.bump, bumpScale: 1.5 }));
     mesh.name = d.id;
     mesh.castShadow = mesh.receiveShadow = true;
     // com o projeto amarrado a uma elevação (datum), cada peça mostra fundo e topo em EL.
@@ -1036,7 +1057,9 @@ function build(p) {
       const el = (H) => (offs[1] - offs[0] < 0.05 ? `EL. ${fmtEL(H + offs[0])}` : `EL. ${fmtEL(H + offs[0])} a ${fmtEL(H + offs[1])}`);
       rows = [...rows, ['Fundo', el(Math.min(...hs))], ['Topo', el(Math.max(...hs))]];
     }
-    mesh.userData = { ...d, rows, vol, key, baseColor };
+    // fileBolts: chumbadores do arquivo do projeto; bolts passa a ser o publicado, quando tem
+    mesh.userData = { ...d, rows, vol, key, baseColor, pubColor, pubOpacity: pb.transparencia?.[key], fileBolts: d.bolts ?? null,
+      bolts: pb.chumbadores?.[key] ?? d.bolts };
     group.add(mesh);
     pieces.push(mesh);
     // nichos no topo da peça: [x0, x1, y0, y1, profundidade] em cm a partir do canto (em planta, do canto do contorno)
@@ -1065,7 +1088,8 @@ function build(p) {
       group.add(pad);
       (mesh.userData.padMeshes ||= []).push(pad);
     }
-    applyOpacity(mesh, opa[key] ?? baseOpacity(d));
+    if (key in opa && Math.abs(opa[key] - baseOpacity(mesh.userData)) < 0.001) { delete opa[key]; pruned = true; }
+    applyOpacity(mesh, opa[key] ?? baseOpacity(mesh.userData));
   }
 
   // cotas: linhas no 3D + rótulos
@@ -1133,6 +1157,11 @@ function build(p) {
   const vol = novas.reduce((a, m) => a + m.userData.vol, 0);
   const b = { p, group, pieces, count: novas.length, dims, dimLabels, tags, names, bounds, groups, vol, paint, opacity: opa, dimMat, locMat,
     bolts: loadBolts(p.id), toWorld: (X, Y, H, at) => P(X, Y, H).add(shift(at)) };
+  for (const m of pieces.filter(canBolt)) {
+    const k = m.userData.key;
+    if (k in b.bolts && canon(b.bolts[k]) === canon(m.userData.bolts ?? null)) { delete b.bolts[k]; pruned = true; }
+  }
+  if (pruned) { savePaint(b); saveOpacity(b); saveBolts(b); }
   pieces.filter(canBolt).forEach((m) => updateBolts(b, m));
   // chumbadores fixos direto na laje (sem pedestal): anchors = [{ id, box: [X0, X1, Y0, Y1, H0, H1], bolts }]
   for (const m of pieces) {
@@ -1250,37 +1279,6 @@ function totals(b) {
 }
 const int = (n) => n.toLocaleString('pt-BR');
 
-// ---------- visão geral: números de todos os projetos e o concreto de cada um ----------
-function renderOverview() {
-  const list = PROJECTS.map((p) => { const b = get(p); return { p, b, ...totals(b) }; });
-  const sum = (f) => list.reduce((a, x) => a + f(x), 0);
-  const vol = sum((x) => x.b.vol), pieces = sum((x) => x.b.count), bolts = sum((x) => x.bolts), plates = sum((x) => x.plates);
-  const kg = sum((x) => x.kg), steel = sum((x) => x.steel);
-  const tile = (label, value, unit = '') => `<div class="kpi"><span>${label}</span><b>${value}${unit ? `<small>${unit}</small>` : ''}</b></div>`;
-  $('kpis').innerHTML = `
-    <div class="kpi total"><span>Concreto nos projetos</span>
-      <div><b>${fmt(vol)}<small>m³</small></b><em>${plural(pieces, 'peça nova', 'peças novas')} em ${plural(list.length, 'projeto', 'projetos')}</em></div></div>
-    ${tile('Projetos', int(list.length))}
-    ${tile('Peças de concreto', int(pieces))}
-    ${tile('Chumbadores', int(bolts), 'un.')}
-    ${tile('Chapas gabarito', int(plates), 'un.')}
-    ${steel ? tile('Estrutura metálica', fmt(kg), 'kg') : ''}`;
-  const max = Math.max(...list.map((x) => x.b.vol), 1e-9);
-  const rows = list.slice().sort((a, c) => c.b.vol - a.b.vol).map(({ p, b, bolts: n }) => `
-    <a class="rank-row" href="#/p/${p.id}" aria-label="${esc(`${p.code}, ${p.title}: ${fmt(b.vol)} m³, ${plural(b.count, 'peça', 'peças')}, ${n} chumbadores. Abrir em 3D`)}">
-      <span class="rank-name"><b>${esc(p.code)}</b><span>${esc(p.title)}</span></span>
-      <span class="bar"><i style="width:${((b.vol / max) * 100).toFixed(2)}%"></i></span>
-      <span class="num main">${fmt(b.vol)}</span>
-      <span class="num opt-col">${int(b.count)}</span>
-      <span class="num opt-col">${n ? int(n) : '—'}</span>
-    </a>`).join('');
-  $('rank').innerHTML = list.length ? `
-    <div class="rank-cap">Concreto por projeto<span>clique para abrir em 3D</span></div>
-    <div class="rank-head" aria-hidden="true"><span>Projeto</span><span class="opt-col"></span><span class="num">m³</span><span class="num opt-col">Peças</span><span class="num opt-col">Chumbadores</span></div>
-    ${rows}` : '';
-  $('overview').hidden = !list.length;
-}
-
 // ---------- galeria ----------
 function renderGallery() {
   const cards = PROJECTS.map((p) => {
@@ -1303,7 +1301,7 @@ function renderGallery() {
       <p>Mande a planta de forma, os cortes e a locação. O modelo 3D é montado a partir deles e entra aqui na galeria.</p></div>`);
   $('cards').innerHTML = cards.join('');
   applyGalleryView();
-  renderOverview();
+  updatePublish();
 
   const hero = PROJECTS[0];
   if (!hero) {
@@ -1407,7 +1405,7 @@ function openGallery() {
   document.body.classList.remove('viewer');
   document.title = `Projetos 3D · ${COMPANY}`;
   clearViewer();
-  renderOverview();   // chumbadores ajustados no projeto mudam os totais
+  updatePublish();   // cores e chumbadores mexidos no projeto
   controls.enabled = false;
   controls.autoRotate = true;
   canvas.style.touchAction = 'pan-y';
@@ -1764,6 +1762,70 @@ $('cards').addEventListener('click', (e) => {
   e.preventDefault();
   openEdit(PROJECTS.find((p) => p.id === id));
 });
+
+// ---------- publicar edições: gera o edicoes.js com o que o site mostra neste navegador ----------
+// o que o projeto mostra agora e é diferente do arquivo dele (é isso que vai para o edicoes.js)
+function editsOf(p) {
+  const b = get(p), parts = { info: {}, pintura: {}, transparencia: {}, chumbadores: {} };
+  for (const k of INFO) if ((p[k] || '') !== p.file[k]) parts.info[k] = p[k] || '';
+  for (const m of b.pieces) {
+    const u = m.userData, c = paintOf(b, m);
+    if (c) parts.pintura[u.key] = c;
+    const o = Math.round((u.currentOpacity ?? baseOpacity(u)) * 100) / 100;
+    if (Math.abs(o - fileOpacity(u)) > 0.001) parts.transparencia[u.key] = o;
+    if (canBolt(m) && canon(boltCfg(b, m)) !== canon(u.fileBolts)) parts.chumbadores[u.key] = boltCfg(b, m);
+  }
+  return Object.fromEntries(Object.entries(parts).filter(([, v]) => Object.keys(v).length));
+}
+const PARTS = [['info', 'título'], ['pintura', 'cores'], ['transparencia', 'transparência'], ['chumbadores', 'chumbadores']];
+// projetos com edições que ainda não estão publicadas, e o que mudou em cada um
+function unpublished() {
+  return PROJECTS.map((p) => {
+    const e = editsOf(p), o = pub(p.id);
+    return { p, e, what: PARTS.filter(([k]) => canon(e[k]) !== canon(o[k])).map(([, name]) => name) };
+  }).filter((x) => x.what.length);
+}
+function updatePublish() {
+  const n = unpublished().length;
+  $('pubBtn').hidden = !n;
+  $('pubN').textContent = n;
+}
+// arquivo legível: cada edição numa linha, listas (pontos dos chumbadores) numa linha só
+const pretty = (v, ind = '') => (!v || typeof v !== 'object' || Array.isArray(v) ? JSON.stringify(v)
+  : `{\n${Object.entries(v).map(([k, x]) => `${ind}  ${JSON.stringify(k)}: ${pretty(x, `${ind}  `)}`).join(',\n')}\n${ind}}`);
+function edicoesJS() {
+  const all = {};
+  for (const p of PROJECTS) { const e = editsOf(p); if (Object.keys(e).length) all[p.id] = e; }
+  // projeto publicado que não está nesta versão do site continua no arquivo
+  for (const [id, e] of Object.entries(PUBLICADO)) if (!PROJECTS.some((p) => p.id === id)) all[id] = e;
+  return `// Edições publicadas da plataforma: cores, transparência, títulos e chumbadores que todo mundo vê.
+// Gerado pelo botão "Publicar edições" em ${new Date().toLocaleString('pt-BR')}.
+// Para mudar: edite no site, clique em "Publicar edições" e envie o arquivo novo para o GitHub no lugar deste.
+window.EDICOES = ${pretty(all)};
+`;
+}
+function openPublish() {
+  const list = unpublished();
+  $('pubCount').textContent = plural(list.length, 'projeto com mudanças', 'projetos com mudanças');
+  $('pubList').innerHTML = list.map(({ p, what }) => `<li><span><b>${esc(p.code)}</b> ${esc(p.title)}</span><em>${what.join(', ')}</em></li>`).join('');
+  $('pubOpen').href = `https://github.com/${REPO}/upload/main`;
+  $('pubModal').hidden = false;
+}
+const closePublish = () => { $('pubModal').hidden = true; };
+$('pubBtn').addEventListener('click', openPublish);
+$('pubClose').addEventListener('click', closePublish);
+$('pubModal').addEventListener('pointerdown', (e) => { if (e.target.id === 'pubModal') closePublish(); });
+$('pubDownload').addEventListener('click', () => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([edicoesJS()], { type: 'text/javascript' }));
+  a.download = 'edicoes.js';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  toast('edicoes.js baixado · agora envie para o GitHub');
+});
+
 function toggleDetails(open = $('details').hidden) {
   $('details').hidden = !open;
   $('vtitle').setAttribute('aria-expanded', open);
@@ -1780,22 +1842,18 @@ const paintKey = (id) => `projetos3d:pintura:${id}`;
 function loadPaint(id) {
   try { return JSON.parse(localStorage.getItem(paintKey(id))) || {}; } catch { return {}; }
 }
-function savePaint(b) {
-  try { localStorage.setItem(paintKey(b.p.id), JSON.stringify(b.paint)); } catch { /* sem armazenamento: vale só nesta sessão */ }
-}
+const savePaint = (b) => store(paintKey(b.p.id), b.paint);
 
 // ---------- transparência das peças ----------
 const opacityKey = (id) => `projetos3d:transparencia:${id}`;
 function loadOpacity(id) {
   try { return JSON.parse(localStorage.getItem(opacityKey(id))) || {}; } catch { return {}; }
 }
-function saveOpacity(b) {
-  try { localStorage.setItem(opacityKey(b.p.id), JSON.stringify(b.opacity)); } catch { /* sem armazenamento: vale só nesta sessão */ }
-}
+const saveOpacity = (b) => store(opacityKey(b.p.id), b.opacity);
 // opacidade inicial: a do projeto; a estrutura existente começa bem apagada
-function baseOpacity(u) {
-  return u.opacity ?? (u.existing ? 0.3 : 1);
-}
+const fileOpacity = (u) => u.opacity ?? (u.existing ? 0.3 : 1);
+// opacidade de partida: a publicada ou, sem ela, a do arquivo do projeto
+const baseOpacity = (u) => u.pubOpacity ?? fileOpacity(u);
 function applyOpacity(m, o) {
   const mat = m.material, see = o < 0.999;
   if (mat.transparent !== see) { mat.transparent = see; mat.needsUpdate = true; }
@@ -1827,15 +1885,19 @@ function wireOpacity(row, meshes) {
   });
   input.addEventListener('change', () => saveOpacity(cur));
 }
+// cor que a peça mostra: '#rrggbb' ou null (concreto). Neste navegador b.paint guarda só o que difere do publicado,
+// e null ali quer dizer "tirei a cor publicada"
+const paintOf = (b, m) => (m.userData.key in b.paint ? b.paint[m.userData.key] : m.userData.pubColor);
 function applyColor(b, m, hex) {
-  if (hex) b.paint[m.userData.key] = hex;
-  else delete b.paint[m.userData.key];
+  hex ??= null;
+  if (hex === m.userData.pubColor) delete b.paint[m.userData.key];
+  else b.paint[m.userData.key] = hex;
   m.material.color.set(hex || m.userData.baseColor);
 }
 const paintHistory = [];
 function paintPieces(meshes, hex) {
   if (!cur || !meshes.length) return;
-  paintHistory.push({ b: cur, items: meshes.map((m) => [m, cur.paint[m.userData.key] ?? null]) });
+  paintHistory.push({ b: cur, items: meshes.map((m) => [m, paintOf(cur, m)]) });
   if (paintHistory.length > 200) paintHistory.shift();
   meshes.forEach((m) => applyColor(cur, m, hex));
   savePaint(cur);
@@ -1849,7 +1911,7 @@ function undoPaint() {
 }
 function clearPaint() {
   if (!cur) return;
-  const painted = cur.pieces.filter((m) => cur.paint[m.userData.key]);
+  const painted = cur.pieces.filter((m) => paintOf(cur, m));
   if (!painted.length) { toast('Nenhuma peça pintada'); return; }
   paintPieces(painted, null);
   toast('Cores originais restauradas · Desfazer volta atrás');
@@ -1882,7 +1944,7 @@ function wireSwatches(box, onPick) {
   });
 }
 const colorOf = (meshes) => {
-  const set = new Set(meshes.map((m) => cur.paint[m.userData.key] || 'orig'));
+  const set = new Set(meshes.map((m) => paintOf(cur, m) || 'orig'));
   return set.size === 1 ? [...set][0] : null;
 };
 
@@ -1903,7 +1965,10 @@ function setPainting(on) {
 wireSwatches($('swatches'), (hex) => { brush = hex; });
 $('swatches').addEventListener('input', (e) => { if (e.target.type === 'color') { brush = e.target.value; markSwatch($('swatches'), 'custom'); } });
 $('paintBtn').addEventListener('click', () => setPainting(!painting));
-$('doneBtn').addEventListener('click', () => setPainting(false));
+$('doneBtn').addEventListener('click', () => {
+  setPainting(false);
+  if (cur && unpublished().some((x) => x.p === cur.p)) toast('Salvo neste navegador · publique no início para todos verem');
+});
 $('undoBtn').addEventListener('click', undoPaint);
 $('clearBtn').addEventListener('click', clearPaint);
 
@@ -2221,6 +2286,7 @@ addEventListener('keydown', (e) => {
   }
   if (e.key !== 'Escape') return;
   if (shot) closeShotEditor();
+  else if (!$('pubModal').hidden) closePublish();
   else if (!$('editModal').hidden) closeEdit();
   else if (!$('labelsMenu').hidden) toggleLabelsMenu(false);
   else if (lb) $('lightbox').hidden = true;
