@@ -1,5 +1,5 @@
 // Edições publicadas da plataforma: cores, transparência, títulos e chumbadores que todo mundo vê.
-// Gerado pelo botão "Publicar edições" em 04/11/2026, 11:11:13.
+// Gerado pelo botão "Publicar edições" em 06/11/2026, 11:15:47.
 // Para mudar: edite no site, clique em "Publicar edições" e envie o arquivo novo para o GitHub no lugar deste.
 window.EDICOES = {
   "tr-2012ks-13": {
@@ -16,7 +16,7 @@ window.EDICOES = {
   },
   "tr-2012ks-15": {
     "pintura": {
-      "RD1": "#c2b80f"
+      "RD1": "#139a3c"
     }
   },
   "tr-2012ks-11-cc": {
@@ -111,7 +111,10 @@ window.EDICOES = {
       "PE.2 · P1": "#139a3c",
       "S3 · P1": "#139a3c",
       "PE.3 · P1": "#139a3c",
-      "BE.1 · P1": "#139a3c"
+      "BE.1 · P1": "#139a3c",
+      "S1 · P2": "#c2b80f",
+      "S2 · P2": "#c2b80f",
+      "S3 · P2": "#c2b80f"
     }
   },
   "se-2012ks-01a": {
@@ -162,14 +165,14 @@ window.EDICOES = {
   },
   "tr-2020ks-03": {
     "pintura": {
-      "S1": "#c2b80f",
+      "S1": "#139a3c",
       "PE.1A": "#c2b80f",
       "PE.1C": "#c2b80f",
       "PE.1B": "#c2b80f",
       "S2": "#139a3c",
-      "VA.1": "#c2b80f",
-      "VA.2": "#c2b80f",
-      "PE.2A": "#c2b80f",
+      "VA.1": "#139a3c",
+      "VA.2": "#139a3c",
+      "PE.2A": "#139a3c",
       "PE.2B": "#c2b80f",
       "S3": "#139a3c",
       "BE.1": "#139a3c"
