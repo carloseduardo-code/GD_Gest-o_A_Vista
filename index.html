@@ -52,7 +52,7 @@
   .nav { position: absolute; top: 0; left: 0; right: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between;
     padding: 22px clamp(20px, 6vw, 88px); }
   .brand { display: flex; align-items: center; gap: 14px; color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 500; }
-  .logo { display: block; height: 54px; width: auto; }
+  .logo { display: block; height: 68px; width: auto; }
   .brand-sep { width: 1px; height: 24px; background: rgba(255, 255, 255, .16); }
   .nav-links { display: flex; align-items: center; gap: 4px; }
   .nav-link { background: none; border: 0; color: var(--muted); font-size: 13px; font-weight: 500; padding: 8px 12px; border-radius: 999px;
@@ -70,7 +70,7 @@
   .eyebrow { display: flex; align-items: center; gap: 10px; font: 600 12px var(--mono); letter-spacing: .14em; text-transform: uppercase;
     color: var(--accent); margin-bottom: 16px; }
   .eyebrow::before { content: ''; width: 22px; height: 2px; border-radius: 2px; background: var(--brand); }
-  .hero-code { font: 800 clamp(44px, 7.4vw, 108px)/.92 var(--sans); letter-spacing: -.035em; margin: 0; }
+  .hero-code { font: 800 clamp(40px, 5.4vw, 88px)/.92 var(--sans); letter-spacing: -.035em; margin: 0; white-space: nowrap; }
   .hero-title { font-size: clamp(18px, 1.8vw, 22px); font-weight: 600; margin: 14px 0 16px; color: #dcd9d5; }
   .hero-meta { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 14px; color: var(--muted); margin-bottom: 28px; }
   .hero-meta b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
@@ -90,7 +90,7 @@
   .sec-title h2 { font-size: 26px; font-weight: 700; letter-spacing: -.02em; margin: 0; }
   .sec-title span { font: 500 12px var(--mono); color: var(--muted); }
 
-  .gallery { max-width: 1240px; margin: 0 auto; padding: 40px clamp(20px, 6vw, 88px) 24px; }
+  .gallery { padding: 40px clamp(20px, 6vw, 88px) 24px; }
   .gallery-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px 20px; margin-bottom: 22px; }
   .g-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .search { display: flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border-radius: 999px; color: var(--muted);
@@ -379,10 +379,10 @@
   .tv-ctrl .sep { margin: 0 4px; }
   .tv-pos { font: 500 12px var(--mono); color: var(--muted); padding: 0 10px 0 6px; font-variant-numeric: tabular-nums; }
   body.tv-idle .tv-ctrl { opacity: 0; }
-  .tv-info { position: absolute; left: clamp(24px, 5vw, 80px); bottom: clamp(52px, 10vh, 120px); max-width: min(820px, 50vw);
+  .tv-info { position: absolute; left: clamp(24px, 5vw, 80px); bottom: clamp(52px, 10vh, 120px); max-width: min(720px, 42vw);
     transition: opacity .5s var(--ease), transform .5s var(--ease); }
   .tv-info.out { opacity: 0; transform: translateY(12px); }
-  .tv-code { font: 800 clamp(44px, 5.6vw, 108px)/.92 var(--sans); letter-spacing: -.035em; margin: 0; }
+  .tv-code { font: 800 clamp(44px, 5vw, 96px)/.92 var(--sans); letter-spacing: -.035em; margin: 0; white-space: nowrap; }
   .tv-title { font-size: clamp(20px, 2.1vw, 32px); font-weight: 600; margin: 16px 0 12px; color: #dcd9d5; }
   .tv-sum { font-size: clamp(15px, 1.3vw, 20px); line-height: 1.5; color: var(--muted); margin: 0 0 28px; }
   .tv-kpis { display: flex; flex-wrap: wrap; gap: 16px 44px; }
@@ -411,7 +411,7 @@
     .search input { width: 100%; }
   }
   @media (max-width: 640px) {
-    .logo { height: 44px; }
+    .logo { height: 54px; }
     .brand-sep, .brand > span:last-child { display: none; }
     .nav-link, .nav-links .lbl-x { display: none; }
     .tv-logo { height: 42px; top: 20px; left: 20px; }
@@ -677,6 +677,16 @@ const fmtDate = (iso) => {
   return `${d} ${MONTHS[m - 1]} ${y}`;
 };
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+// código grande sempre numa linha só: se não couber na largura, a fonte diminui até caber
+function fitLine(el) {
+  if (!el) return;
+  el.style.fontSize = '';
+  const w = el.clientWidth, sw = el.scrollWidth;
+  if (w && sw > w + 1) el.style.fontSize = `${Math.floor(parseFloat(getComputedStyle(el).fontSize) * w / sw)}px`;
+}
+const fitCodes = () => { fitLine($('heroCode')); fitLine(document.querySelector('.tv-code')); };
+addEventListener('resize', fitCodes);
+document.fonts?.ready.then(fitCodes);
 
 // ---------- cena ----------
 const stage = $('stage');
@@ -714,7 +724,8 @@ sun.shadow.mapSize.set(2048, 2048);
 sun.shadow.normalBias = 0.02;
 scene.add(sun, sun.target);
 
-const ground = new THREE.Mesh(new THREE.CircleGeometry(45, 64).rotateX(-Math.PI / 2),
+// chão bem maior que a névoa: ele some aos poucos no fundo, sem a borda curva aparecendo
+const ground = new THREE.Mesh(new THREE.CircleGeometry(400, 96).rotateX(-Math.PI / 2),
   new THREE.MeshStandardMaterial({ color: 0x1d1c1a, roughness: 1 }));
 ground.position.y = -0.03;
 ground.receiveShadow = true;
@@ -1264,6 +1275,7 @@ let offX = 0, offY = 0;
 // (na apresentação também: o texto fica embaixo à esquerda)
 const offsetTarget = () => {
   if (mode === 'viewer') return [0, 0];
+  if (mode === 'tv' && W > 860) return [-W * 0.24, -H * 0.03];   // na apresentação o texto é mais alto: modelo mais à direita
   return W > 860 ? [-W * 0.2, -H * 0.03] : [0, H * 0.16];
 };
 
@@ -1310,6 +1322,7 @@ function renderGallery() {
   }
   const b = get(hero);
   $('heroCode').textContent = hero.code;
+  fitLine($('heroCode'));
   $('heroTitle').textContent = hero.title;
   $('heroMeta').innerHTML = `<span><b>${b.count}</b> ${b.count === 1 ? 'peça' : 'peças'}</span><span><b>${fmt(b.vol)} m³</b> de concreto</span><span>${fmtDate(hero.date)}</span>`;
   $('heroOpen').href = `#/p/${hero.id}`;
@@ -1509,6 +1522,7 @@ function showTV() {
       ${t.plates ? kpi(int(t.plates), t.plates === 1 ? 'chapa gabarito' : 'chapas gabarito') : ''}
       ${t.steel ? kpi(`${fmt(t.kg)} kg`, 'de aço') : ''}
     </div>`;
+  fitLine($('tvInfo').querySelector('.tv-code'));
 }
 // troca de projeto: escurece, troca o modelo e a câmera, e clareia de novo
 function stepTV(d) {
