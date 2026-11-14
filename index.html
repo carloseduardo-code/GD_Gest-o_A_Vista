@@ -1009,6 +1009,11 @@ function build(p) {
     const [geo, r] = bevelled(new THREE.Shape(pts.map(([Y, H]) => new THREE.Vector2((Y - OY) / 100, H / 100))), (X1 - X0) / 100);
     return geo.rotateY(-Math.PI / 2).translate((X1 - OX) / 100 - r, 0, 0);
   };
+  // perfil em corte (X, H) extrudado ao longo de Y (vigas que correm de cima para baixo da planta)
+  const sectionPrismY = (pts, Y0, Y1) => {
+    const [geo, r] = bevelled(new THREE.Shape(pts.map(([X, H]) => new THREE.Vector2((X - OX) / 100, H / 100))), (Y1 - Y0) / 100);
+    return geo.translate(0, 0, (Y0 - OY) / 100 + r);
+  };
   // área do polígono em m² (fórmula do laço)
   const area = (pts) => Math.abs(pts.reduce((a, [x, y], i) => {
     const [x2, y2] = pts[(i + 1) % pts.length];
@@ -1029,8 +1034,10 @@ function build(p) {
       geo = planPrism(d.plan, ...d.h, d.holes);
       vol = (area(d.plan) - (d.holes || []).reduce((a, h) => a + area(h), 0)) * (d.h[1] - d.h[0]) / 100;
     } else if (d.section) {
-      geo = sectionPrism(d.section, ...d.x);
-      vol = area(d.section) * (d.x[1] - d.x[0]) / 100;
+      // section + x: perfil (Y, H) ao longo de X; section + y: perfil (X, H) ao longo de Y
+      const [a, b] = d.y || d.x;
+      geo = d.y ? sectionPrismY(d.section, a, b) : sectionPrism(d.section, a, b);
+      vol = area(d.section) * (b - a) / 100;
     } else {
       geo = box(...d.box);
       vol = (d.box[1] - d.box[0]) * (d.box[3] - d.box[2]) * (d.box[5] - d.box[4]) / 1e6;
@@ -1063,7 +1070,7 @@ function build(p) {
       const dh = d.at ? d.at[2] : 0;
       const fmtEL = (H) => (datum + (H + dh) / 100).toFixed(3).replace('.', ',');
       // peça inclinada: a elevação vai de um lado ao outro
-      const ys = d.plan ? d.plan.map((q) => q[1]) : d.box ? [d.box[2], d.box[3]] : [0];
+      const ys = d.plan ? d.plan.map((q) => q[1]) : d.box ? [d.box[2], d.box[3]] : d.y ? d.y : d.section.map((q) => q[0]);
       const offs = [slopeAt(d.slope, Math.min(...ys)), slopeAt(d.slope, Math.max(...ys))].sort((a, b) => a - b);
       const el = (H) => (offs[1] - offs[0] < 0.05 ? `EL. ${fmtEL(H + offs[0])}` : `EL. ${fmtEL(H + offs[0])} a ${fmtEL(H + offs[1])}`);
       rows = [...rows, ['Fundo', el(Math.min(...hs))], ['Topo', el(Math.max(...hs))]];
