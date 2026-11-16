@@ -24,14 +24,13 @@
     rows: [['Seção', '50 cm na face · fundo 20 cm · mísula 20 × 30'], ['Detalhe', '3 · 2012KS-C-500713']] });
   const VB_A = [[476.7,124],[496.7,124],[516.7,154],[476.7,154]];
   const VB_B = [[1022.7,124],[1002.7,124],[982.7,154],[1022.7,154]];
-  const VB_ESQ = [[97,124],[117,124],[137,154],[97,154]];
   const VB_DIR = [[2142.5,124],[2122.5,124],[2102.5,154],[2142.5,154]];
 
   (window.PROJETOS = window.PROJETOS || []).push({
     id: 'se-2012ks-01a',
     code: 'SE-2012KS-01A',
     title: 'Britagem Secundária · fundação',
-    summary: '21 sapatas com pedestais, chumbadores M20 e M24 e chapas gabarito, em duas filas e uma linha de bases menores, ao lado das sapatas existentes da SE-2012KS-01, e o piso de 20 cm entre as filas A e B.',
+    summary: '21 sapatas com pedestais, chumbadores M20 e M24 e chapas gabarito, em duas filas e uma linha de bases menores, ao lado das sapatas existentes da SE-2012KS-01, e o trecho executado do piso de 20 cm entre as filas A e B, até o eixo 5.',
     date: '2026-11-14',
     center: [1189, 532],
     datum: 294.215,   // elevação (m) do H = 0 do modelo: assentamento das bases
@@ -41,8 +40,9 @@
       'Chapas gabarito GB-1 e GB-2: largura no sentido do corte e espessura (3 mm) do desenho; o outro sentido foi estimado. Lista completa em LC-2012KS-C-500018.',
       'Estruturas existentes da SE-2012KS-01 só para referência: S63, S67 e S68 com alturas dos cortes; S64, S65, S66, S69, BE3 e BE4 com alturas aproximadas.',
       'Terreno (entre EL. 295,55 e 295,87) e concreto magro não estão no modelo.',
-      'Piso dos desenhos 2012KS-C-500713 Rev. 0 (forma) e 500714 Rev. 0 (armação): laje h = 20 entre as filas A e B, do PE.15/PE.16 até o eixo 5, com caimento de 1% da fila A (EL. 295,955) para a fila B (EL. 295,900). Viga de borda V.B.1 (detalhe 3) em todo o contorno, junta de construção no eixo 3 e junta de isolamento de 1 cm em volta dos pedestais.',
-      'Concreto do piso no modelo: 24,59 m³ (laje 20,94 + vigas de borda 3,65). A nota do desenho dá 21,00 m³, que bate com a laje sem as vigas de borda.',
+      'Piso dos desenhos 2012KS-C-500713 Rev. 0 (forma) e 500714 Rev. 0 (armação): laje h = 20 entre as filas A e B, com caimento de 1% da fila A (EL. 295,955) para a fila B (EL. 295,900), viga de borda V.B.1 (detalhe 3) nas bordas, junta de construção no eixo 3 e junta de isolamento de 1 cm em volta dos pedestais.',
+      'Só entra o trecho executado do piso: de 335 cm depois do eixo 1 até o eixo 5. No desenho o piso começa no PE.15/PE.16, mas na parte da esquerda os pedestais não foram executados e o piso não será feito. O limite foi tirado do pull planning; o desenho não mostra viga de borda nessa ponta.',
+      'Concreto do piso executado: 17,66 m³ (laje 15,22 + vigas de borda 2,44). O piso inteiro do desenho daria 24,59 m³ (laje 20,94, que bate com os 21,00 m³ da nota, + vigas de borda 3,65).',
       'Piso medido no PDF do desenho (escala 1:50), com as cotas e os eixos do modelo. Sub-base, lona plástica e o concreto magro das vigas de borda não estão no modelo.',
     ],
     references: [
@@ -179,32 +179,24 @@
       { id: 'PE.21', group: 'Fila B', kind: 'Pedestal', type: 'pedestal',
         box: [2062.5,2142.5,942.7,1022.7,30,253.5], bolts: BOLT_M24,
         rows: [['Seção', '80 × 80 cm'], ['Altura', '223,5 cm'], ['Chumbadores', '4 × M24 (CB-02) · projeção 14 cm'], ['Chapa gabarito', 'GB-2'], ['Graute', '5 cm']] },
-      // piso (2012KS-C-500713): contorno com os recortes dos pedestais (1 cm de junta) e a faixa até B + 50 à esquerda
+      // piso (2012KS-C-500713), só o trecho executado: de 335 cm depois do eixo 1 até o eixo 5, com os recortes dos pedestais (1 cm de junta)
       { id: 'PISO', group: 'Piso', kind: 'Piso (laje h = 20)', type: 'parede', name: 'PISO', slope: PISO_SLOPE, h: [154, 174],
-        plan: [[97,476.7],[275.5,476.7],[275.5,557.7],[357.5,557.7],[357.5,476.7],[722,476.7],[722,557.7],[804,557.7],[804,476.7],
-          [1168.5,476.7],[1168.5,557.7],[1250.5,557.7],[1250.5,476.7],[1615,476.7],[1615,557.7],[1697,557.7],[1697,476.7],
-          [2061.5,476.7],[2061.5,557.7],[2142.5,557.7],[2142.5,941.7],[2061.5,941.7],[2061.5,1022.7],[1697,1022.7],[1697,941.7],
-          [1615,941.7],[1615,1022.7],[1250.5,1022.7],[1250.5,941.7],[1168.5,941.7],[1168.5,1022.7],[804,1022.7],[804,941.7],
-          [722,941.7],[722,1022.7],[357.5,1022.7],[357.5,941.7],[275.5,941.7],[275.5,1032.7],[97,1032.7],[97,1013.2],[148,1013.2],
-          [148,961.2],[97,961.2],[97,637.2],[148,637.2],[148,585.2],[97,585.2]],
-        rows: [['Espessura', '20 cm'], ['Área', '104,71 m²'], ['Caimento', '1% da fila A para a fila B'],
+        plan: [[651.5,476.7],[722,476.7],[722,557.7],[804,557.7],[804,476.7],[1168.5,476.7],[1168.5,557.7],[1250.5,557.7],[1250.5,476.7],
+          [1615,476.7],[1615,557.7],[1697,557.7],[1697,476.7],[2061.5,476.7],[2061.5,557.7],[2142.5,557.7],[2142.5,941.7],[2061.5,941.7],
+          [2061.5,1022.7],[1697,1022.7],[1697,941.7],[1615,941.7],[1615,1022.7],[1250.5,1022.7],[1250.5,941.7],[1168.5,941.7],[1168.5,1022.7],
+          [804,1022.7],[804,941.7],[722,941.7],[722,1022.7],[651.5,1022.7]],
+        rows: [['Trecho', 'de 335 cm depois do eixo 1 até o eixo 5'], ['Espessura', '20 cm'], ['Área', '76,11 m²'], ['Caimento', '1% da fila A para a fila B'],
           ['Juntas', 'construção no eixo 3 · isolamento de 1 cm nos pedestais'], ['Concreto estrutural', 'fck ≥ 30 MPa'],
-          ['Telas soldadas', 'Q-196 em cima e Q-335 embaixo · 951 kg'], ['Barras', 'CA-50 596 kg · CA-25 Ø20 na junta 17 kg']] },
-      VB(VB_A, { x: [97, 275.5] }, 'A borda–1'),
-      VB(VB_A, { x: [357.5, 722] }, 'A 1–2'),
+          ['Armação do desenho', 'piso inteiro: telas Q-196/Q-335 951 kg · CA-50 596 kg · CA-25 17 kg']] },
+      VB(VB_A, { x: [651.5, 722] }, 'A 1–2'),
       VB(VB_A, { x: [804, 1168.5] }, 'A 2–3'),
       VB(VB_A, { x: [1250.5, 1615] }, 'A 3–4'),
       VB(VB_A, { x: [1697, 2061.5] }, 'A 4–5'),
-      VB([[1032.7,124],[1012.7,124],[992.7,154],[1032.7,154]], { x: [148, 275.5] }, 'B borda–1'),
-      VB(VB_B, { x: [357.5, 722] }, 'B 1–2'),
+      VB(VB_B, { x: [651.5, 722] }, 'B 1–2'),
       VB(VB_B, { x: [804, 1168.5] }, 'B 2–3'),
       VB(VB_B, { x: [1250.5, 1615] }, 'B 3–4'),
       VB(VB_B, { x: [1697, 2061.5] }, 'B 4–5'),
-      VB(VB_ESQ, { y: [496.7, 585.2] }, 'esquerda A–PE.15'),
-      VB(VB_ESQ, { y: [637.2, 961.2] }, 'esquerda PE.15–PE.16'),
       VB(VB_DIR, { y: [557.7, 941.7] }, 'eixo 5'),
-      { id: 'V.B.1 · canto PE.16', group: 'Piso', kind: 'Viga de borda (V.B.1)', type: 'parede', noName: true, slope: PISO_SLOPE,
-        box: [97, 148, 1013.2, 1032.7, 124, 154], rows: [['Seção', '50 cm na face · trecho ao lado do PE.16'], ['Detalhe', '3 · 2012KS-C-500713']] },
       { id: 'S63', group: 'Existente', kind: 'Sapata existente (SE-2012KS-01)', type: 'sapata', existing: true,
         box: [1.9,201.9,315,515,-29,21], rows: [['Dimensões', '200 × 200 cm']] },
       { id: 'S63 · pedestal', group: 'Existente', kind: 'Pedestal existente', type: 'parede', existing: true,
