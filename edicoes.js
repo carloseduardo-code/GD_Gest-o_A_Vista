@@ -1,5 +1,5 @@
 // Edições publicadas da plataforma: cores, transparência, títulos e chumbadores que todo mundo vê.
-// Gerado pelo botão "Publicar edições" em 16/11/2026, 09:43:01.
+// Gerado pelo botão "Publicar edições" em 17/11/2026, 11:37:37.
 // Para mudar: edite no site, clique em "Publicar edições" e envie o arquivo novo para o GitHub no lugar deste.
 window.EDICOES = {
   "se-2012ks-01a": {
@@ -47,7 +47,7 @@ window.EDICOES = {
       "S21": "#139a3c",
       "PE.21": "#139a3c",
       "PISO": "#c2b80f",
-      "V.B.1 · A 1–2": "#c41a1a",
+      "V.B.1 · A 1–2": "#c2b80f",
       "V.B.1 · A 2–3": "#c2b80f",
       "V.B.1 · A 3–4": "#c2b80f",
       "V.B.1 · A 4–5": "#c2b80f",
@@ -56,6 +56,9 @@ window.EDICOES = {
       "V.B.1 · B 3–4": "#c2b80f",
       "V.B.1 · B 4–5": "#c2b80f",
       "V.B.1 · eixo 5": "#c2b80f"
+    },
+    "transparencia": {
+      "PISO": 0.65
     }
   },
   "tr-2012ks-13": {
@@ -101,8 +104,8 @@ window.EDICOES = {
       "PES.25": "#c2b80f",
       "S26": "#139a3c",
       "PES.26": "#c2b80f",
-      "S29": "#c41a1a",
-      "PES.29": "#c41a1a",
+      "S29": "#c2b80f",
+      "PES.29": "#c2b80f",
       "S30": "#c41a1a",
       "PES.30": "#c41a1a",
       "S33": "#c41a1a",
@@ -153,7 +156,25 @@ window.EDICOES = {
       "PE107B": "#139a3c",
       "PE107C": "#139a3c",
       "PE107D": "#139a3c",
-      "RD.101": "#139a3c"
+      "RD.101": "#139a3c",
+      "RD.101 · laje h=20": "#139a3c",
+      "PE-RD.1": "#139a3c",
+      "PE-RD.2": "#139a3c",
+      "PE-RD.3": "#139a3c",
+      "PE-RD.4": "#139a3c",
+      "PE-RD.5": "#139a3c",
+      "PE-RD.6": "#139a3c",
+      "PE-RD.7": "#139a3c",
+      "PE-RD.8": "#139a3c",
+      "PE-RD.9": "#139a3c",
+      "BE-RD.1": "#139a3c",
+      "BE-RD.2": "#139a3c",
+      "PE-RD.10": "#139a3c",
+      "PE-RD.11": "#139a3c",
+      "PE-RD.12": "#139a3c",
+      "PE-RD.13": "#139a3c",
+      "PE-RD.14": "#139a3c",
+      "PE-RD.15": "#139a3c"
     }
   },
   "yy-2012ks-101": {
