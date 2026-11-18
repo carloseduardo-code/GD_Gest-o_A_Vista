@@ -13,8 +13,8 @@
     id: 'tr-2012ks-15',
     code: 'TR-2012KS-15',
     title: 'Radier RD1 · troca de correia',
-    summary: 'Radier RD1 da troca de correia do TR-2011KS-15, dentro da casa de transferência CT-2011KS-11: 470 × 650 × 100 cm com 8 nichos e 48 chumbadores.',
-    date: '2026-10-24',
+    summary: 'Radier RD1 da troca de correia do TR-2011KS-15, dentro da casa de transferência CT-2011KS-11: 470 × 650 × 100 cm com 8 nichos e 48 chumbadores, e a faixa de piso de 1 m em volta dele.',
+    date: '2026-11-18',
     center: [595,295],
     datum: 293.09,
     notes: [
@@ -24,6 +24,7 @@
       'Bases de graute de 5 cm sobre os nichos: 55 × 80 cm nas de 8 chumbadores e 55 × 65 cm nas de 4. Elas não entram no volume de concreto.',
       'Os chumbadores são os dos dois cavaletes de aço da troca de correia (2011KS-M-500065 e 500066); os cavaletes não estão no modelo.',
       'Piso e pilares da CT-2011KS-11 só como referência; o piso está plano em EL. 293,84 (no desenho vai de 293,899 a 293,787).',
+      'Faixa de piso em volta do radier: 1 m de largura em cada lado, a partir da borda do radier, e 20 cm de altura, no nível do piso existente (EL. 293,64 a 293,84). Contorno de 670 × 850 cm: 26,40 m² e 5,28 m³. As cotas aparecem em Rótulos → Cotas.',
     ],
     references: [
       [pasta + 'desenhos/locacao-501216.png', 'Locação do radier · 2011KS-C-501216'],
@@ -45,9 +46,13 @@
           { id: 'Base 8', box: [746.5,801.5,501,581,100,105], bolts: { ...CHUMB, points: [[20.5,19],[34.5,19],[20.5,33],[34.5,33],[20.5,47],[34.5,47],[20.5,61],[34.5,61]] } },
         ],
         rows: [["Dimensões","470 × 650 × 100 cm"],["Bases de graute","4 × 55 × 80 e 4 × 55 × 65 cm, 5 cm de altura (T.C.A. EL. 294,140)"],["Nichos","8 × 25 × 25 × 20 cm, embaixo das bases"],["Chumbadores","48 × barra roscada Ø3/4\" UNC × 49,5 cm (217A), 14,5 cm acima do graute"],["Concreto magro","5 cm"]] },
+      // faixa de piso de 1 m em volta do radier (cada lado, a partir da borda), 20 cm de altura no nível do piso existente
+      { id: "Faixa do piso", group: "Faixa do piso", kind: "Piso · faixa de 1 m em volta do radier", type: 'parede', name: "PISO · FAIXA DE 1 m",
+        plan: [[260,-130],[930,-130],[930,720],[260,720]], holes: [[[360,-30],[830,-30],[830,620],[360,620]]], h: [55,75],
+        rows: [["Largura","1 m em cada lado, a partir da borda do radier"],["Altura","20 cm"],["Contorno","670 × 850 cm"],["Área","26,40 m²"]] },
       { id: "Piso existente", group: "Existente", kind: "Piso da CT-2011KS-11", type: 'sapata', existing: true, opacity: 0.16,
-        plan: [[-110,-110],[1310,-110],[1310,660],[-110,660]], holes: [[[358,-32],[832,-32],[832,622],[358,622]]], h: [55,75],
-        rows: [["Topo","P.A. EL. 293,899 · P.B. EL. 293,787 (no modelo, plano em 293,84)"],["Espessura","≈ 20 cm (demolição de 6,12 m³ no lugar do radier)"]] },
+        plan: [[-110,-230],[1310,-230],[1310,820],[-110,820]], holes: [[[260,-130],[930,-130],[930,720],[260,720]]], h: [55,75],
+        rows: [["Topo","P.A. EL. 293,899 · P.B. EL. 293,787 (no modelo, plano em 293,84)"],["Espessura","≈ 20 cm (demolição de 6,12 m³ no lugar do radier)"],["No modelo","só fora da faixa de 1 m em volta do radier"]] },
       { id: "Pilar C4", group: "Existente", kind: "Pilar existente", type: 'parede', existing: true,
         box: [-50,50,-50,50,45,475],
         rows: [["Seção","100 × 100 cm"],["Altura","cortado no modelo 4 m acima do piso"]] },
@@ -61,8 +66,17 @@
         box: [1150,1250,500,600,45,475],
         rows: [["Seção","100 × 100 cm"],["Altura","cortado no modelo 4 m acima do piso"]] },
     ],
+    // cotas da faixa: 100 cm em cada lado do radier e 20 cm de altura
+    dims: [
+      [[260, 130, 75], [360, 130, 75], [0, 0, 8], '100'],
+      [[830, 130, 75], [930, 130, 75], [0, 0, 8], '100'],
+      [[760, -130, 75], [760, -30, 75], [0, 0, 8], '100'],
+      [[760, 620, 75], [760, 720, 75], [0, 0, 8], '100'],
+      [[930, 720, 55], [930, 720, 75], [25, 25, 0], '20'],
+    ],
     tags: [
       { text: 'RD1', at: [595,-50,140], view: [[-4.2, 5.6, 7.2], [0, 0.9, 0]] },
+      { text: 'Faixa do piso', at: [230,-170,90] },
 
     ],
     // vistas da câmera: [posição, alvo] em metros
