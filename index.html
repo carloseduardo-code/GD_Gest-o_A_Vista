@@ -1803,7 +1803,14 @@ const PARTS = [['info', 'título'], ['pintura', 'cores'], ['transparencia', 'tra
 function unpublished() {
   return PROJECTS.map((p) => {
     const e = editsOf(p), o = pub(p.id);
-    return { p, e, what: PARTS.filter(([k]) => canon(e[k]) !== canon(o[k])).map(([, name]) => name) };
+    // o publicado de peças que saíram do modelo não conta como mudança (some na próxima publicação)
+    const keys = new Set(get(p).pieces.map((m) => m.userData.key));
+    const live = (k) => {
+      if (k === 'info' || !o[k]) return o[k];
+      const v = Object.fromEntries(Object.entries(o[k]).filter(([key]) => keys.has(key)));
+      return Object.keys(v).length ? v : undefined;
+    };
+    return { p, e, what: PARTS.filter(([k]) => canon(e[k]) !== canon(live(k))).map(([, name]) => name) };
   }).filter((x) => x.what.length);
 }
 function updatePublish() {
