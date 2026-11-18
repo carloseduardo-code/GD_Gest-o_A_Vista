@@ -1,7 +1,20 @@
 // Edições publicadas da plataforma: cores, transparência, títulos e chumbadores que todo mundo vê.
-// Gerado pelo botão "Publicar edições" em 17/11/2026, 11:37:37.
+// Gerado pelo botão "Publicar edições" em 18/11/2026, 13:51:46.
 // Para mudar: edite no site, clique em "Publicar edições" e envie o arquivo novo para o GitHub no lugar deste.
 window.EDICOES = {
+  "tr-2012ks-15": {
+    "pintura": {
+      "RD1": "#139a3c",
+      "Faixa do piso": "#c2b80f"
+    },
+    "transparencia": {
+      "Piso existente": 0.1,
+      "Pilar C4": 0.1,
+      "Pilar D4": 0.1,
+      "Pilar C5": 0.1,
+      "Pilar D5": 0.1
+    }
+  },
   "se-2012ks-01a": {
     "pintura": {
       "S1": "#139a3c",
@@ -73,11 +86,6 @@ window.EDICOES = {
       "PE.D5-2C": "#c2b80f"
     }
   },
-  "tr-2012ks-15": {
-    "pintura": {
-      "RD1": "#139a3c"
-    }
-  },
   "tr-2012ks-11-cc": {
     "pintura": {
       "S4": "#139a3c",
@@ -97,21 +105,21 @@ window.EDICOES = {
       "S22": "#139a3c",
       "PES.22": "#139a3c",
       "S23": "#139a3c",
-      "PES.23": "#c2b80f",
+      "PES.23": "#139a3c",
       "S24": "#139a3c",
-      "PES.24": "#c2b80f",
+      "PES.24": "#139a3c",
       "S25": "#139a3c",
-      "PES.25": "#c2b80f",
+      "PES.25": "#139a3c",
       "S26": "#139a3c",
-      "PES.26": "#c2b80f",
+      "PES.26": "#139a3c",
       "S29": "#c2b80f",
       "PES.29": "#c2b80f",
-      "S30": "#c41a1a",
-      "PES.30": "#c41a1a",
-      "S33": "#c41a1a",
-      "PES.33": "#c41a1a",
-      "S34": "#c41a1a",
-      "PES.34": "#c41a1a"
+      "S30": "#c2b80f",
+      "PES.30": "#c2b80f",
+      "S33": "#c2b80f",
+      "PES.33": "#c2b80f",
+      "S34": "#c2b80f",
+      "PES.34": "#c2b80f"
     }
   },
   "tr-2012ks-11": {
@@ -189,22 +197,28 @@ window.EDICOES = {
       "S3 · P1": "#139a3c",
       "PE.3 · P1": "#139a3c",
       "BE.1 · P1": "#139a3c",
-      "S1 · P2": "#c2b80f",
-      "S2 · P2": "#c2b80f",
-      "S3 · P2": "#c2b80f"
+      "S1 · P2": "#c41a1a",
+      "S2 · P2": "#c41a1a",
+      "S3 · P2": "#c41a1a",
+      "PE.1A · P2": "#c41a1a",
+      "PE.1B · P2": "#c41a1a",
+      "PE.2A · P2": "#c41a1a",
+      "PE.2B · P2": "#c41a1a",
+      "PE.3 · P2": "#c41a1a",
+      "BE.1 · P2": "#c41a1a"
     }
   },
   "tr-2020ks-03": {
     "pintura": {
       "S1": "#139a3c",
-      "PE.1A": "#c2b80f",
-      "PE.1C": "#c2b80f",
-      "PE.1B": "#c2b80f",
+      "PE.1A": "#139a3c",
+      "PE.1C": "#139a3c",
+      "PE.1B": "#139a3c",
       "S2": "#139a3c",
       "VA.1": "#139a3c",
       "VA.2": "#139a3c",
       "PE.2A": "#139a3c",
-      "PE.2B": "#c2b80f",
+      "PE.2B": "#139a3c",
       "S3": "#139a3c",
       "BE.1": "#139a3c"
     }
