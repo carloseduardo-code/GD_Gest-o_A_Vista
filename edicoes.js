@@ -1,18 +1,17 @@
 // Edições publicadas da plataforma: cores, transparência, títulos e chumbadores que todo mundo vê.
-// Gerado pelo botão "Publicar edições" em 18/11/2026, 13:51:46.
+// Gerado pelo botão "Publicar edições" em 18/11/2026, 14:13:43.
 // Para mudar: edite no site, clique em "Publicar edições" e envie o arquivo novo para o GitHub no lugar deste.
 window.EDICOES = {
   "tr-2012ks-15": {
+    "info": {
+      "title": "Radier RD1"
+    },
     "pintura": {
       "RD1": "#139a3c",
       "Faixa do piso": "#c2b80f"
     },
     "transparencia": {
-      "Piso existente": 0.1,
-      "Pilar C4": 0.1,
-      "Pilar D4": 0.1,
-      "Pilar C5": 0.1,
-      "Pilar D5": 0.1
+      "Faixa do piso": 0.7
     }
   },
   "se-2012ks-01a": {
