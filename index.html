@@ -640,7 +640,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 const COMPANY = 'Gonçalves & Dias';
 const BG = 0x121211;
-const COLORS = { sapata: 0x8e959a, parede: 0xc0c5c8, pedestal: 0xccd0d3, existente: 0x86827c, aco: 0x5f7684 };
+const COLORS = { sapata: 0x8e959a, parede: 0xc0c5c8, pedestal: 0xccd0d3, existente: 0x86827c, aco: 0x5f7684, graute: 0x9ba1a5 };
 const PROJECTS = (window.PROJETOS || []).slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
@@ -1094,13 +1094,14 @@ function build(p) {
       (mesh.userData.nicheMeshes ||= []).push(niche);
     }
     // bases elevadas no topo da peça (graute sob as chapas): [x0, x1, y0, y1, altura] em cm a partir do canto;
-    // mesmo material da peça (pintura e transparência valem para elas) e fora do volume de concreto
+    // sempre em cinza (a pintura da peça não vale para elas), com a transparência da peça e fora do volume de concreto
+    const groutMat = d.pads && new THREE.MeshStandardMaterial({ color: COLORS.graute, roughness: 0.95, map: CONCRETE.map, bumpMap: CONCRETE.bump, bumpScale: 1.2 });
     for (const [x0, x1, y0, y1, hh] of (corner && d.pads) || []) {
       const [X0, Y0, H1] = corner;
       const pg = tilt(box(X0 + x0, X0 + x1, Y0 + y0, Y0 + y1, H1, H1 + hh), d.slope);
       pg.translate(o.x, o.y, o.z);
       worldUV(pg, pieces.length + 11);
-      const pad = new THREE.Mesh(pg, mesh.material);
+      const pad = new THREE.Mesh(pg, groutMat);
       pad.castShadow = pad.receiveShadow = true;
       pad.name = `Graute ${d.id}`;
       group.add(pad);
@@ -1890,7 +1891,13 @@ function applyOpacity(m, o) {
   m.castShadow = o > 0.75;
   m.userData.currentOpacity = o;
   for (const n of m.userData.nicheMeshes || []) n.visible = !see;
-  for (const p of m.userData.padMeshes || []) p.castShadow = m.castShadow;
+  for (const p of m.userData.padMeshes || []) {
+    p.castShadow = m.castShadow;
+    const pm = p.material;
+    if (pm.transparent !== see) { pm.transparent = see; pm.needsUpdate = true; }
+    pm.opacity = o;
+    pm.depthWrite = !see;
+  }
 }
 function setPieceOpacity(meshes, o, save) {
   for (const m of meshes) {
