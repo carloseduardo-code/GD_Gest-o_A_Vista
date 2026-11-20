@@ -1,126 +1,7 @@
 // Edições publicadas da plataforma: cores, transparência, títulos e chumbadores que todo mundo vê.
-// Gerado pelo botão "Publicar edições" em 18/11/2026, 14:13:43.
+// Gerado pelo botão "Publicar edições" em 20/11/2026, 12:05:25.
 // Para mudar: edite no site, clique em "Publicar edições" e envie o arquivo novo para o GitHub no lugar deste.
 window.EDICOES = {
-  "tr-2012ks-15": {
-    "info": {
-      "title": "Radier RD1"
-    },
-    "pintura": {
-      "RD1": "#139a3c",
-      "Faixa do piso": "#c2b80f"
-    },
-    "transparencia": {
-      "Faixa do piso": 0.7
-    }
-  },
-  "se-2012ks-01a": {
-    "pintura": {
-      "S1": "#139a3c",
-      "PE.1": "#139a3c",
-      "S2": "#139a3c",
-      "PE.2": "#139a3c",
-      "S3": "#c41a1a",
-      "PE.3": "#c41a1a",
-      "S4": "#c41a1a",
-      "PE.4": "#c41a1a",
-      "S5": "#139a3c",
-      "PE.5": "#139a3c",
-      "S6": "#139a3c",
-      "PE.6": "#139a3c",
-      "S7": "#139a3c",
-      "PE.7": "#139a3c",
-      "S8": "#139a3c",
-      "PE.8": "#139a3c",
-      "S9": "#139a3c",
-      "PE.9": "#139a3c",
-      "S10": "#c41a1a",
-      "PE.10": "#c41a1a",
-      "S11": "#139a3c",
-      "PE.11": "#139a3c",
-      "S12": "#139a3c",
-      "PE.12": "#139a3c",
-      "S13": "#139a3c",
-      "PE.13": "#139a3c",
-      "S14": "#139a3c",
-      "PE.14": "#139a3c",
-      "S15": "#c41a1a",
-      "PE.15": "#c41a1a",
-      "S16": "#139a3c",
-      "PE.16": "#139a3c",
-      "S17": "#139a3c",
-      "PE.17": "#139a3c",
-      "S18": "#139a3c",
-      "PE.18": "#139a3c",
-      "S19": "#139a3c",
-      "PE.19": "#139a3c",
-      "S20": "#139a3c",
-      "PE.20": "#139a3c",
-      "S21": "#139a3c",
-      "PE.21": "#139a3c",
-      "PISO": "#c2b80f",
-      "V.B.1 · A 1–2": "#c2b80f",
-      "V.B.1 · A 2–3": "#c2b80f",
-      "V.B.1 · A 3–4": "#c2b80f",
-      "V.B.1 · A 4–5": "#c2b80f",
-      "V.B.1 · B 1–2": "#c2b80f",
-      "V.B.1 · B 2–3": "#c2b80f",
-      "V.B.1 · B 3–4": "#c2b80f",
-      "V.B.1 · B 4–5": "#c2b80f",
-      "V.B.1 · eixo 5": "#c2b80f"
-    },
-    "transparencia": {
-      "PISO": 0.65
-    }
-  },
-  "tr-2012ks-13": {
-    "pintura": {
-      "SD5-1": "#c41a1a",
-      "PE.D5-1A": "#c41a1a",
-      "PE.D5-1B": "#c41a1a",
-      "PE.D5-1C": "#c41a1a",
-      "SD5-2": "#139a3c",
-      "PE.D5-2A": "#c2b80f",
-      "PE.D5-2B": "#c2b80f",
-      "PE.D5-2C": "#c2b80f"
-    }
-  },
-  "tr-2012ks-11-cc": {
-    "pintura": {
-      "S4": "#139a3c",
-      "PES.4": "#139a3c",
-      "S5": "#139a3c",
-      "PES.5": "#139a3c",
-      "S8": "#139a3c",
-      "PES.8": "#139a3c",
-      "S9": "#139a3c",
-      "PES.9": "#139a3c",
-      "S19": "#139a3c",
-      "PES.19": "#139a3c",
-      "S21": "#139a3c",
-      "PES.21": "#139a3c",
-      "S20": "#139a3c",
-      "PES.20": "#139a3c",
-      "S22": "#139a3c",
-      "PES.22": "#139a3c",
-      "S23": "#139a3c",
-      "PES.23": "#139a3c",
-      "S24": "#139a3c",
-      "PES.24": "#139a3c",
-      "S25": "#139a3c",
-      "PES.25": "#139a3c",
-      "S26": "#139a3c",
-      "PES.26": "#139a3c",
-      "S29": "#c2b80f",
-      "PES.29": "#c2b80f",
-      "S30": "#c2b80f",
-      "PES.30": "#c2b80f",
-      "S33": "#c2b80f",
-      "PES.33": "#c2b80f",
-      "S34": "#c2b80f",
-      "PES.34": "#c2b80f"
-    }
-  },
   "tr-2012ks-11": {
     "pintura": {
       "S100": "#139a3c",
@@ -181,7 +62,146 @@ window.EDICOES = {
       "PE-RD.12": "#139a3c",
       "PE-RD.13": "#139a3c",
       "PE-RD.14": "#139a3c",
-      "PE-RD.15": "#139a3c"
+      "PE-RD.15": "#139a3c",
+      "PISO 1": "#c41a1a",
+      "PISO 2": "#c41a1a",
+      "PISO 3": "#c2b80f",
+      "PISO 4": "#c2b80f",
+      "PISO 5": "#c2b80f",
+      "PISO 6": "#c2b80f",
+      "PISO 7": "#c2b80f",
+      "PISO 2 · engrossamento": "#c41a1a",
+      "VB5": "#c41a1a"
+    },
+    "transparencia": {
+      "PISO 1": 0.25,
+      "PISO 2": 0.25,
+      "PISO 3": 0.8,
+      "PISO 4": 0.8,
+      "PISO 5": 0.8,
+      "PISO 6": 0.8,
+      "PISO 7": 0.8,
+      "PISO 2 · engrossamento": 0.25,
+      "VB5": 0.25
+    }
+  },
+  "tr-2012ks-15": {
+    "info": {
+      "title": "Radier RD1"
+    },
+    "pintura": {
+      "RD1": "#139a3c",
+      "Faixa do piso": "#c2b80f"
+    },
+    "transparencia": {
+      "Faixa do piso": 0.7
+    }
+  },
+  "se-2012ks-01a": {
+    "pintura": {
+      "S1": "#139a3c",
+      "PE.1": "#139a3c",
+      "S2": "#139a3c",
+      "PE.2": "#139a3c",
+      "S3": "#c41a1a",
+      "PE.3": "#c41a1a",
+      "S4": "#c41a1a",
+      "PE.4": "#c41a1a",
+      "S5": "#139a3c",
+      "PE.5": "#139a3c",
+      "S6": "#139a3c",
+      "PE.6": "#139a3c",
+      "S7": "#139a3c",
+      "PE.7": "#139a3c",
+      "S8": "#139a3c",
+      "PE.8": "#139a3c",
+      "S9": "#139a3c",
+      "PE.9": "#139a3c",
+      "S10": "#c41a1a",
+      "PE.10": "#c41a1a",
+      "S11": "#139a3c",
+      "PE.11": "#139a3c",
+      "S12": "#139a3c",
+      "PE.12": "#139a3c",
+      "S13": "#139a3c",
+      "PE.13": "#139a3c",
+      "S14": "#139a3c",
+      "PE.14": "#139a3c",
+      "S15": "#c41a1a",
+      "PE.15": "#c41a1a",
+      "S16": "#139a3c",
+      "PE.16": "#139a3c",
+      "S17": "#139a3c",
+      "PE.17": "#139a3c",
+      "S18": "#139a3c",
+      "PE.18": "#139a3c",
+      "S19": "#139a3c",
+      "PE.19": "#139a3c",
+      "S20": "#139a3c",
+      "PE.20": "#139a3c",
+      "S21": "#139a3c",
+      "PE.21": "#139a3c",
+      "PISO": "#139a3c",
+      "V.B.1 · A 1–2": "#139a3c",
+      "V.B.1 · A 2–3": "#139a3c",
+      "V.B.1 · A 3–4": "#139a3c",
+      "V.B.1 · A 4–5": "#139a3c",
+      "V.B.1 · B 1–2": "#139a3c",
+      "V.B.1 · B 2–3": "#139a3c",
+      "V.B.1 · B 3–4": "#139a3c",
+      "V.B.1 · B 4–5": "#139a3c",
+      "V.B.1 · eixo 5": "#139a3c"
+    },
+    "transparencia": {
+      "PISO": 0.75
+    }
+  },
+  "tr-2012ks-13": {
+    "pintura": {
+      "SD5-1": "#c41a1a",
+      "PE.D5-1A": "#c41a1a",
+      "PE.D5-1B": "#c41a1a",
+      "PE.D5-1C": "#c41a1a",
+      "SD5-2": "#139a3c",
+      "PE.D5-2A": "#c2b80f",
+      "PE.D5-2B": "#c2b80f",
+      "PE.D5-2C": "#c2b80f"
+    }
+  },
+  "tr-2012ks-11-cc": {
+    "pintura": {
+      "S4": "#139a3c",
+      "PES.4": "#139a3c",
+      "S5": "#139a3c",
+      "PES.5": "#139a3c",
+      "S8": "#139a3c",
+      "PES.8": "#139a3c",
+      "S9": "#139a3c",
+      "PES.9": "#139a3c",
+      "S19": "#139a3c",
+      "PES.19": "#139a3c",
+      "S21": "#139a3c",
+      "PES.21": "#139a3c",
+      "S20": "#139a3c",
+      "PES.20": "#139a3c",
+      "S22": "#139a3c",
+      "PES.22": "#139a3c",
+      "S23": "#139a3c",
+      "PES.23": "#139a3c",
+      "S24": "#139a3c",
+      "PES.24": "#139a3c",
+      "S25": "#139a3c",
+      "PES.25": "#139a3c",
+      "S26": "#139a3c",
+      "PES.26": "#139a3c",
+      "S29": "#c2b80f",
+      "PES.29": "#c2b80f",
+      "S30": "#c2b80f",
+      "PES.30": "#c2b80f",
+      "S33": "#c2b80f",
+      "PES.33": "#c2b80f",
+      "S34": "#c2b80f",
+      "PES.34": "#c2b80f"
     }
   },
   "yy-2012ks-101": {
