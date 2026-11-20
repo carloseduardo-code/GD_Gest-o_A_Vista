@@ -1164,10 +1164,48 @@ function build(p) {
   const bounds = new THREE.Box3().setFromObject(group);
   // nome das peças principais novas (sapatas, blocos, radier, paredes): o pedestal fica sem nome, a sapata já identifica o conjunto
   // (name: texto no lugar do id; noName: peça sem rótulo)
+  // a ponta da linha fica sempre no topo do conjunto: em cima do pedestal que está sobre a sapata (o mais perto do meio dela)
+  // ou, sem pedestal, no topo da própria peça. Um ponto fixo, que não muda de lugar quando a câmera gira
+  const peds = pieces.filter((q) => q.userData.type === 'pedestal' && !q.userData.existing).map((q) => new THREE.Box3().setFromObject(q));
+  const inPlan = (pts, X, Y) => pts.reduce((inside, [x1, y1], i) => {
+    const [x2, y2] = pts[(i + 1) % pts.length];
+    return (y1 > Y) !== (y2 > Y) && X < x1 + ((Y - y1) * (x2 - x1)) / (y2 - y1) ? !inside : inside;
+  }, false);
   const names = pieces.filter((m) => !m.userData.existing && !m.userData.noName && m.userData.type !== 'pedestal' && !m.userData.steel).map((m) => {
-    const box = new THREE.Box3().setFromObject(m);
-    const top = new THREE.Vector3((box.min.x + box.max.x) / 2, box.max.y, (box.min.z + box.max.z) / 2);
-    return { mesh: m, text: m.userData.name ?? m.userData.id, box, top, main: m.userData.type !== 'pedestal' && !m.userData.steel };
+    const box = new THREE.Box3().setFromObject(m), c = box.getCenter(new THREE.Vector3());
+    const stack = peds.filter((pb) => {
+      const pc = pb.getCenter(new THREE.Vector3());
+      return pc.x > box.min.x && pc.x < box.max.x && pc.z > box.min.z && pc.z < box.max.z && Math.abs(pb.min.y - box.max.y) < 0.05;
+    }).sort((a, b) => a.getCenter(new THREE.Vector3()).distanceTo(c) - b.getCenter(new THREE.Vector3()).distanceTo(c));
+    let top;
+    if (stack.length) {
+      const pb = stack[0];
+      top = new THREE.Vector3((pb.min.x + pb.max.x) / 2, pb.max.y, (pb.min.z + pb.max.z) / 2);
+    } else if (m.userData.plan) {
+      // peça em planta (laje, faixa com furo): o ponto mais para dentro da peça (longe das bordas e dos furos),
+      // e entre os mais para dentro, o mais perto do meio; no topo dela
+      const d = m.userData, xs = d.plan.map((q) => q[0]), ys = d.plan.map((q) => q[1]);
+      const X0 = Math.min(...xs), X1 = Math.max(...xs), Y0 = Math.min(...ys), Y1 = Math.max(...ys), XC = (X0 + X1) / 2, YC = (Y0 + Y1) / 2;
+      const rings = [d.plan, ...(d.holes || [])];
+      const edgeDist = (X, Y) => Math.min(...rings.flatMap((ring) => ring.map(([ax, ay], i) => {
+        const [bx, by] = ring[(i + 1) % ring.length], dx = bx - ax, dy = by - ay;
+        const t = Math.max(0, Math.min(1, ((X - ax) * dx + (Y - ay) * dy) / (dx * dx + dy * dy || 1)));
+        return Math.hypot(X - ax - t * dx, Y - ay - t * dy);
+      })));
+      let best = [XC, YC], bIn = -1, bd = Infinity;
+      for (let i = 0; i < 24; i++) for (let j = 0; j < 24; j++) {
+        const X = X0 + ((X1 - X0) * (i + 0.5)) / 24, Y = Y0 + ((Y1 - Y0) * (j + 0.5)) / 24;
+        if (!inPlan(d.plan, X, Y) || (d.holes || []).some((hp) => inPlan(hp, X, Y))) continue;
+        const e = edgeDist(X, Y), dd = Math.hypot(X - XC, Y - YC);
+        if (e > bIn + 5 || (e > bIn - 5 && dd < bd)) { bIn = Math.max(bIn, e); bd = dd; best = [X, Y]; }
+      }
+      top = P(best[0], best[1], d.h[1] + slopeAt(d.slope, best[1])).add(shift(d.at));
+    } else {
+      top = new THREE.Vector3(c.x, box.max.y, c.z);
+    }
+    // o nome se posiciona em volta do conjunto inteiro (sapata e pedestal)
+    for (const pb of stack) box.union(pb);
+    return { mesh: m, text: m.userData.name ?? m.userData.id, box, top, main: true };
   });
   // volumes e contagens só do concreto novo; a estrutura existente e o aço aparecem mas não entram na conta
   const novas = pieces.filter((m) => !m.userData.existing && !m.userData.steel);
@@ -1635,22 +1673,22 @@ function layoutNames(b, cam, w, h, s = 1, avoid = []) {
   const mains = items.filter((it) => it.n.main).sort((a, c) => c.area - a.area);
   for (const it of mains) {
     const hw = nameWidth(it.n.text, s) / 2, [x0, y0, x1, y1] = it.r, cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
-    const cands = [[cx, y1 + gap + hh], [x0 - gap - hw, cy], [x1 + gap + hw, cy], [cx, y0 - gap - hh],
-      [x0 - gap - hw, y1], [x1 + gap + hw, y1], [cx, y1 + gap * 4 + hh], [x0 - gap * 4 - hw, cy], [x1 + gap * 4 + hw, cy]];
+    // a ponta da linha fica no topo, então o nome vai de preferência em cima do conjunto (linha curta), depois dos lados e embaixo
+    const cands = [[cx, y0 - gap - hh], [x0 - gap - hw, y0], [x1 + gap + hw, y0], [x0 - gap - hw, cy], [x1 + gap + hw, cy],
+      [cx, y0 - gap * 4 - hh], [cx, y1 + gap + hh], [x0 - gap * 4 - hw, cy], [x1 + gap * 4 + hw, cy]];
     let best = null;
     cands.forEach(([x, y], i) => {
       const r = [x - hw, y - hh, x + hw, y + hh];
-      let score = i;   // na dúvida, embaixo da peça
+      // na dúvida, em cima da peça; linha curta conta mais que cobrir um pouco outra peça; nunca em cima de outro nome
+      let score = i * 2 + Math.hypot(x - it.top[0], y - it.top[1]) * 0.15 / s;
       for (const q of placed) score += overlap(r, q) * 6;
-      for (const o of mains) if (o !== it) score += overlap(r, o.r) * 0.5;
+      for (const o of mains) if (o !== it) score += overlap(r, o.r) * 0.02 / (s * s);
       if (r[0] < 0 || r[2] > w || r[1] < 0 || r[3] > h) score += 1e7;
       if (!best || score < best.score) best = { x, y, r, score };
     });
     placed.push(best.r);
-    // ponta da linha: o ponto da peça mais perto do rótulo, um pouco para dentro dela
-    const ax = Math.min(Math.max(best.x, x0 + (x1 - x0) * 0.3), x1 - (x1 - x0) * 0.3);
-    const ay = Math.min(Math.max(best.y, y0 + (y1 - y0) * 0.3), y1 - (y1 - y0) * 0.3);
-    out.push({ n: it.n, x: best.x, y: best.y, ax, ay, lead: true });
+    // ponta da linha: sempre o topo do conjunto (ver build), o mesmo ponto de qualquer ângulo
+    out.push({ n: it.n, x: best.x, y: best.y, ax: it.top[0], ay: it.top[1], lead: true });
   }
   return out;
 }
