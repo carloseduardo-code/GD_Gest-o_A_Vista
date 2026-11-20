@@ -1,6 +1,7 @@
 // =====================================================================
 // Projeto TR-2012KS-11 — Transportador TR-2012KS-11, fundação interna (dentro do prédio da Britagem Secundária)
-// Desenhos: locação 2012KS-C-500463 Rev. 1, sapatas 500464 Rev. 1, radier RD.101 500617 Rev. 1 e 500618 Rev. 1.
+// Desenhos: locação 2012KS-C-500463 Rev. 1, sapatas 500464 Rev. 1, radier RD.101 500617 Rev. 1 e 500618 Rev. 1;
+// piso do RD.101 até a S101: 2012KS-C-500706 Rev. 0 (forma), 500707 e 500708 Rev. 0 (armação), medido no DWG.
 // Medidas em cm. X = ao longo do transportador (da S100 para o radier), Y = de cima para baixo da planta, H = altura.
 // H = 0 no fundo do radier na borda mais baixa (EL. 293,746). O radier tem o topo e o fundo inclinados (slope).
 // Gerado a partir das coordenadas do DWG por gen-tr11.js.
@@ -9,6 +10,8 @@
   const pasta = 'projetos/tr-2012ks-11/';
   // topo do radier: sobe 24,5 cm da borda de baixo (E, EL. 294,946) para a de cima (C, EL. 295,191)
   const SLOPE = [1685.6,0,9.6,24.5];
+  // piso: topo em EL. 295,165 no lado C (Y = 226, H = 141,9) e 295,084 no lado D (Y = 766), caimento de 1,5% na largura
+  const PISO_SLOPE = [226, 0, 766, -8.1];
   // chapas gabarito: espessura e folga estimadas; altura medida no corte (≈ 12 cm acima do concreto)
   const GB = { on: true, t: 9.5, h: 12, margin: 5 };
   // pedestais 95 × 85 das sapatas: 8 chumbadores Ø1.1/2" (CB-1), projeção 21 cm, nicho 30 × 30 × 30 no meio
@@ -37,8 +40,8 @@
     id: 'tr-2012ks-11',
     code: 'TR-2012KS-11',
     title: 'Transportador · fundação interna',
-    summary: 'Fundação do transportador TR-2012KS-11 dentro do prédio da Britagem Secundária: a sapata S100, as sapatas S101 a S107 com 4 pedestais cada e o radier RD.101 com pedestais, bases e nichos, entre os pilares do prédio ED-2012KS-01.',
-    date: '2026-10-24',
+    summary: 'Fundação do transportador TR-2012KS-11 dentro do prédio da Britagem Secundária: a sapata S100, as sapatas S101 a S107 com 4 pedestais cada e o radier RD.101 com pedestais, bases e nichos, entre os pilares do prédio ED-2012KS-01, e o piso do RD.101 até a S101.',
+    date: '2026-11-20',
     center: [4163.1,847.6],
     datum: 293.746,
     notes: [
@@ -49,6 +52,9 @@
       'Blocos e pilares do prédio ED-2012KS-01 só como referência (des. 2012KS-C-83410P); pilares cortados a EL. 297,000. Estacas e concreto magro não estão no modelo.',
       'Quantitativos da nota da locação × modelo: forma 247,12 × 248,07 m² e concreto magro 17,99 × 17,98 m³ batem; concreto estrutural 394,14 × 350,27 m³ não.',
       'A diferença (43,87 m³) é quase igual ao retângulo de 472 × 784 cm ao lado do radier, no canto à esquerda do eixo 2 do prédio, entre os eixos D e E, com 120 cm (44,45 m³): ele não é radier na planta de forma, na armação (500619) nem no corte B-B, onde só existe o piso existente. O modelo segue o contorno desenhado; vale confirmar o quantitativo com a projetista.',
+      "Piso do RD.101 até a S101 (2012KS-C-500706 Rev. 0; armação em 500707 e 500708): faixa de 5.547,6 × 540 cm entre as filas C e D, da viga VB5 (ao lado da S101) até o radier, com o topo nivelado com o radier: EL. 295,165 no lado C e 295,084 no lado D (caimento de 1,5% na largura).",
+      "Laje com 30 cm nos primeiros 1.050 cm a partir da VB5 e 20 cm no resto, com transição de 100 cm (no modelo, um degrau no meio da transição, com o mesmo volume). VB5 na ponta: 45 cm de largura até o topo da sapata S101, com mísula. Telas Q-335 em cima e Q-503 embaixo.",
+      "Sete concretagens entre as juntas de construção (575, 5 × 850 e 722,6 cm) e junta de isolamento de 2 cm em volta dos 26 pedestais e junto ao radier. Concreto do piso no modelo: 61,04 m³ em 276,66 m². Sub-base, lona e o piso da região da S100 (VB1/VB4) não estão no modelo.",
     ],
     references: [
       [pasta + 'desenhos/locacao-500463.png', 'Locação das fundações e cortes · 2012KS-C-500463'],
@@ -239,6 +245,42 @@
       { id: "PE-RD.15", group: "RD.101", kind: "Pedestal", type: 'pedestal',
         box: [7480.7,7510.7,681.1,711.1,134.2,148.7], bolts: QUIM_14,
         rows: [["Seção","30 × 30 cm"],["Chumbadores","4 × químico Ø5/8\" × 150 mm"]] },
+      // piso do RD.101 até a S101 (2012KS-C-500706 Rev. 0): 7 concretagens entre as juntas de construção, J.I. de 2 cm nos pedestais e no radier
+      { id: "PISO 1", group: "Piso", kind: "Piso (laje h = 30) · trecho 1 de 7", type: 'parede', name: "PISO 1", slope: PISO_SLOPE, h: [111.9,141.9],
+        plan: [[1206.2,226],[1781.2,226],[1781.2,766],[1206.2,766]],
+        holes: [[[1336.4,312.1],[1435.4,312.1],[1435.4,401.1],[1336.4,401.1]],[[1336.4,591.1],[1435.4,591.1],[1435.4,680.1],[1336.4,680.1]]],
+        rows: [["Trecho", "1 de 7 · da VB5 (S101) até a 1ª junta de construção"], ["Dimensões", "575 × 540 cm"], ["Espessura", "30 cm"], ["Área", "29,29 m²"], ["Telas", "Q-335 em cima e Q-503 embaixo"]] },
+      { id: "PISO 2", group: "Piso", kind: "Piso (laje h = 20) · trecho 2 de 7", type: 'parede', name: "PISO 2", slope: PISO_SLOPE, h: [121.9,141.9],
+        plan: [[1781.2,226],[2631.2,226],[2631.2,766],[1781.2,766]],
+        holes: [[[1935.6,312.1],[2034.6,312.1],[2034.6,401.1],[1935.6,401.1]],[[1935.6,591.1],[2034.6,591.1],[2034.6,680.1],[1935.6,680.1]],[[2197.3,312.1],[2296.3,312.1],[2296.3,401.1],[2197.3,401.1]],[[2197.3,591.1],[2296.3,591.1],[2296.3,680.1],[2197.3,680.1]]],
+        rows: [["Trecho", "2 de 7 · entre juntas de construção"], ["Dimensões", "850 × 540 cm"], ["Espessura", "20 cm (o engrossamento embaixo leva a 30 cm nos primeiros 475 cm, com transição de 100 cm)"], ["Área", "42,38 m²"], ["Telas", "Q-335 em cima e Q-503 embaixo"]] },
+      { id: "PISO 3", group: "Piso", kind: "Piso (laje h = 20) · trecho 3 de 7", type: 'parede', name: "PISO 3", slope: PISO_SLOPE, h: [121.9,141.9],
+        plan: [[2631.2,226],[3481.2,226],[3481.2,766],[2631.2,766]],
+        holes: [[[2796.6,312.1],[2895.6,312.1],[2895.6,401.1],[2796.6,401.1]],[[2796.6,591.1],[2895.6,591.1],[2895.6,680.1],[2796.6,680.1]],[[3058.3,312.1],[3157.3,312.1],[3157.3,401.1],[3058.3,401.1]],[[3058.3,591.1],[3157.3,591.1],[3157.3,680.1],[3058.3,680.1]]],
+        rows: [["Trecho", "3 de 7 · entre juntas de construção"], ["Dimensões", "850 × 540 cm"], ["Espessura", "20 cm"], ["Área", "42,38 m²"], ["Telas", "Q-335 em cima e Q-503 embaixo"]] },
+      { id: "PISO 4", group: "Piso", kind: "Piso (laje h = 20) · trecho 4 de 7", type: 'parede', name: "PISO 4", slope: PISO_SLOPE, h: [121.9,141.9],
+        plan: [[3481.2,226],[4331.2,226],[4331.2,766],[3481.2,766]],
+        holes: [[[3657.5,312.1],[3756.5,312.1],[3756.5,401.1],[3657.5,401.1]],[[3657.5,591.1],[3756.5,591.1],[3756.5,680.1],[3657.5,680.1]],[[3919.2,312.1],[4018.2,312.1],[4018.2,401.1],[3919.2,401.1]],[[3919.2,591.1],[4018.2,591.1],[4018.2,680.1],[3919.2,680.1]]],
+        rows: [["Trecho", "4 de 7 · entre juntas de construção"], ["Dimensões", "850 × 540 cm"], ["Espessura", "20 cm"], ["Área", "42,38 m²"], ["Telas", "Q-335 em cima e Q-503 embaixo"]] },
+      { id: "PISO 5", group: "Piso", kind: "Piso (laje h = 20) · trecho 5 de 7", type: 'parede', name: "PISO 5", slope: PISO_SLOPE, h: [121.9,141.9],
+        plan: [[4331.2,226],[5181.2,226],[5181.2,766],[4331.2,766]],
+        holes: [[[4518.4,312.1],[4617.4,312.1],[4617.4,401.1],[4518.4,401.1]],[[4518.4,591.1],[4617.4,591.1],[4617.4,680.1],[4518.4,680.1]],[[4780.1,312.1],[4879.1,312.1],[4879.1,401.1],[4780.1,401.1]],[[4780.1,591.1],[4879.1,591.1],[4879.1,680.1],[4780.1,680.1]]],
+        rows: [["Trecho", "5 de 7 · entre juntas de construção"], ["Dimensões", "850 × 540 cm"], ["Espessura", "20 cm"], ["Área", "42,38 m²"], ["Telas", "Q-335 em cima e Q-503 embaixo"]] },
+      { id: "PISO 6", group: "Piso", kind: "Piso (laje h = 20) · trecho 6 de 7", type: 'parede', name: "PISO 6", slope: PISO_SLOPE, h: [121.9,141.9],
+        plan: [[5181.2,226],[6031.2,226],[6031.2,766],[5181.2,766]],
+        holes: [[[5379.3,312.1],[5478.3,312.1],[5478.3,401.1],[5379.3,401.1]],[[5379.3,591.1],[5478.3,591.1],[5478.3,680.1],[5379.3,680.1]],[[5641,312.1],[5740,312.1],[5740,401.1],[5641,401.1]],[[5641,591.1],[5740,591.1],[5740,680.1],[5641,680.1]]],
+        rows: [["Trecho", "6 de 7 · entre juntas de construção"], ["Dimensões", "850 × 540 cm"], ["Espessura", "20 cm"], ["Área", "42,38 m²"], ["Telas", "Q-335 em cima e Q-503 embaixo"]] },
+      { id: "PISO 7", group: "Piso", kind: "Piso (laje h = 20) · trecho 7 de 7", type: 'parede', name: "PISO 7", slope: PISO_SLOPE, h: [121.9,141.9],
+        plan: [[6031.2,226],[6753.8,226],[6753.8,766],[6031.2,766]],
+        holes: [[[6240.2,312.1],[6339.2,312.1],[6339.2,401.1],[6240.2,401.1]],[[6240.2,591.1],[6339.2,591.1],[6339.2,680.1],[6240.2,680.1]],[[6501.9,312.1],[6600.9,312.1],[6600.9,401.1],[6501.9,401.1]],[[6501.9,591.1],[6600.9,591.1],[6600.9,680.1],[6501.9,680.1]]],
+        rows: [["Trecho", "7 de 7 · da última junta de construção até o radier RD.101"], ["Dimensões", "722,6 × 540 cm"], ["Espessura", "20 cm"], ["Área", "35,50 m²"], ["Telas", "Q-335 em cima e Q-503 embaixo"]] },
+      { id: "PISO 2 · engrossamento", group: "Piso", kind: "Piso · engrossamento para 30 cm (trecho 2)", type: 'parede', noName: true, slope: PISO_SLOPE, h: [111.9,121.9],
+        plan: [[1781.2,226],[2306.2,226],[2306.2,766],[1781.2,766]],
+        holes: [[[1935.6,312.1],[2034.6,312.1],[2034.6,401.1],[1935.6,401.1]],[[1935.6,591.1],[2034.6,591.1],[2034.6,680.1],[1935.6,680.1]],[[2197.3,312.1],[2296.3,312.1],[2296.3,401.1],[2197.3,401.1]],[[2197.3,591.1],[2296.3,591.1],[2296.3,680.1],[2197.3,680.1]]],
+        rows: [["Espessura","10 cm embaixo da laje de 20 cm"],["No modelo","a transição de 100 cm para 20 cm vira um degrau no meio dela (mesmo volume)"]] },
+      { id: "VB5", group: "Piso", kind: "Viga de borda (VB5)", type: 'parede', noName: true, slope: PISO_SLOPE,
+        section: [[1206.2,101.1],[1251.2,101.1],[1262,111.9],[1206.2,111.9]], y: [226,766],
+        rows: [["Seção","45 cm de largura até o topo da sapata S101 · mísula 10,8 × 10,8 cm"],["Junta","1 cm para a VB4 do piso da região da S100"]] },
       { id: "Bloco existente 1", group: "Existente", kind: "Bloco sobre estacas (ED-2012KS-01)", type: 'sapata', existing: true, opacity: 0.12,
         box: [1186.1,1526.1,1.1,341.1,-194.6,-74.6],
         rows: [["Dimensões","340 × 340 cm"],["Projeto","ED-2012KS-01 · des. 2012KS-C-83410P"]] },
@@ -349,6 +391,7 @@
       { text: 'S106', at: [5559.6,496.1,190], view: [[10.6,6.1,4.1],[14,0.9,-3.5]] },
       { text: 'S107', at: [6420.5,496.1,190], view: [[19.2,6.1,4.1],[22.6,0.9,-3.5]] },
       { text: 'RD.101', at: [7530.5,496.1,230], view: [[19, 20, 27], [33.5, 0, 0]] },
+      { text: 'Piso', at: [3980,190,175] },
     ],
     // vistas da câmera: [posição, alvo] em metros
     views: {
