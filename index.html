@@ -514,7 +514,8 @@
   </div>
 
   <div class="menu glass" id="labelsMenu" hidden>
-    <label class="opt"><span>Nomes das peças<small>S1, PE.1A… em cima de cada peça</small></span><input class="switch" type="checkbox" id="optNames"></label>
+    <label class="opt"><span>Nomes das peças<small>S1, VA.1, PISO… com linha até a peça</small></span><input class="switch" type="checkbox" id="optNames"></label>
+    <label class="opt"><span>Nomes dos pedestais<small>PE.1A, BE.1… também com nome</small></span><input class="switch" type="checkbox" id="optPeds"></label>
     <label class="opt"><span>Etiquetas dos grupos<small>os marcadores verdes de cada conjunto</small></span><input class="switch" type="checkbox" id="optTags"></label>
     <label class="opt" id="optDimsRow"><span>Cotas<small>medidas desenhadas no modelo</small></span><input class="switch" type="checkbox" id="optDims"></label>
   </div>
@@ -1164,48 +1165,45 @@ function build(p) {
   const bounds = new THREE.Box3().setFromObject(group);
   // nome das peças principais novas (sapatas, blocos, radier, paredes): o pedestal fica sem nome, a sapata já identifica o conjunto
   // (name: texto no lugar do id; noName: peça sem rótulo)
-  // a ponta da linha fica sempre no topo do conjunto: em cima do pedestal que está sobre a sapata (o mais perto do meio dela)
-  // ou, sem pedestal, no topo da própria peça. Um ponto fixo, que não muda de lugar quando a câmera gira
-  const peds = pieces.filter((q) => q.userData.type === 'pedestal' && !q.userData.existing).map((q) => new THREE.Box3().setFromObject(q));
+  // nome de cada peça nova (sapata, pedestal, parede, base, laje): a ponta da linha fica no topo da própria peça,
+  // na parte que fica à mostra (fora das peças apoiadas em cima dela), no ponto mais para dentro e, entre esses, o mais perto
+  // do meio. Um ponto fixo da peça, que não muda quando a câmera gira. Com o topo todo coberto, vai para o meio da peça.
   const inPlan = (pts, X, Y) => pts.reduce((inside, [x1, y1], i) => {
     const [x2, y2] = pts[(i + 1) % pts.length];
     return (y1 > Y) !== (y2 > Y) && X < x1 + ((Y - y1) * (x2 - x1)) / (y2 - y1) ? !inside : inside;
   }, false);
-  const names = pieces.filter((m) => !m.userData.existing && !m.userData.noName && m.userData.type !== 'pedestal' && !m.userData.steel).map((m) => {
-    const box = new THREE.Box3().setFromObject(m), c = box.getCenter(new THREE.Vector3());
-    const stack = peds.filter((pb) => {
-      const pc = pb.getCenter(new THREE.Vector3());
-      return pc.x > box.min.x && pc.x < box.max.x && pc.z > box.min.z && pc.z < box.max.z && Math.abs(pb.min.y - box.max.y) < 0.05;
-    }).sort((a, b) => a.getCenter(new THREE.Vector3()).distanceTo(c) - b.getCenter(new THREE.Vector3()).distanceTo(c));
-    let top;
-    if (stack.length) {
-      const pb = stack[0];
-      top = new THREE.Vector3((pb.min.x + pb.max.x) / 2, pb.max.y, (pb.min.z + pb.max.z) / 2);
-    } else if (m.userData.plan) {
-      // peça em planta (laje, faixa com furo): o ponto mais para dentro da peça (longe das bordas e dos furos),
-      // e entre os mais para dentro, o mais perto do meio; no topo dela
-      const d = m.userData, xs = d.plan.map((q) => q[0]), ys = d.plan.map((q) => q[1]);
-      const X0 = Math.min(...xs), X1 = Math.max(...xs), Y0 = Math.min(...ys), Y1 = Math.max(...ys), XC = (X0 + X1) / 2, YC = (Y0 + Y1) / 2;
-      const rings = [d.plan, ...(d.holes || [])];
-      const edgeDist = (X, Y) => Math.min(...rings.flatMap((ring) => ring.map(([ax, ay], i) => {
-        const [bx, by] = ring[(i + 1) % ring.length], dx = bx - ax, dy = by - ay;
-        const t = Math.max(0, Math.min(1, ((X - ax) * dx + (Y - ay) * dy) / (dx * dx + dy * dy || 1)));
-        return Math.hypot(X - ax - t * dx, Y - ay - t * dy);
-      })));
-      let best = [XC, YC], bIn = -1, bd = Infinity;
-      for (let i = 0; i < 24; i++) for (let j = 0; j < 24; j++) {
-        const X = X0 + ((X1 - X0) * (i + 0.5)) / 24, Y = Y0 + ((Y1 - Y0) * (j + 0.5)) / 24;
-        if (!inPlan(d.plan, X, Y) || (d.holes || []).some((hp) => inPlan(hp, X, Y))) continue;
-        const e = edgeDist(X, Y), dd = Math.hypot(X - XC, Y - YC);
-        if (e > bIn + 5 || (e > bIn - 5 && dd < bd)) { bIn = Math.max(bIn, e); bd = dd; best = [X, Y]; }
-      }
-      top = P(best[0], best[1], d.h[1] + slopeAt(d.slope, best[1])).add(shift(d.at));
-    } else {
-      top = new THREE.Vector3(c.x, box.max.y, c.z);
+  const ringDist = (rings, X, Y) => Math.min(...rings.flatMap((ring) => ring.map(([ax, ay], i) => {
+    const [bx, by] = ring[(i + 1) % ring.length], dx = bx - ax, dy = by - ay;
+    const t = Math.max(0, Math.min(1, ((X - ax) * dx + (Y - ay) * dy) / (dx * dx + dy * dy || 1)));
+    return Math.hypot(X - ax - t * dx, Y - ay - t * dy);
+  })));
+  const solid = pieces.filter((q) => !q.userData.existing).map((q) => [q, new THREE.Box3().setFromObject(q)]);
+  const names = solid.filter(([m]) => !m.userData.noName && !m.userData.steel).map(([m, box]) => {
+    const d = m.userData, c = box.getCenter(new THREE.Vector3()), a = shift(d.at);
+    // peças apoiadas no topo desta (pedestal na sapata, parede no bloco…): a ponta não vai embaixo delas
+    const covers = solid.filter(([q, qb]) => q !== m && Math.abs(qb.min.y - box.max.y) < 0.05
+      && qb.min.x < box.max.x && qb.max.x > box.min.x && qb.min.z < box.max.z && qb.max.z > box.min.z).map(([, qb]) => qb);
+    const toPlan = (x, z) => [(x - a.x) * 100 + OX, (z - a.z) * 100 + OY];
+    const inside = d.plan ? (x, z) => { const [X, Y] = toPlan(x, z); return inPlan(d.plan, X, Y) && !(d.holes || []).some((h) => inPlan(h, X, Y)); } : () => true;
+    const edge = d.plan ? (x, z) => ringDist([d.plan, ...(d.holes || [])], ...toPlan(x, z)) / 100
+      : (x, z) => Math.min(x - box.min.x, box.max.x - x, z - box.min.z, box.max.z - z);
+    const free = (x, z) => covers.reduce((r, qb) => Math.min(r, Math.hypot(Math.max(qb.min.x - x, 0, x - qb.max.x), Math.max(qb.min.z - z, 0, z - qb.max.z))), Infinity);
+    let best = null, bIn = -1, bd = Infinity;
+    for (let i = 0; i < 24; i++) for (let j = 0; j < 24; j++) {
+      const x = box.min.x + ((box.max.x - box.min.x) * (i + 0.5)) / 24, z = box.min.z + ((box.max.z - box.min.z) * (j + 0.5)) / 24;
+      if (!inside(x, z)) continue;
+      const f = free(x, z);
+      if (f <= 0) continue;
+      const e = Math.min(edge(x, z), f), dd = Math.hypot(x - c.x, z - c.z);
+      if (e > bIn + 0.05 || (e > bIn - 0.05 && dd < bd)) { bIn = Math.max(bIn, e); bd = dd; best = [x, z]; }
     }
-    // o nome se posiciona em volta do conjunto inteiro (sapata e pedestal)
-    for (const pb of stack) box.union(pb);
-    return { mesh: m, text: m.userData.name ?? m.userData.id, box, top, main: true };
+    let top;
+    if (!best) top = c.clone();
+    else if (d.plan) {
+      const [X, Y] = toPlan(...best);
+      top = P(X, Y, d.h[1] + slopeAt(d.slope, Y)).add(a);
+    } else top = new THREE.Vector3(best[0], box.max.y, best[1]);
+    return { mesh: m, text: d.name ?? d.id, box, top, main: d.type !== 'pedestal' };
   });
   // volumes e contagens só do concreto novo; a estrutura existente e o aço aparecem mas não entram na conta
   const novas = pieces.filter((m) => !m.userData.existing && !m.userData.steel);
@@ -1627,9 +1625,10 @@ $('views').addEventListener('click', (e) => {
 // menu Rótulos: nomes das peças e etiquetas dos grupos ligados de saída (dá para ocultar); cotas só quando o projeto tem
 const pref = (k, def) => { try { const v = localStorage.getItem(`projetos3d:rotulos:${k}`); return v == null ? def : v === '1'; } catch { return def; } };
 const setPref = (k, v) => { try { localStorage.setItem(`projetos3d:rotulos:${k}`, v ? '1' : '0'); } catch { /* sem armazenamento */ } };
-let namesOn = pref('nomes', true), tagsOn = pref('grupos', true);
+let namesOn = pref('nomes', true), tagsOn = pref('grupos', true), pedsOn = pref('pedestais', true);
 dimsOn = pref('cotas', false);
 $('optNames').checked = namesOn;
+$('optPeds').checked = pedsOn;
 $('optTags').checked = tagsOn;
 $('optDims').checked = dimsOn;
 function toggleLabelsMenu(open = $('labelsMenu').hidden) {
@@ -1640,6 +1639,7 @@ $('labelsBtn').addEventListener('click', (e) => { e.stopPropagation(); toggleLab
 $('labelsMenu').addEventListener('click', (e) => e.stopPropagation());
 addEventListener('pointerdown', (e) => { if (!$('labelsMenu').hidden && !e.target.closest('#labelsMenu, #labelsBtn')) toggleLabelsMenu(false); });
 $('optNames').addEventListener('change', (e) => { namesOn = e.target.checked; setPref('nomes', namesOn); });
+$('optPeds').addEventListener('change', (e) => { pedsOn = e.target.checked; setPref('pedestais', pedsOn); });
 $('optTags').addEventListener('change', (e) => { tagsOn = e.target.checked; setPref('grupos', tagsOn); namesAt = 0; });
 $('optDims').addEventListener('change', (e) => { dimsOn = e.target.checked; setPref('cotas', dimsOn); applyDims(dimsOn); });
 
@@ -1655,7 +1655,8 @@ function nameWidth(text, s) {
   return textWidth.get(k);
 }
 const overlap = (r, q) => Math.max(0, Math.min(r[2], q[2]) - Math.max(r[0], q[0])) * Math.max(0, Math.min(r[3], q[3]) - Math.max(r[1], q[1]));
-function layoutNames(b, cam, w, h, s = 1, avoid = []) {
+// all: na foto entram todos; na tela, o nome de pedestal que ficaria em cima de outro nome espera a câmera chegar mais perto
+function layoutNames(b, cam, w, h, s = 1, avoid = [], all = false) {
   const v = new THREE.Vector3(), items = [];
   for (const n of b.names) {
     let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity, behind = false;
@@ -1670,7 +1671,8 @@ function layoutNames(b, cam, w, h, s = 1, avoid = []) {
     items.push({ n, r: [x0, y0, x1, y1], top: [(v.x + 1) / 2 * w, (1 - v.y) / 2 * h], area: (x1 - x0) * (y1 - y0) });
   }
   const hh = 10 * s, gap = 9 * s, out = [], placed = [...avoid];
-  const mains = items.filter((it) => it.n.main).sort((a, c) => c.area - a.area);
+  // sapatas, paredes e lajes; pedestais e bases também, se "Nomes dos pedestais" estiver ligado. As maiores primeiro
+  const mains = items.filter((it) => it.n.main || pedsOn).sort((a, c) => (c.n.main - a.n.main) || (c.area - a.area));
   for (const it of mains) {
     const hw = nameWidth(it.n.text, s) / 2, [x0, y0, x1, y1] = it.r, cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
     // a ponta da linha fica no topo, então o nome vai de preferência em cima do conjunto (linha curta), depois dos lados e embaixo
@@ -1686,6 +1688,7 @@ function layoutNames(b, cam, w, h, s = 1, avoid = []) {
       if (r[0] < 0 || r[2] > w || r[1] < 0 || r[3] > h) score += 1e7;
       if (!best || score < best.score) best = { x, y, r, score };
     });
+    if (!all && !it.n.main && placed.some((q) => overlap(best.r, q) > 0)) continue;
     placed.push(best.r);
     // ponta da linha: sempre o topo do conjunto (ver build), o mesmo ponto de qualquer ângulo
     out.push({ n: it.n, x: best.x, y: best.y, ax: it.top[0], ay: it.top[1], lead: true });
@@ -2581,7 +2584,7 @@ async function takePhoto() {
     return { tag: true, text: t.text, x, y, x0: x, y0: y, hidden: false, r: [x - hw, y - hh, x + hw, y + hh] };
   }).filter(Boolean) : [];
   const shotLabels = [...(namesOn
-    ? layoutNames(cur, camera, PW, PH, ns, [foot, ...tagLabels.map((t) => t.r)])
+    ? layoutNames(cur, camera, PW, PH, ns, [foot, ...tagLabels.map((t) => t.r)], true)
       .map((c) => ({ text: c.n.text, x: c.x, y: c.y, ax: c.ax, ay: c.ay, x0: c.x, y0: c.y, hidden: false }))
     : []), ...tagLabels];
   camera.clearViewOffset();
