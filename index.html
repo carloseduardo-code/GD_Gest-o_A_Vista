@@ -352,6 +352,12 @@
   .se-label.off { opacity: .35; border-style: dashed; box-shadow: none; cursor: pointer; }
   .se-label.off:hover { opacity: .7; }
   .se-label.off .se-x { display: none; }
+  /* etiqueta de grupo na foto: pílula com ponto verde, como os marcadores da tela */
+  .se-label.se-tag { display: flex; align-items: center; gap: calc(6px * var(--s, 1)); font-size: calc(11.5px * var(--s, 1));
+    padding: calc(5px * var(--s, 1)) calc(9px * var(--s, 1)) calc(5px * var(--s, 1)) calc(7px * var(--s, 1));
+    border-radius: 999px; border-color: rgba(36, 126, 81, .55); }
+  .se-label.se-tag::before { content: ''; flex: none; width: calc(6px * var(--s, 1)); height: calc(6px * var(--s, 1)); border-radius: 50%;
+    background: var(--brand); }
 
   .flash { position: fixed; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 50; }
   .flash.go { animation: flash .55s ease-out; }
@@ -571,7 +577,7 @@
 <div class="shot-editor" id="shotEditor" hidden>
   <div class="se-bar">
     <div class="se-title"><b>Editar foto</b>
-      <span>Arraste os nomes · × oculta · clique no apagado para voltar</span></div>
+      <span>Arraste os nomes e as etiquetas · × oculta · clique no apagado para voltar</span></div>
     <div class="se-actions">
       <span class="se-count" id="seCount"></span>
       <button type="button" class="btn ghost sm" id="seReset">Restaurar</button>
@@ -2524,12 +2530,22 @@ async function takePhoto() {
         l.userData.kind === 'loc' ? '#9a5800' : '#1d6b44', 5 * s, 3 * s, 5 * s);
     }
   }
-  // nomes das sapatas, como na tela; eles só entram na imagem ao salvar, depois de arrumados no editor da foto
-  const ns = PW / 1250;
-  const shotLabels = namesOn
-    ? layoutNames(cur, camera, PW, PH, ns, [[0, PH - 150 * (PW / 1600), PW, PH]])
+  // nomes das sapatas e etiquetas dos grupos, como na tela; eles só entram na imagem ao salvar, depois de arrumados no editor da foto
+  const ns = PW / 1250, foot = [0, PH - 150 * (PW / 1600), PW, PH];
+  // etiquetas: todas entram na foto (na tela, de longe, as que se cobrem ficam escondidas); a que cai fora do quadro vai para a borda
+  g.font = `600 ${11.5 * ns}px Inter`;
+  const tagLabels = tagsOn ? cur.tags.map((t) => {
+    v.setFromMatrixPosition(t.obj.matrixWorld).project(camera);
+    if (v.z < -1 || v.z > 1) return null;
+    const hw = (g.measureText(t.text).width + 28 * ns) / 2, hh = 12 * ns, m = 12 * ns;
+    const x = Math.min(PW - hw - m, Math.max(hw + m, (v.x + 1) / 2 * PW));
+    const y = Math.min(foot[1] - hh - m, Math.max(hh + m, (1 - v.y) / 2 * PH));
+    return { tag: true, text: t.text, x, y, x0: x, y0: y, hidden: false, r: [x - hw, y - hh, x + hw, y + hh] };
+  }).filter(Boolean) : [];
+  const shotLabels = [...(namesOn
+    ? layoutNames(cur, camera, PW, PH, ns, [foot, ...tagLabels.map((t) => t.r)])
       .map((c) => ({ text: c.n.text, x: c.x, y: c.y, ax: c.ax, ay: c.ay, x0: c.x, y0: c.y, hidden: false }))
-    : [];
+    : []), ...tagLabels];
   camera.clearViewOffset();
   glow(selected);
 
@@ -2608,7 +2624,34 @@ function drawShotNames(g, labels, ns) {
   }
 }
 
-// ---------- editor da foto: arrastar e ocultar os nomes antes de salvar ----------
+// etiquetas dos grupos na foto: pílula branca com borda e ponto verdes (mesmas medidas da tela, na escala da foto)
+function drawShotTags(g, tags, ns) {
+  g.font = `600 ${11.5 * ns}px Inter`;
+  g.textAlign = 'left';
+  g.textBaseline = 'middle';
+  for (const c of tags) {
+    const bw = g.measureText(c.text).width + 28 * ns, bh = 23 * ns, x0 = c.x - bw / 2;
+    g.save();
+    g.shadowColor = 'rgba(57,52,49,0.18)';
+    g.shadowBlur = 6 * ns;
+    g.shadowOffsetY = 1.5 * ns;
+    roundRect(g, x0, c.y - bh / 2, bw, bh, bh / 2);
+    g.fillStyle = '#ffffff';
+    g.fill();
+    g.restore();
+    g.lineWidth = Math.max(1, ns);
+    g.strokeStyle = 'rgba(36,126,81,0.55)';
+    g.stroke();
+    g.fillStyle = '#247e51';
+    g.beginPath();
+    g.arc(x0 + 10 * ns, c.y, 3 * ns, 0, Math.PI * 2);
+    g.fill();
+    g.fillStyle = '#393431';
+    g.fillText(c.text, x0 + 19 * ns, c.y + 0.5 * ns);
+  }
+}
+
+// ---------- editor da foto: arrastar e ocultar os nomes e as etiquetas antes de salvar ----------
 let shot = null;
 function fitShot() {
   if (!shot) return;
@@ -2627,14 +2670,14 @@ function drawShotEditor() {
     c.el.style.left = `${(c.x / shot.PW) * 100}%`;
     c.el.style.top = `${(c.y / shot.PH) * 100}%`;
     c.el.classList.toggle('off', c.hidden);
-    if (c.hidden) continue;
+    if (c.hidden || c.tag) continue;   // etiqueta de grupo não tem linha até a peça
     d += `M${c.ax.toFixed(1)} ${c.ay.toFixed(1)}L${c.x.toFixed(1)} ${c.y.toFixed(1)}`;
     dots += `M${(c.ax - 2.2 * shot.ns).toFixed(1)} ${c.ay.toFixed(1)}a${2.2 * shot.ns} ${2.2 * shot.ns} 0 1 0 ${4.4 * shot.ns} 0a${2.2 * shot.ns} ${2.2 * shot.ns} 0 1 0 ${-4.4 * shot.ns} 0`;
   }
   svg.querySelector('.se-lead').setAttribute('d', d);
   svg.querySelector('.se-dot').setAttribute('d', dots);
   const off = shot.labels.filter((c) => c.hidden).length;
-  $('seCount').textContent = shot.labels.length ? `${shot.labels.length - off} de ${shot.labels.length} nomes na foto` : 'Sem nomes nesta foto';
+  $('seCount').textContent = shot.labels.length ? `${shot.labels.length - off} de ${shot.labels.length} rótulos na foto` : 'Sem rótulos nesta foto';
 }
 function openShotEditor(s) {
   shot = s;
@@ -2645,7 +2688,7 @@ function openShotEditor(s) {
   box.innerHTML = '';
   for (const c of s.labels) {
     const el = document.createElement('div');
-    el.className = 'se-label';
+    el.className = c.tag ? 'se-label se-tag' : 'se-label';
     el.innerHTML = `<span></span><button type="button" class="se-x" aria-label="Ocultar">×</button>`;
     el.firstChild.textContent = c.text;
     el.title = 'Arraste para mover · × para ocultar';
@@ -2711,7 +2754,8 @@ $('seSave').addEventListener('click', () => {
   out.height = shot.PH;
   const g = out.getContext('2d');
   g.drawImage(shot.base, 0, 0);
-  drawShotNames(g, shot.labels.filter((c) => !c.hidden), shot.ns);
+  drawShotNames(g, shot.labels.filter((c) => !c.hidden && !c.tag), shot.ns);
+  drawShotTags(g, shot.labels.filter((c) => !c.hidden && c.tag), shot.ns);
   const name = shot.name;
   out.toBlob((blob) => {
     const a = document.createElement('a');
